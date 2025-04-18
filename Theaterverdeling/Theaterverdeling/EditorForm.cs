@@ -2,12 +2,12 @@
 
 namespace Theaterverdeling
 {
-    public partial class EditorForm : Form
+  public partial class EditorForm : Form
+  {
+    public EditorForm()
     {
-        public EditorForm()
-        {
-            InitializeComponent();
+      InitializeComponent();
 
-        }
     }
+  }
 }
