@@ -7,11 +7,12 @@ namespace Theaterverdeling
 {
     public class Voorstelling
     {
-        public DateTime Time;
-        public Zaal Zaal;
-        public DateTime Datum;
-        public int Freeseats{get { return Zaal.Seats - Groups.Sum(group => group.Personen); }}
-        public List<Group> Groups=new List<Group>(); 
+        public DateTime Time { get; set; }
+        public Zaal Zaal { get; set; }
+        public DateTime Datum { get; set; }
+        public int Freeseats => Zaal.Seats - Groups.Sum(group => group.Personen);
+        public List<Group> Groups { get; set; } = new List<Group>(); 
+        
         public Voorstelling(DateTime time, Zaal zaal, DateTime datum)
         {
             Zaal = zaal;

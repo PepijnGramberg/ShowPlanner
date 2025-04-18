@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using PdfSharpCore.Drawing;
 
 namespace Theaterverdeling
 {
     public abstract class Zaal
     {
-        public bool Frontseatsoff = false;
-        public bool Balconyoff = false;
+        public bool Frontseatsoff { get; set; } = false;
+        public bool Balconyoff { get; set; } = false;
         protected int _seats;
-        public int Seats { get { return _seats; } }
-        public List<Group> Groups;
+        public int Seats => _seats;
+        public List<Group> Groups { get; set; }
         protected List<int>[] Places;
         public virtual void AssignSeats()
         {

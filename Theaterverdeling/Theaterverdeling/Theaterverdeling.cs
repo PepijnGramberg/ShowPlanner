@@ -62,7 +62,7 @@ namespace Theaterverdeling
                         }
                     if (!found)
                     {
-                        MessageBox.Show("De groep \"" + gGroup.Name + "\" is niet ingedeeld!");
+                        MessageBox.Show($"De groep \"{gGroup.Name}\" is niet ingedeeld!");
                     }
                 }
 
@@ -81,7 +81,8 @@ namespace Theaterverdeling
                         pdf.AddPage(page);
                         var gr = XGraphics.FromPdfPage(page);
                         var format = new XStringFormat { Alignment = XStringAlignment.Center };
-                        gr.DrawString(voorstellingnaambox.Text + "\n" + voorstelling.Datum.ToShortDateString() + " " + voorstelling.Time.ToShortTimeString(), new XFont("Verdana", 12), XBrushes.Black, new XRect(10, 25, 500, 200), format);
+                        gr.DrawString($"{voorstellingnaambox.Text}\n{voorstelling.Datum.ToShortDateString()} {voorstelling.Time.ToShortTimeString()}", 
+                            new XFont("Verdana", 12), XBrushes.Black, new XRect(10, 25, 500, 200), format);
 
                         voorstelling.Draw(gr);
 
@@ -90,7 +91,8 @@ namespace Theaterverdeling
                         pdfs.Add(pdf1);
                         pdf1.AddPage(page1);
                         var gr1 = XGraphics.FromPdfPage(page1);
-                        gr1.DrawString(voorstellingnaambox.Text + "\n" + voorstelling.Datum.ToShortDateString() + " " + voorstelling.Time.ToShortTimeString(), new XFont("Verdana", 12), XBrushes.Black, new XRect(10, 25, 500, 200), format);
+                        gr1.DrawString($"{voorstellingnaambox.Text}\n{voorstelling.Datum.ToShortDateString()} {voorstelling.Time.ToShortTimeString()}", 
+                            new XFont("Verdana", 12), XBrushes.Black, new XRect(10, 25, 500, 200), format);
 
                         voorstelling.Draw(gr1);
                     }
@@ -106,8 +108,7 @@ namespace Theaterverdeling
 
                     pdf.Save(saveFileDialog.FileName);
                     for (var i = 0; i < pdfs.Count; i++)
-                        pdfs[i].Save(saveFileDialog.FileName.Substring(0, saveFileDialog.FileName.Length - 4) +
-                                     " Voorstelling " + (i + 1) + ".pdf");
+                        pdfs[i].Save($"{saveFileDialog.FileName.Substring(0, saveFileDialog.FileName.Length - 4)} Voorstelling {(i + 1)}.pdf");
                 }
                 Groupviewerupdate();
                 Voorstellingviewerupdate();
@@ -124,41 +125,39 @@ namespace Theaterverdeling
 
         void AddshowformAddingshow(object sender, EventArgs e)
         {
-            var show = ((Addshowform)sender).show;
-            show.Zaal.Frontseatchange(Frontrowsdisable.Checked);
-            _shows.Add(show);
-            Voorstellingviewerupdate();
+            if (sender is Addshowform addShowForm)
+            {
+                var show = addShowForm.show;
+                show.Zaal.Frontseatchange(Frontrowsdisable.Checked);
+                _shows.Add(show);
+                Voorstellingviewerupdate();
 
-            Updatestoelen();
+                Updatestoelen();
+            }
         }
         void Voorstellingviewerupdate()
         {
             Voorstellingviewer.Items.Clear();
             foreach (var show in _shows)
             {
-                Voorstellingviewer.Items.Add(show.Datum.ToShortDateString() + " " + show.Time.ToShortTimeString() + " " + (show.Zaal.Balconyoff ? "ZB" : ""));
+                Voorstellingviewer.Items.Add($"{show.Datum.ToShortDateString()} {show.Time.ToShortTimeString()} {(show.Zaal.Balconyoff ? "ZB" : "")}");
             }
         }
-        private int Zaalsort(Voorstelling x, Voorstelling y)
-        {
-
-            return x.Freeseats < y.Freeseats ? 1 : 0;
-        }
+        private int Zaalsort(Voorstelling x, Voorstelling y) => x.Freeseats < y.Freeseats ? 1 : 0;
         private int Zaaldatesort(Voorstelling x, Voorstelling y)
         {
             if (x.Datum.Date < y.Datum.Date)
                 return 0;
             if (x.Datum.Date > y.Datum.Date)
                 return 1;
-            if (x.Time.TimeOfDay < y.Time.TimeOfDay) return 0;
-            return 1;
+            return x.Time.TimeOfDay < y.Time.TimeOfDay ? 0 : 1;
         }
         #endregion
         private void Updatestoelen()
         {
             var personen = _groups.Sum(group => group.Personen);
             var stoelen = _shows.Sum(show => show.Zaal.Seats);
-            Seatlabel.Text = (personen + "/" + stoelen + " stoelen");
+            Seatlabel.Text = $"{personen}/{stoelen} stoelen";
         }
         #region Groepen
         private void AddgroupClick(object sender, EventArgs e)
@@ -176,10 +175,13 @@ namespace Theaterverdeling
 
         void AddgroupformAddinggroup(object sender, EventArgs e)
         {
-            var group = ((Addgroupform)sender).Group;
-            _groups.Add(group);
-            Groupviewerupdate();
-            Updatestoelen();
+            if (sender is Addgroupform addGroupForm)
+            {
+                var group = addGroupForm.Group;
+                _groups.Add(group);
+                Groupviewerupdate();
+                Updatestoelen();
+            }
         }
 
         private void Groupviewerupdate()
@@ -187,11 +189,7 @@ namespace Theaterverdeling
             Groupviewer.Items.Clear();
             foreach (var group in _groups)
             {
-                var text = group.Name + " " + group.Personen;
-                if (group.Morning)
-                    text += "  O";
-                if (group.Firstrows)
-                    text += " V";
+                var text = $"{group.Name} {group.Personen}{(group.Morning ? "  O" : "")}{(group.Firstrows ? " V" : "")}";
                 Groupviewer.Items.Add(text);
             }
         }
