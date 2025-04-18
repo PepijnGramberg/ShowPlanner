@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Product Id="*" Name="Theaterverdelingsetup" Language="1033" Version="1.0.0.0" Manufacturer="Pepijn" UpgradeCode="2edc7945-c4f9-428f-bdd0-869a56ac1973">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MediaTemplate />
+
+		<Feature Id="ProductFeature" Title="Theaterverdelingsetup" Level="1">
+			<ComponentGroupRef Id="ProductComponents" />
+		</Feature>
+	</Product>
+
+	<Fragment>
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder">
+				<Directory Id="INSTALLFOLDER" Name="Theaterverdelingsetup" />
+			</Directory>
+		</Directory>
+	</Fragment>
+
+	<Fragment>
+		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+			<!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
+			<!-- <Component Id="ProductComponent"> -->
+				<!-- TODO: Insert files, registry keys, and other resources here. -->
+      <Component Id="Theaterverdeling.exe" Guid="*">
+        <File Id="Theaterverdeling.exe" Source="D:\backup\Visual Studio 2012\Projects\Theaterverdeling\Theaterverdeling\Theaterverdeling.exe" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="PdfSharp.dll" Guid="*">
+        <File Id="PdfSharp.dll" Source="D:\backup\Visual Studio 2012\Projects\Theaterverdeling\Theaterverdeling\PdfSharp.dll" KeyPath="yes"/>
+      </Component>
+      <Component Id="PdfSharp.Charting.dll" Guid="*">
+      <File Id="PdfSharp.Charting.dll" Source="D:\backup\Visual Studio 2012\Projects\Theaterverdeling\Theaterverdeling\PdfSharp.Charting.dll" KeyPath="yes"/>
+      </Component>
+			<!-- </Component> -->
+		</ComponentGroup>
+	</Fragment>
+</Wix>
