@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
-using PdfSharp.Pdf;
-using PdfSharp.Drawing;
+using PdfSharpCore.Pdf;
+using PdfSharpCore.Drawing;
 using System.IO;
 
 

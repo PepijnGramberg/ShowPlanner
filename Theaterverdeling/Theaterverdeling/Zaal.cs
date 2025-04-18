@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using PdfSharp.Drawing;
+using PdfSharpCore.Drawing;
 
 namespace Theaterverdeling
 {
@@ -209,15 +209,15 @@ namespace Theaterverdeling
             }
         }
     List<XBrush> _color = new List<XBrush> {
-          new SolidBrush(Color.FromArgb(119,170,221)),
-          new SolidBrush(Color.FromArgb(170,170,0)),
-          new SolidBrush(Color.FromArgb(238,136,102)),
-          new SolidBrush(Color.FromArgb(238,221,136)),
-          new SolidBrush(Color.FromArgb(255,170,187)),
-          new SolidBrush(Color.FromArgb(153,221,255)),
-          new SolidBrush(Color.FromArgb(68,187,153)),
-          new SolidBrush(Color.FromArgb(187,204,51)),
-          new SolidBrush(Color.FromArgb(153,153,153))};
+          new XSolidBrush(XColor.FromArgb(119,170,221)),
+          new XSolidBrush(XColor.FromArgb(170,170,0)),
+          new XSolidBrush(XColor.FromArgb(238,136,102)),
+          new XSolidBrush(XColor.FromArgb(238,221,136)),
+          new XSolidBrush(XColor.FromArgb(255,170,187)),
+          new XSolidBrush(XColor.FromArgb(153,221,255)),
+          new XSolidBrush(XColor.FromArgb(68,187,153)),
+          new XSolidBrush(XColor.FromArgb(187,204,51)),
+          new XSolidBrush(XColor.FromArgb(153,153,153))};
           // XBrushes.Red, XBrushes.Fuchsia, XBrushes.Orange, XBrushes.Green, XBrushes.Indigo, XBrushes.SteelBlue, XBrushes.Firebrick, XBrushes.DarkViolet, XBrushes.Turquoise, XBrushes.IndianRed, XBrushes.SeaGreen, XBrushes.CornflowerBlue, XBrushes.BurlyWood };
     }
     //public class Lampegietnobalkon : Lampegiet
