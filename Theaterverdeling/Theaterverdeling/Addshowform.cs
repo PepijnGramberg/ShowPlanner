@@ -13,9 +13,8 @@ namespace Theaterverdeling
 
     private void AddshowClick(object sender, EventArgs e)
     {
-
       var time = Time.Value;
-      var zaal = new Lampegiet(false, Balconyoff.Checked);
+      var zaal = new Lampegiet();
       show = new Voorstelling(time, zaal, Datumkeuze.Value.Date);
       Addingshow(this, new EventArgs());
       Close();

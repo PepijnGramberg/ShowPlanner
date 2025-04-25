@@ -1,36 +1,277 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.IO;
 using PdfSharpCore.Drawing;
 
 namespace Theaterverdeling
 {
+  [JsonConverter(typeof(RowConverter))]
+  public abstract class Row
+  {
+    public virtual int TotalSeatCount { get; } = 0;
+    public virtual int AvailableSeatCount { get; } = 0;
+  }
+
+  public sealed class WalkWay : Row
+  {
+  }
+
+  public sealed class ChairRow : Row
+  {
+    public ChairRow(int seatCount, bool inUse, int rowNr = 0)
+    {
+      InUse = inUse;
+      RowNr = rowNr;
+      Seats = new Seat[seatCount];
+      for (var i = 0; i < Seats.Length; i++)
+      {
+        Seats[i] = new Seat();
+      }
+    }
+    public bool InUse { get; }
+    public int RowNr { get; }
+    public override int TotalSeatCount => Seats.Length;
+
+    public override int AvailableSeatCount => InUse ? TotalSeatCount : 0;
+
+    public Seat[] Seats { get; }
+  }
+
+  public sealed class Seat { }
+
+  // Custom converter for Row polymorphism
+  public class RowConverter : JsonConverter<Row>
+  {
+    public override Row Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+      // Save reader state
+      var readerCopy = reader;
+      
+      // Check if this is a JSON object
+      if (readerCopy.TokenType != JsonTokenType.StartObject)
+      {
+        throw new JsonException("Expected JSON object");
+      }
+      
+      // Read to get the type discriminator
+      readerCopy.Read();
+      if (readerCopy.TokenType != JsonTokenType.PropertyName || readerCopy.GetString() != "Type")
+      {
+        throw new JsonException("Expected Type property");
+      }
+      
+      // Read the type name
+      readerCopy.Read();
+      string typeName = readerCopy.GetString();
+      
+      // Return the appropriate type based on the discriminator
+      if (typeName == "WalkWay")
+      {
+        return JsonSerializer.Deserialize<WalkWay>(ref reader, options);
+      }
+      else if (typeName == "ChairRow")
+      {
+        // Read the object into a JsonDocument first
+        using var jsonDoc = JsonDocument.ParseValue(ref reader);
+        var json = jsonDoc.RootElement.GetRawText();
+        
+        // Extract properties needed for constructor
+        using var jsonDoc2 = JsonDocument.Parse(json);
+        var root = jsonDoc2.RootElement;
+        
+        int seatCount = 0;
+        bool inUse = false;
+        int rowNr = 0;
+        
+        if (root.TryGetProperty("SeatCount", out var seatCountProp))
+        {
+          seatCount = seatCountProp.GetInt32();
+        }
+        
+        if (root.TryGetProperty("InUse", out var inUseProp))
+        {
+          inUse = inUseProp.GetBoolean();
+        }
+        
+        if (root.TryGetProperty("RowNr", out var rowNrProp))
+        {
+          rowNr = rowNrProp.GetInt32();
+        }
+        
+        // Create new ChairRow with constructor
+        return new ChairRow(seatCount, inUse, rowNr);
+      }
+      
+      throw new JsonException($"Unknown Row type: {typeName}");
+    }
+
+    public override void Write(Utf8JsonWriter writer, Row value, JsonSerializerOptions options)
+    {
+      writer.WriteStartObject();
+      
+      // Write a type discriminator
+      writer.WriteString("Type", value.GetType().Name);
+      
+      if (value is ChairRow chairRow)
+      {
+        writer.WriteBoolean("InUse", chairRow.InUse);
+        writer.WriteNumber("SeatCount", chairRow.TotalSeatCount);
+        writer.WriteNumber("RowNr", chairRow.RowNr);
+        
+        // Handle seats array
+        writer.WriteStartArray("Seats");
+        foreach (var seat in chairRow.Seats)
+        {
+          writer.WriteStartObject();
+          writer.WriteEndObject(); // Empty seat object (can add properties later)
+        }
+        writer.WriteEndArray();
+      }
+      
+      writer.WriteEndObject();
+    }
+  }
+
   public abstract class Zaal
   {
-    public bool Frontseatsoff { get; set; } = false;
-    public bool Balconyoff { get; set; } = false;
-    protected int _seats;
-    public int Seats => _seats;
+    public int Seats => _rows.Sum(r => r.AvailableSeatCount);
     public List<Group> Groups { get; set; }
     protected List<int>[] Places;
+
+    // Change to protected with JsonInclude attribute to allow serialization
+    [JsonInclude]
+    protected List<Row> _rows = new List<Row>();
+    public IReadOnlyList<Row> Rows => _rows;
+
     public virtual void AssignSeats()
     {
       CreatePlaces();
       FillPlaces();
     }
 
-    public abstract void Draw(XGraphics gr);
-    protected abstract void CreatePlaces();
-    public abstract void Frontseatchange(bool fso);
+    public virtual void Draw(XGraphics gr) 
+    {
+      var font = new XFont("Verdana", 12);
+      var padding = 20;
+      var maxWidthChairs = Rows.Max(r => r.TotalSeatCount) + 2; // add two for row number to be displayed. and keeep it centered
+      var maxHeightChairs = Rows.Count;
+
+      var mapSize = new XSize(gr.PageSize.Width - (padding * 2), 500);
+      var mapContainer = gr.BeginContainer(new XRect(new XPoint(padding, padding), mapSize), new XRect(mapSize), gr.PageUnit);
+      var seatSize = Math.Min(mapSize.Width / maxWidthChairs, mapSize.Height / maxHeightChairs);
+
+      for (var i = 0; i < Rows.Count; i++)
+      {
+        var rowHeight = i * seatSize;
+        if (Rows[i] is ChairRow chairRow)
+        {
+          // Start of the row needs to be offset from the Graphics box so the entire row is centered.
+          var startRow = (mapSize.Width - (chairRow.TotalSeatCount * seatSize))/2;
+
+          var chairs = new List<XRect>();
+          for (var j = 0; j < chairRow.TotalSeatCount; j++) {
+            // Add 1 to J for so there is space for the row number in front
+            chairs.Add(new XRect(startRow + (j+1)*seatSize,rowHeight, seatSize, seatSize));
+          }
+
+          // Draw row number on the left
+          DrawInt(chairRow.RowNr, new XRect(startRow, rowHeight, seatSize, seatSize));
+          // Draw row number on the right
+          DrawInt(chairRow.RowNr, new XRect(startRow + (chairRow.TotalSeatCount + 1) * seatSize, rowHeight, seatSize, seatSize));
+
+          // Draw the chairs.
+          for(var j = 0; j < chairs.Count; j++)
+          {
+            // Color the chairs according to which group is assigned.
+            // TODO
+            // Draw the numbers. Seats in the real world are not 0 indexed so we increment the number for display purposes.
+            DrawInt(j + 1, chairs[j]);
+          }
+          // Black outline.
+          gr.DrawRectangles(XPens.Black, chairs.ToArray());
+        }
+      }
+
+      gr.EndContainer(mapContainer);
+
+      void DrawInt(int number, XRect position)
+      {
+        DrawString(number.ToString(), position);
+      }
+      void DrawString(string text, XRect position)
+      {
+        gr.DrawString(text, font, XBrushes.Black, position, XStringFormats.Center);
+      }
+    }
+    protected virtual void CreatePlaces() { }
+
+    // Serialize the Zaal to JSON
+    public string ToJson()
+    {
+      var options = new JsonSerializerOptions
+      {
+        WriteIndented = true,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+      };
+      
+      // Create a serializable representation
+      var zaalData = new ZaalSerializationData
+      {
+        ZaalType = GetType().Name,
+        Rows = _rows
+      };
+      
+      return JsonSerializer.Serialize(zaalData, options);
+    }
+
+    // Deserialize from JSON
+    public static T FromJson<T>(string json) where T : Zaal, new()
+    {
+      var options = new JsonSerializerOptions
+      {
+        WriteIndented = true,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+      };
+      
+      var zaalData = JsonSerializer.Deserialize<ZaalSerializationData>(json, options);
+      
+      // Create a new instance of the specific Zaal type
+      T result = new T();
+      
+      // Populate the rows
+      if (zaalData.Rows != null)
+      {
+        result._rows = zaalData.Rows;
+      }
+      
+      return result;
+    }
+
+    // Save to a JSON file
+    public void SaveToFile(string filePath)
+    {
+      File.WriteAllText(filePath, ToJson());
+    }
+
+    // Load from a JSON file
+    public static T LoadFromFile<T>(string filePath) where T : Zaal, new()
+    {
+      if (!File.Exists(filePath))
+      {
+        throw new FileNotFoundException($"File not found: {filePath}");
+      }
+      
+      string json = File.ReadAllText(filePath);
+      return FromJson<T>(json);
+    }
 
     protected void FillPlaces()
     {
-      var leftrow = 1;
-      var rightrow = 1;
-      if (Frontseatsoff)
-      {
-        leftrow = 3;
-        rightrow = 3;
-      }
+      var leftrow =0;
+      var rightrow = 0;
       var group = 0;
       var groupnotdone = true;
       var groupseats = 0;
@@ -43,9 +284,13 @@ namespace Theaterverdeling
         }
         if (leftrow < rightrow)//LEFT SIDE FILLING
         {
-          for (; leftrow < (Balconyoff ? Places.Length - 6 : Places.Length); leftrow++)
+          for (; leftrow < _rows.Count; leftrow++)
           {
-            for (int i = 0; i < Places[leftrow].Count / 2; i++)
+            if(!(_rows[leftrow] is ChairRow chairs))
+            {
+              continue;
+            }
+            for (int i = 0; i < chairs.TotalSeatCount / 2; i++)
             {
               if (!(i <= 1 && leftrow < 3))
               {
@@ -64,7 +309,7 @@ namespace Theaterverdeling
         }
         else
         {
-          for (; rightrow < (Balconyoff ? Places.Length - 6 : Places.Length); rightrow++)
+          for (; rightrow < _rows.Count; rightrow++)
           {
             for (int i = Places[rightrow].Count - 1; i >= Places[rightrow].Count / 2; i--)
             {
@@ -122,14 +367,21 @@ namespace Theaterverdeling
       }
     }
   }
+
+  // Helper class for serialization
+  public class ZaalSerializationData
+  {
+    public string ZaalType { get; set; }
+    public List<Row> Rows { get; set; }
+  }
+
   public class Lampegiet : Zaal
   {
-    public Lampegiet(bool fso, bool balcony)
+    public Lampegiet()
     {
-      Balconyoff = balcony;
-      Frontseatsoff = fso;
-      _seats = (!fso ? 558 : 511) - (Balconyoff ? 192 : 0);
+      // Default constructor for serialization
     }
+    
     protected override void CreatePlaces()
     {
       Places = new List<int>[20];
@@ -152,14 +404,10 @@ namespace Theaterverdeling
       Places[19].Add(-1);
     }
 
-    public override void Frontseatchange(bool fso)
-    {
-      Frontseatsoff = fso;
-      _seats = (!fso ? 558 : 511) - (Balconyoff ? 192 : 0);
-    }
-
     public override void Draw(XGraphics gr)
     {
+      base.Draw(gr);
+      return;
       const int size = 16;
       const int topmargin = 55;
       gr.DrawString("Podium", new XFont("Verdana", 15), XBrushes.Black, new XRect(250, 60, 100, 0));

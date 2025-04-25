@@ -6,6 +6,8 @@ using System.Windows.Forms;
 using PdfSharpCore.Pdf;
 using PdfSharpCore.Drawing;
 using System.IO;
+using static System.Windows.Forms.DataFormats;
+using static System.Net.Mime.MediaTypeNames;
 
 
 namespace Theaterverdeling
@@ -162,7 +164,17 @@ namespace Theaterverdeling
       if (sender is Addshowform addShowForm)
       {
         var show = addShowForm.show;
-        show.Zaal.Frontseatchange(Frontrowsdisable.Checked);
+        var zaal = Zaal.LoadFromFile<Lampegiet>("D:\\Projects\\ShowPlanner\\Theaterverdeling\\Theaterverdeling\\Zalen\\Test.json");
+        //todo show.Zaal.Frontseatchange(Frontrowsdisable.Checked);
+
+
+        var pdf1 = new PdfDocument();
+        var page1 = new PdfPage();
+        pdf1.AddPage(page1);
+        using var gr1 = XGraphics.FromPdfPage(page1);
+        zaal.Draw(gr1);
+        pdf1.Save(@"D:\Projects\ShowPlanner\Theaterverdeling\Theaterverdeling\Zalen\Test.pdf");
+
         _shows.Add(show);
         Voorstellingviewerupdate();
 
@@ -174,7 +186,7 @@ namespace Theaterverdeling
       Voorstellingviewer.Items.Clear();
       foreach (var show in _shows)
       {
-        Voorstellingviewer.Items.Add($"{show.Datum.ToShortDateString()} {show.Time.ToShortTimeString()} {(show.Zaal.Balconyoff ? "ZB" : "")}");
+        // todo Voorstellingviewer.Items.Add($"{show.Datum.ToShortDateString()} {show.Time.ToShortTimeString()} {(show.Zaal.Balconyoff ? "ZB" : "")}");
       }
     }
     private int Zaalsort(Voorstelling x, Voorstelling y) => x.Freeseats < y.Freeseats ? 1 : 0;
@@ -276,7 +288,7 @@ namespace Theaterverdeling
     {
       foreach (var voorstelling in _shows)
       {
-        voorstelling.Zaal.Frontseatchange(Frontrowsdisable.Checked);
+       // todo voorstelling.Zaal.Frontseatchange(Frontrowsdisable.Checked);
       }
       Updatestoelen();
     }
@@ -331,7 +343,7 @@ namespace Theaterverdeling
             writer.WriteLine("#VOORSTELLING#");
             foreach (var voorstelling in _shows)
             {
-              writer.WriteLine(voorstelling.Zaal.Balconyoff);
+             //todo  writer.WriteLine(voorstelling.Zaal.Balconyoff);
               writer.WriteLine(voorstelling.Datum.ToString());
               writer.WriteLine(voorstelling.Time.ToString());
             }
@@ -397,7 +409,7 @@ namespace Theaterverdeling
                 line = reader.ReadLine();
                 var time = DateTime.ParseExact(line, "d-M-yyyy H:mm:ss", CultureInfo.InvariantCulture,
                                                DateTimeStyles.AllowLeadingWhite);
-                _shows.Add(new Voorstelling(time, new Lampegiet(Frontrowsdisable.Checked, balcony), date));
+               // todo _shows.Add(new Voorstelling(time, new Lampegiet(Frontrowsdisable.Checked, balcony), date));
                 line = reader.ReadLine();
               }
               line = reader.ReadLine();
