@@ -6,8 +6,6 @@ using System.Windows.Forms;
 using PdfSharpCore.Pdf;
 using PdfSharpCore.Drawing;
 using System.IO;
-using static System.Windows.Forms.DataFormats;
-using static System.Net.Mime.MediaTypeNames;
 
 
 namespace Theaterverdeling
@@ -164,7 +162,7 @@ namespace Theaterverdeling
       if (sender is Addshowform addShowForm)
       {
         var show = addShowForm.show;
-        var zaal = Zaal.LoadFromFile<Lampegiet>("D:\\Projects\\ShowPlanner\\Theaterverdeling\\Theaterverdeling\\Zalen\\Test.json");
+        var zaal = Zaal.LoadFromFile<Lampegiet>("D:\\Projects\\ShowPlanner\\Theaterverdeling\\Theaterverdeling\\Zalen\\Lampegiet.json");
         //todo show.Zaal.Frontseatchange(Frontrowsdisable.Checked);
 
 

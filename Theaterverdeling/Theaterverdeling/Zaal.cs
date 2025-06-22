@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.IO;
 using PdfSharpCore.Drawing;
+using System.Drawing;
 
 namespace Theaterverdeling
 {
@@ -152,60 +153,78 @@ namespace Theaterverdeling
       FillPlaces();
     }
 
-    public virtual void Draw(XGraphics gr) 
+    public void Draw(XGraphics gr) 
     {
-      var font = new XFont("Verdana", 12);
+      Draw(new XGraphicsDrawingContext(gr));
+    }
+
+    public void Draw(Graphics gr)
+    {
+      Draw(new GdiDrawingContext(gr));
+    }
+
+    protected virtual void Draw(IDrawingContext ctx)
+    {
       var padding = 20;
       var maxWidthChairs = Rows.Max(r => r.TotalSeatCount) + 2; // add two for row number to be displayed. and keeep it centered
       var maxHeightChairs = Rows.Count;
 
-      var mapSize = new XSize(gr.PageSize.Width - (padding * 2), 500);
-      var mapContainer = gr.BeginContainer(new XRect(new XPoint(padding, padding), mapSize), new XRect(mapSize), gr.PageUnit);
-      var seatSize = Math.Min(mapSize.Width / maxWidthChairs, mapSize.Height / maxHeightChairs);
-
-      for (var i = 0; i < Rows.Count; i++)
+      var mapWidth = ctx.PageWidth - (padding * 2);
+      var mapHeight = 500f;
+      
+      using (var mapContainer = ctx.BeginContainer(
+             new RectangleF(padding, padding, mapWidth, mapHeight),
+             new RectangleF(0, 0, mapWidth, mapHeight)))
       {
-        var rowHeight = i * seatSize;
-        if (Rows[i] is ChairRow chairRow)
+        var seatSize = Math.Min(mapWidth / maxWidthChairs, mapHeight / maxHeightChairs);
+
+#if DEBUG
+        ctx.DrawRectangles([new RectangleF(0,0,mapWidth,mapHeight)]);
+#endif
+        for (var i = 0; i < Rows.Count; i++)
         {
-          // Start of the row needs to be offset from the Graphics box so the entire row is centered.
-          var startRow = (mapSize.Width - (chairRow.TotalSeatCount * seatSize))/2;
-
-          var chairs = new List<XRect>();
-          for (var j = 0; j < chairRow.TotalSeatCount; j++) {
-            // Add 1 to J for so there is space for the row number in front
-            chairs.Add(new XRect(startRow + (j+1)*seatSize,rowHeight, seatSize, seatSize));
-          }
-
-          // Draw row number on the left
-          DrawInt(chairRow.RowNr, new XRect(startRow, rowHeight, seatSize, seatSize));
-          // Draw row number on the right
-          DrawInt(chairRow.RowNr, new XRect(startRow + (chairRow.TotalSeatCount + 1) * seatSize, rowHeight, seatSize, seatSize));
-
-          // Draw the chairs.
-          for(var j = 0; j < chairs.Count; j++)
+          var rowHeight = i * seatSize;
+          if (Rows[i] is ChairRow chairRow)
           {
-            // Color the chairs according to which group is assigned.
-            // TODO
-            // Draw the numbers. Seats in the real world are not 0 indexed so we increment the number for display purposes.
-            DrawInt(j + 1, chairs[j]);
+            // Start of the row needs to be offset from the Graphics box so the entire row is centered.
+            var startRow = (mapWidth - ((chairRow.TotalSeatCount + 2) * seatSize))/2;
+
+            var chairs = new List<RectangleF>();
+            for (var j = 0; j < chairRow.TotalSeatCount; j++) {
+              // Add 1 to J for so there is space for the row number in front
+              chairs.Add(new RectangleF(startRow + (j+1)*seatSize, rowHeight, seatSize, seatSize));
+            }
+
+            // Draw row number on the left
+            DrawInt(chairRow.RowNr, new RectangleF(startRow, rowHeight, seatSize, seatSize));
+            // Draw row number on the right
+            DrawInt(chairRow.RowNr, new RectangleF(startRow + (chairRow.TotalSeatCount + 1) * seatSize, rowHeight, seatSize, seatSize));
+
+            // Draw the chairs.
+            for(var j = 0; j < chairs.Count; j++)
+            {
+              // Color the chairs according to which group is assigned.
+              // TODO
+              ctx.FillRectangle(chairs[j], Color.FromArgb(Random.Shared.Next(0, 255), Random.Shared.Next(0, 255), Random.Shared.Next(0, 255), Random.Shared.Next(0, 255)));
+              // Draw the numbers. Seats in the real world are not 0 indexed so we increment the number for display purposes.
+              DrawInt(j + 1, chairs[j]);
+            }
+            // Black outline.
+            ctx.DrawRectangles(chairs.ToArray());
           }
-          // Black outline.
-          gr.DrawRectangles(XPens.Black, chairs.ToArray());
+        }
+
+        void DrawInt(int number, RectangleF position)
+        {
+          DrawString(number.ToString(), position);
+        }
+        void DrawString(string text, RectangleF position)
+        {
+          ctx.DrawString(text, position);
         }
       }
-
-      gr.EndContainer(mapContainer);
-
-      void DrawInt(int number, XRect position)
-      {
-        DrawString(number.ToString(), position);
-      }
-      void DrawString(string text, XRect position)
-      {
-        gr.DrawString(text, font, XBrushes.Black, position, XStringFormats.Center);
-      }
     }
+
     protected virtual void CreatePlaces() { }
 
     // Serialize the Zaal to JSON
@@ -404,75 +423,6 @@ namespace Theaterverdeling
       Places[19].Add(-1);
     }
 
-    public override void Draw(XGraphics gr)
-    {
-      base.Draw(gr);
-      return;
-      const int size = 16;
-      const int topmargin = 55;
-      gr.DrawString("Podium", new XFont("Verdana", 15), XBrushes.Black, new XRect(250, 60, 100, 0));
-      for (int i = 1; i < Places.Length; i++)
-      {
-        gr.DrawString(i.ToString(), new XFont("Verdana", 12), XBrushes.Black, new XRect((0 - Places[i].Count / 2) * size + 300 - (Places[i].Count % 2 * (size / 2)) - size, i <= 13 ? topmargin + i * size : topmargin + i * size + 10, size, size), new XStringFormat());
-        for (int j = 0; j < Places[i].Count; j++)
-        {
-          int x = (j - Places[i].Count / 2) * size + 300 - (Places[i].Count % 2 * (size / 2));
-          int y = topmargin + i * size;
-          if (i > 13)
-            y += 10;
-          var rect = new XRect(x, y, size, size);
-          if (Places[i][j] != -1)
-            gr.DrawRectangle(_color[Places[i][j] % _color.Count], rect);
-          gr.DrawRectangle(new XPen(XColor.FromArgb(0, 0, 0)), rect);
-          var format = new XStringFormat { Alignment = XStringAlignment.Center };
-          gr.DrawString((j + 1).ToString(), new XFont("Verdana", 10), XBrushes.Black, rect, format);
-        }
-      }
-      var group = 0;
-      var counter = 0;
-      var newgroup = false;
-      gr.DrawString(Groups[group].Name, new XFont("Verdana", 10), _color[group % _color.Count], new XPoint(40, 420 + group * size));
-      for (var i = 0; ; i++)
-      {
-        if (!(counter < Groups[group].Seats.Count))
-        {
-          group++;
-          counter = 0;
-          if (group == Groups.Count)
-            break;
-          newgroup = true;
-          gr.DrawString(Groups[group].Name, new XFont("Verdana", 10), _color[group % _color.Count], new XPoint(40 + i / 25 * 220 + (i / 25) * 100, 420 + i % 25 * size));
-        }
-
-        var tuple = Groups[group].Seats[counter];
-        gr.DrawString("Rij " + tuple.Item1 + " Stoel " + tuple.Item2 + " t/m " + tuple.Item3, new XFont("Verdana", 10), XBrushes.Black, new XPoint(40 + i / 25 * 220 + (i / 25 + 1) * 100, 420 + i % 25 * size));
-        counter++;
-        if (newgroup)
-        {
-          gr.DrawLine(XPens.Black, 40 + i / 25 * 220 + (i / 25) * 100, 409 + i % 25 * size,
-                                   270 + i / 25 * 220 + (i / 25) * 100, 409 + i % 25 * size);
-          newgroup = false;
-        }
-      }
-    }
-    List<XBrush> _color = new List<XBrush> {
-          new XSolidBrush(XColor.FromArgb(119,170,221)),
-          new XSolidBrush(XColor.FromArgb(170,170,0)),
-          new XSolidBrush(XColor.FromArgb(238,136,102)),
-          new XSolidBrush(XColor.FromArgb(238,221,136)),
-          new XSolidBrush(XColor.FromArgb(255,170,187)),
-          new XSolidBrush(XColor.FromArgb(153,221,255)),
-          new XSolidBrush(XColor.FromArgb(68,187,153)),
-          new XSolidBrush(XColor.FromArgb(187,204,51)),
-          new XSolidBrush(XColor.FromArgb(153,153,153))};
     // XBrushes.Red, XBrushes.Fuchsia, XBrushes.Orange, XBrushes.Green, XBrushes.Indigo, XBrushes.SteelBlue, XBrushes.Firebrick, XBrushes.DarkViolet, XBrushes.Turquoise, XBrushes.IndianRed, XBrushes.SeaGreen, XBrushes.CornflowerBlue, XBrushes.BurlyWood };
   }
-  //public class Lampegietnobalkon : Lampegiet
-  //{
-  //    public Lampegietnobalkon(bool fso)
-  //    {
-  //        Frontseatsoff = fso;
-  //        _seats = !fso ? 360 : 313;
-  //    }
-  //}
 }
