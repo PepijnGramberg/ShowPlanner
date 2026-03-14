@@ -17,7 +17,7 @@ namespace Theaterverdeling
     public int Personen { get { return _personen; } }
     public bool Firstrows { get { return _firstrows; } }
     public Voorstelling Voorstelling;
-    public List<Tuple<int, int, int>> Seats = new List<Tuple<int, int, int>>();
+    public List<SeatRange> Seats = new List<SeatRange>();
 
     public Group(string naam, int personen, bool first, bool morning, List<DateTime> datum)
     {

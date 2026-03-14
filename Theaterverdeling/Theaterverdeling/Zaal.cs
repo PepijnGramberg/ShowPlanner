@@ -354,10 +354,10 @@ namespace Theaterverdeling
 
       //rijen en stoel nummers per groep
       bool aan = false;
-      var temp = new Tuple<int, int, int>(0, 0, 0);
+      var temp = new SeatRange(0, 0, 0);
       for (int grnr = 0; grnr < Groups.Count; grnr++)
       {
-        Groups[grnr].Seats = new List<Tuple<int, int, int>>();
+        Groups[grnr].Seats = new List<SeatRange>();
         for (int row = 1; row < Places.Length; row++)
         {
 
@@ -367,18 +367,18 @@ namespace Theaterverdeling
             {
               if (Places[row][seatnr] != grnr)
               {
-                Groups[grnr].Seats.Add(new Tuple<int, int, int>(temp.Item1, temp.Item2 + 1, seatnr));
+                Groups[grnr].Seats.Add(new SeatRange(temp.Row, temp.StartSeat + 1, seatnr));
                 aan = false;
               }
               else if (seatnr == Places[row].Count - 1)
               {
-                Groups[grnr].Seats.Add(new Tuple<int, int, int>(temp.Item1, temp.Item2 + 1, seatnr + 1));
+                Groups[grnr].Seats.Add(new SeatRange(temp.Row, temp.StartSeat + 1, seatnr + 1));
                 aan = false;
               }
             }
             else if (Places[row][seatnr] == grnr)
             {
-              temp = new Tuple<int, int, int>(row, seatnr, 0);
+              temp = new SeatRange(row, seatnr, 0);
               aan = true;
             }
           }
@@ -424,5 +424,18 @@ namespace Theaterverdeling
     }
 
     // XBrushes.Red, XBrushes.Fuchsia, XBrushes.Orange, XBrushes.Green, XBrushes.Indigo, XBrushes.SteelBlue, XBrushes.Firebrick, XBrushes.DarkViolet, XBrushes.Turquoise, XBrushes.IndianRed, XBrushes.SeaGreen, XBrushes.CornflowerBlue, XBrushes.BurlyWood };
+  }
+
+  public struct SeatRange
+  {
+    public int Row { get; }
+    public int StartSeat { get; }
+    public int EndSeat { get; }
+    public SeatRange(int row, int startSeat, int endSeat)
+    {
+      Row = row;
+      StartSeat = startSeat;
+      EndSeat = endSeat;
+    }
   }
 }
