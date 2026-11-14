@@ -398,10 +398,11 @@ namespace Theaterverdeling
         if (group.Personen > 0 && !group.HandSeated)
         {
           // Seats that were left open come first, when the whole group fits in them.
-          var gap = gaps.OrderBy(open => open.Start).FirstOrDefault(open => Take(rows, open.Side, open.Start, open.End, group.Personen) != null);
+          // Nobody sits alone there either: a gap that would put one person of the group in a row is passed over.
+          var gap = gaps.OrderBy(open => open.Start).FirstOrDefault(open => TakeTogether(rows, open, group.Personen) != null);
           if (gap != null)
           {
-            seats = Take(rows, gap.Side, gap.Start, gap.End, group.Personen);
+            seats = TakeTogether(rows, gap, group.Personen);
           }
           else
           {
@@ -500,6 +501,14 @@ namespace Theaterverdeling
         }
       }
       return remaining == 0 ? seats : null;
+    }
+
+    // The seats for a number of people in a gap, or null when they do not fit there or one of them
+    // would sit alone in a row.
+    private static List<RowPart> TakeTogether(List<ChairRow> rows, Gap gap, int people)
+    {
+      var seats = Take(rows, gap.Side, gap.Start, gap.End, people);
+      return seats == null || (people > 1 && seats.Any(rowPart => rowPart.Seats.Count == 1)) ? null : seats;
     }
 
     // The seats of a row on one side that nobody has yet, from the edge towards the middle.

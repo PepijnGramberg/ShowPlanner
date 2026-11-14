@@ -241,5 +241,17 @@ namespace Theaterverdeling.Tests
 
       Assert.All(groups, group => Assert.Equal(55, group.Seats.Sum(range => range.EndSeat - range.StartSeat + 1)));
     }
+
+    [Fact]
+    public void Nobody_sits_alone_in_seats_that_an_earlier_group_left_open()
+    {
+      var hall = Hall(Row(1, 10), Row(2, 10), Walkway, Row(3, 10), Row(4, 10), Row(5, 10), Row(6, 10));
+      var c = Group("C", 3);
+
+      // B leaves one seat open in row 1 and the right half of row 2, in front of the walkway.
+      Seat(hall, Group("A", 4), Group("B", 12), c);
+
+      Assert.Equal("rij 1: 1-3", Describe(c));
+    }
   }
 }
