@@ -768,33 +768,48 @@ namespace Theaterverdeling
       {
         return;
       }
-      lineHeight = Math.Min(lineHeight, (ctx.PageHeight - bottomMargin - top) / lineCount);
-      var markerHeight = Math.Min(markerSize, lineHeight - 2);
-      var nameLeft = left + markerSize + 4;
-      var rangesLeft = nameLeft + nameWidth;
-
-      var y = top;
-      for (var g = 0; g < groups.Count; g++)
+      var room = ctx.PageHeight - bottomMargin - top;
+      if (room <= 0)
       {
-        var group = groups[g];
-        if (g > 0)
-        {
-          ctx.DrawLine(new PointF(left, y), new PointF(rangesLeft + rangesPerLine * rangeWidth, y));
-        }
-        var marker = new RectangleF(left, y + (lineHeight - markerHeight) / 2, markerSize, markerHeight);
-        DrawGroupMarker(ctx, marker, g);
-        ctx.DrawText(group.Name, new RectangleF(nameLeft, y, nameWidth, lineHeight));
+        return;
+      }
+      // A line is never lower than its text is high, or the lines would run into each other.
+      // When the legend still does not fit, all of it is drawn smaller, text included.
+      lineHeight = Math.Max(Math.Min(lineHeight, room / lineCount), LegendMinLineHeight);
+      var scale = Math.Min(1, room / (lineCount * lineHeight));
+      var markerHeight = Math.Min(markerSize, lineHeight - 2);
+      var nameLeft = markerSize + 4;
+      var rangesLeft = nameLeft + nameWidth;
+      var size = new SizeF(rangesLeft + rangesPerLine * rangeWidth, lineCount * lineHeight);
 
-        for (var i = 0; i < group.Seats.Count; i++)
+      using (ctx.BeginContainer(new RectangleF(left, top, size.Width * scale, size.Height * scale), new RectangleF(PointF.Empty, size)))
+      {
+        var y = 0f;
+        for (var g = 0; g < groups.Count; g++)
         {
-          var range = group.Seats[i];
-          var seats = range.StartSeat == range.EndSeat ? $"{range.StartSeat}" : $"{range.StartSeat}-{range.EndSeat}";
-          var position = new RectangleF(rangesLeft + i % rangesPerLine * rangeWidth, y + i / rangesPerLine * lineHeight, rangeWidth, lineHeight);
-          ctx.DrawText($"rij {range.Row}: {seats}", position);
+          var group = groups[g];
+          if (g > 0)
+          {
+            ctx.DrawLine(new PointF(0, y), new PointF(size.Width, y));
+          }
+          var marker = new RectangleF(0, y + (lineHeight - markerHeight) / 2, markerSize, markerHeight);
+          DrawGroupMarker(ctx, marker, g);
+          ctx.DrawText(group.Name, new RectangleF(nameLeft, y, nameWidth, lineHeight));
+
+          for (var i = 0; i < group.Seats.Count; i++)
+          {
+            var range = group.Seats[i];
+            var seats = range.StartSeat == range.EndSeat ? $"{range.StartSeat}" : $"{range.StartSeat}-{range.EndSeat}";
+            var position = new RectangleF(rangesLeft + i % rangesPerLine * rangeWidth, y + i / rangesPerLine * lineHeight, rangeWidth, lineHeight);
+            ctx.DrawText($"rij {range.Row}: {seats}", position);
+          }
+          y += LegendLines(group, rangesPerLine) * lineHeight;
         }
-        y += LegendLines(group, rangesPerLine) * lineHeight;
       }
     }
+
+    // The lowest line that still holds the text of the legend, which is 10 points high.
+    public const float LegendMinLineHeight = 12;
 
     private static int LegendLines(Group group, int rangesPerLine)
     {

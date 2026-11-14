@@ -139,6 +139,24 @@ namespace Theaterverdeling.Tests
     }
 
     [Fact]
+    public void Legend_that_does_not_fit_is_drawn_smaller_so_its_lines_stay_apart()
+    {
+      var hall = Zaal.Load("Lampegiet");
+      var groups = Enumerable.Range(1, 36).Select(number => Group("Groep " + number, 15)).ToArray();
+      Seat(hall, groups);
+      var drawing = new RecordingDrawingContext();
+
+      hall.Draw(drawing);
+
+      var names = Enumerable.Range(0, drawing.Texts.Count).Where(index => drawing.Texts[index].Text.StartsWith("Groep ")).ToList();
+      Assert.Equal(36, names.Count);
+      // A line of the legend keeps the height its text needs, at the size the text is drawn.
+      Assert.All(names, index => Assert.True(drawing.Texts[index].Rect.Height / drawing.TextScales[index] >= Zaal.LegendMinLineHeight - 0.01f));
+      Assert.All(names, index => Assert.True(drawing.TextScales[index] < 1));
+      Assert.All(drawing.Texts, text => Assert.True(text.Rect.Bottom <= drawing.PageHeight + 0.01f, $"\"{text.Text}\" is below the page"));
+    }
+
+    [Fact]
     public void Legend_marks_each_group_with_the_colour_of_its_seats()
     {
       var hall = Hall(Row(1, 4));
