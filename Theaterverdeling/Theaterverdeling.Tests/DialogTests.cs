@@ -351,6 +351,42 @@ namespace Theaterverdeling.Tests
     }
 
     [Fact]
+    public void New_showing_starts_with_the_date_hall_and_unused_sections_of_the_last_one()
+    {
+      OnUiThread(() =>
+      {
+        using var main = new Theaterverdeling();
+        main.Show();
+        AddShowing(main, Day, HalfPastTen, "Balkon");
+
+        Find<Button>(main, "Addshow").PerformClick();
+
+        var dialog = Application.OpenForms.OfType<Addshowform>().Single();
+        Assert.Equal(Day, Find<DateTimePicker>(dialog, "Datumkeuze").Value.Date);
+        Assert.Equal("Lampegiet", Find<ComboBox>(dialog, "Hallchoice").SelectedItem);
+        Assert.Equal(new[] { "Balkon" }, Find<CheckedListBox>(dialog, "Sectionsoff").CheckedItems.Cast<string>());
+        // The time is the one thing that differs, so it is not copied.
+        Assert.Equal(new TimeSpan(10, 0, 0), Find<DateTimePicker>(dialog, "Time").Value.TimeOfDay);
+      });
+    }
+
+    [Fact]
+    public void First_showing_of_a_plan_starts_today_with_every_section_in_use()
+    {
+      OnUiThread(() =>
+      {
+        using var main = new Theaterverdeling();
+        main.Show();
+
+        Find<Button>(main, "Addshow").PerformClick();
+
+        var dialog = Application.OpenForms.OfType<Addshowform>().Single();
+        Assert.Equal(DateTime.Today, Find<DateTimePicker>(dialog, "Datumkeuze").Value.Date);
+        Assert.Empty(Find<CheckedListBox>(dialog, "Sectionsoff").CheckedItems);
+      });
+    }
+
+    [Fact]
     public void Edit_buttons_do_nothing_without_a_selection()
     {
       OnUiThread(() =>

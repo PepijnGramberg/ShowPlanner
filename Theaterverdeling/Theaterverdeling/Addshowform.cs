@@ -23,8 +23,10 @@ namespace Theaterverdeling
       {
         Hallchoice.Items.Add(name);
       }
-      // A new showing starts in the hall of the showing that was added last.
-      var hall = editing?.Zaal.Name ?? plan.Shows.LastOrDefault()?.Zaal.Name;
+      // A new showing starts as the last showing of the plan: its hall, its date and the sections
+      // that are not used. Showings of one show are mostly alike, so only the time is left to set.
+      var example = editing ?? plan.Shows.LastOrDefault();
+      var hall = example?.Zaal.Name;
       var index = hall == null ? -1 : Hallchoice.FindStringExact(hall);
       if (Hallchoice.Items.Count > 0)
       {
@@ -32,16 +34,19 @@ namespace Theaterverdeling
         Hallchoice.SelectedIndex = Math.Max(index, 0);
       }
 
+      if (example != null)
+      {
+        Datumkeuze.Value = example.Datum;
+        for (var i = 0; i < Sectionsoff.Items.Count; i++)
+        {
+          Sectionsoff.SetItemChecked(i, example.Zaal.SwitchedOffSections.Contains((string)Sectionsoff.Items[i]));
+        }
+      }
       if (editing != null)
       {
         Text = "Voorstelling wijzigen";
         Addshow.Text = "Wijzigen";
-        Datumkeuze.Value = editing.Datum;
         Time.Value = DateTime.Today + editing.Time.TimeOfDay;
-        for (var i = 0; i < Sectionsoff.Items.Count; i++)
-        {
-          Sectionsoff.SetItemChecked(i, editing.Zaal.SwitchedOffSections.Contains((string)Sectionsoff.Items[i]));
-        }
       }
     }
 

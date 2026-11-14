@@ -50,10 +50,11 @@ namespace Theaterverdeling.Tests
       var dialog = Application.OpenForms.OfType<Addshowform>().Single();
       Find<DateTimePicker>(dialog, "Datumkeuze").Value = date;
       Find<DateTimePicker>(dialog, "Time").Value = time;
-      foreach (var section in switchedOff)
+      // A new showing starts with the sections of the last one, so every section is set here.
+      var sections = Find<CheckedListBox>(dialog, "Sectionsoff");
+      for (var i = 0; i < sections.Items.Count; i++)
       {
-        var sections = Find<CheckedListBox>(dialog, "Sectionsoff");
-        sections.SetItemChecked(sections.Items.IndexOf(section), true);
+        sections.SetItemChecked(i, switchedOff.Contains((string)sections.Items[i]));
       }
       Find<Button>(dialog, "Addshow").PerformClick();
     }
