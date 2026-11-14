@@ -29,6 +29,8 @@ It is a Windows app (WinForms, .NET 9). The user interface is in Dutch.
 - A morning group only goes to a showing before noon.
 - Groups that fit in no showing are reported in one message and listed under "Niet ingedeeld" in the preview.
 
+A change to the plan in the main window closes the preview, because it is out of date. The main window says so and asks to distribute again.
+
 ### Seating a showing
 
 - Groups are seated in the order above, so front-row groups sit in front.

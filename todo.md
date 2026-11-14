@@ -8,7 +8,7 @@ Outcome of the UX review. Each point is one commit; tick it off in that commit.
 - [x] Ask before a group or a showing is removed.
 - [x] A new showing starts at 10:00 and the time has no seconds.
 - [x] After "Laden", tell the user to press "Verdeel groepen" to see the seating again.
-- [ ] Say why the preview closed when the plan changes in the main window.
+- [x] Say why the preview closed when the plan changes in the main window.
 - [ ] After "Exporteer PDF", say where the files are and offer to open the PDF. Make the way to the PDF visible from the main window.
 - [ ] Make the showing and group dialogs modal, so only one is open and the main window waits.
 

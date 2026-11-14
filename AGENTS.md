@@ -43,7 +43,7 @@ The app is Windows only (`net9.0-windows`, WinForms). The test run takes a few s
 - **What is saved.** The plan file holds the plan, the pins and the hand-chosen seats, and nothing else of a distribution. After loading, "Verdeel groepen" rebuilds the rest. New fields in the plan file are optional and left out when empty, so older files keep loading; raise `FileVersion` only for a change that breaks them.
 - **Halls live next to the exe.** `Zaal.HallsFolder` is `Zalen` under `AppContext.BaseDirectory`. Halls are loaded by name, and only the file name counts, so a name from a plan file cannot point outside that folder.
 - **A showing owns its hall.** Every `Voorstelling` has its own `Zaal` object with its own seats. Changing a hall file does not change showings that are already in the open plan.
-- **The preview closes when the plan changes** in the main window, because it would be out of date. Corrections made inside the preview refresh it instead.
+- **The preview closes when the plan changes** in the main window, because it would be out of date. The main window then says why. Corrections made inside the preview refresh it instead.
 
 ## Tests
 

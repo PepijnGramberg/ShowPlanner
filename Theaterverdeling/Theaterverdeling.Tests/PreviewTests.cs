@@ -79,6 +79,9 @@ namespace Theaterverdeling.Tests
         AddGroup(main, "Het Kompas", 31);
 
         Assert.Empty(Application.OpenForms.OfType<PreviewForm>());
+        Assert.Equal(
+          "De indeling is gesloten, want het plan is gewijzigd. Klik op \"Verdeel groepen\" voor de nieuwe indeling.",
+          Find<Label>(main, "Hintlabel").Text);
       });
     }
 

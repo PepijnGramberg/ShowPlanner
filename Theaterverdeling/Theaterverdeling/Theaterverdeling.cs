@@ -79,6 +79,10 @@ namespace Theaterverdeling
     private void PlanChanged()
     {
       _changed = true;
+      if (_preview != null && _preview.Visible)
+      {
+        Hintlabel.Text = "De indeling is gesloten, want het plan is gewijzigd. Klik op \"Verdeel groepen\" voor de nieuwe indeling.";
+      }
       ClosePreview();
     }
 
