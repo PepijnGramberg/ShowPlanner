@@ -40,7 +40,7 @@ Ideas worth carrying over from the rewrite, as ideas and not as code:
 - `Graphics.cs`: one drawing interface with a PDF and a screen implementation. This makes an on-screen preview cheap.
 - `Zaal.cs` row model (`ChairRow`, `WalkWay`) with JSON load/save, and `Zalen/Lampegiet.json` (558 chairs, 550 usable: the two outer seats on both sides of rows 1 and 2 are never assigned, as in the old app).
 - `Group`, `Voorstelling`, `SeatRange` and the three forms.
-- The distribution rules, now in `Plan.Distribute`: front-row groups first, then morning groups, then largest first. A group goes to the showing with the most free seats on a date it prefers, and to any other showing when that fails.
+- The distribution rules, now in `Plan.Distribute`: front-row groups first, then morning groups, then largest first. A group goes to the showing that stays the least full on a date it prefers, and to any other showing when that fails.
 
 ### Known defects in the app
 
@@ -124,7 +124,12 @@ Open, in this order (decided 2026-11-14):
    - Single seats: with a group chosen, a click on one of its seats makes that seat free and a click on a free seat gives it to the group. The list shows how many people of the group still have no seat.
    - Pins are saved in the plan file. A pin is dropped when its showing is removed or has no room left.
    - Not done: seats that are changed by hand are not saved in the plan file, and they are lost when the showing is seated again, which happens at "Verdeel groepen" and when a group moves into or out of that showing.
-4. [ ] Smarter seating: balance showings, avoid splitting a group across the walkway, keep a group in adjacent rows, avoid a single leftover seat at the far edge of the next row.
+4. [x] Smarter seating. A group still sits row by row on one side of the hall, in adjacent rows. On top of that:
+   - Balance: a group goes to the preferred showing that stays the least full for its size with the group in it. This only differs from "most free seats" when the halls differ in size.
+   - Nobody sits alone: when the last row of a group would hold one person, the group leaves a seat free in the row before, so two sit together. A group also does not start on a row with one seat left.
+   - Walkway: a group that would sit on both sides of the walkway starts behind it, when it fits there.
+   - Seats that these rules leave open go to a later group that fits in them completely.
+   - A showing that is too full for these rules is seated the plain way, row by row with every seat used, so no group loses its place because of them.
 5. [ ] Distribution: single-file self-contained publish instead of an MSI.
 
 ## Build and run

@@ -260,13 +260,198 @@ namespace Theaterverdeling
       }
     }
 
+    // Gives every group its seats, in the order of the list of groups. A group sits row by row on
+    // one side of the hall, on the side that is the fewest rows along. On top of that:
+    // - nobody sits alone: when the last row of a group would hold one person, the group leaves a
+    //   seat free in the row before, so two sit together;
+    // - a group that would sit on both sides of a walkway starts behind the walkway instead;
+    // - seats that these two rules leave open go to a later group that fits in them completely.
+    // When a group finds no place that way, the hall is too full for these rules and all groups
+    // are seated the plain way: row by row, using every seat.
     public virtual void AssignSeats()
+    {
+      ClearSeats();
+      if (!AssignSeatsWithRules())
+      {
+        ClearSeats();
+        AssignSeatsRowByRow();
+      }
+    }
+
+    private void ClearSeats()
     {
       foreach (var seat in _rows.OfType<ChairRow>().SelectMany(row => row.Seats))
       {
         seat.Group = null;
       }
+    }
 
+    // One side of the hall while it is being filled.
+    private sealed class Side
+    {
+      public Func<ChairRow, IEnumerable<Seat>> Half;
+
+      // The row this side has reached, as position in the rows that can be used.
+      public int Row;
+    }
+
+    // Seats on one side that were left open: the half rows from Start up to End.
+    private sealed class Gap
+    {
+      public Side Side;
+      public int Start;
+      public int End;
+    }
+
+    // The seats a group gets in one row.
+    private sealed class RowPart
+    {
+      public int Row;
+      public List<Seat> Seats;
+    }
+
+    // Seats the groups with the rules described at AssignSeats. Returns false when a group finds no place.
+    private bool AssignSeatsWithRules()
+    {
+      // The rows that can be used, each with the part of the hall it is in: walkways separate the parts.
+      var rows = new List<ChairRow>();
+      var parts = new List<int>();
+      var part = 0;
+      foreach (var row in _rows)
+      {
+        if (row is WalkWay)
+        {
+          part++;
+        }
+        else if (row is ChairRow chairRow && chairRow.Available)
+        {
+          rows.Add(chairRow);
+          parts.Add(part);
+        }
+      }
+
+      var left = new Side { Half = LeftHalf };
+      var right = new Side { Half = RightHalf };
+      var gaps = new List<Gap>();
+      foreach (var group in Groups)
+      {
+        List<RowPart> seats = null;
+        if (group.Personen > 0)
+        {
+          // Seats that were left open come first, when the whole group fits in them.
+          var gap = gaps.OrderBy(open => open.Start).FirstOrDefault(open => Take(rows, open.Side, open.Start, open.End, group.Personen) != null);
+          if (gap != null)
+          {
+            seats = Take(rows, gap.Side, gap.Start, gap.End, group.Personen);
+          }
+          else
+          {
+            // The side that is the fewest rows along gets the group. The right side wins a tie.
+            var first = left.Row < right.Row ? left : right;
+            var second = first == left ? right : left;
+            seats = Place(rows, parts, first, gaps, group.Personen) ?? Place(rows, parts, second, gaps, group.Personen);
+          }
+          if (seats == null)
+          {
+            return false;
+          }
+          foreach (var seat in seats.SelectMany(rowPart => rowPart.Seats))
+          {
+            seat.Group = group;
+          }
+        }
+        group.Seats = SeatRangesOf(group);
+      }
+      return true;
+    }
+
+    // Finds seats for a group on one side, from the row that side has reached, and moves the side along.
+    // Returns null when the side has too few seats left.
+    private static List<RowPart> Place(List<ChairRow> rows, List<int> parts, Side side, List<Gap> gaps, int people)
+    {
+      var seats = Take(rows, side, side.Row, rows.Count, people);
+      if (seats == null)
+      {
+        return null;
+      }
+
+      // Nobody sits alone at the start either: when the row the side has reached has one seat left,
+      // the group starts in the next row and that seat stays open.
+      if (seats.Count >= 2 && seats[0].Seats.Count == 1)
+      {
+        var next = Take(rows, side, seats[0].Row + 1, rows.Count, people);
+        if (next != null)
+        {
+          gaps.Add(new Gap { Side = side, Start = seats[0].Row, End = seats[0].Row + 1 });
+          seats = next;
+        }
+      }
+
+      // A group that would sit on both sides of a walkway starts behind it, when it fits there
+      // without crossing the next walkway. The seats in front of the walkway stay open.
+      var firstPart = parts[seats[0].Row];
+      if (seats.Any(rowPart => parts[rowPart.Row] != firstPart))
+      {
+        var behind = seats[0].Row;
+        while (parts[behind] == firstPart)
+        {
+          behind++;
+        }
+        var moved = Take(rows, side, behind, rows.Count, people);
+        if (moved != null && moved.All(rowPart => parts[rowPart.Row] == parts[behind]))
+        {
+          gaps.Add(new Gap { Side = side, Start = side.Row, End = behind });
+          seats = moved;
+        }
+      }
+
+      // Nobody sits alone: one person in the last row gets a neighbour from the row before,
+      // as long as that does not leave somebody alone there.
+      if (seats.Count >= 2)
+      {
+        var last = seats[seats.Count - 1];
+        var before = seats[seats.Count - 2];
+        var neighbour = FreeSeats(rows[last.Row], side).Skip(1).FirstOrDefault();
+        if (last.Seats.Count == 1 && before.Seats.Count >= 3 && neighbour != null)
+        {
+          before.Seats.RemoveAt(before.Seats.Count - 1);
+          last.Seats.Add(neighbour);
+          gaps.Add(new Gap { Side = side, Start = before.Row, End = before.Row + 1 });
+        }
+      }
+
+      // The side stays on the row where the group ends, so the next group can use what is left of it.
+      side.Row = seats[seats.Count - 1].Row;
+      return seats;
+    }
+
+    // The first free seats for a number of people on one side, in the rows from start up to end.
+    // Returns null when there are too few.
+    private static List<RowPart> Take(List<ChairRow> rows, Side side, int start, int end, int people)
+    {
+      var seats = new List<RowPart>();
+      var remaining = people;
+      for (var row = start; row < end && remaining > 0; row++)
+      {
+        var free = FreeSeats(rows[row], side).Take(remaining).ToList();
+        if (free.Count > 0)
+        {
+          seats.Add(new RowPart { Row = row, Seats = free });
+          remaining -= free.Count;
+        }
+      }
+      return remaining == 0 ? seats : null;
+    }
+
+    // The seats of a row on one side that nobody has yet, from the edge towards the middle.
+    private static IEnumerable<Seat> FreeSeats(ChairRow row, Side side)
+    {
+      return side.Half(row).Where(seat => seat.Usable && seat.Group == null);
+    }
+
+    // Seats the groups row by row and uses every seat, without the extra rules.
+    private void AssignSeatsRowByRow()
+    {
       var rows = _rows.OfType<ChairRow>().Where(row => row.Available).ToList();
       var left = 0;
       var right = 0;

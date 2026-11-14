@@ -23,12 +23,25 @@ namespace Theaterverdeling.Tests
     public void Group_that_does_not_fit_in_its_half_row_continues_in_the_next_row()
     {
       var hall = Hall(Row(1, 10), Row(2, 10));
+      var a = Group("A", 3);
+      var b = Group("B", 4);
+
+      Seat(hall, a, b);
+
+      Assert.Equal("rij 1: 6-7, rij 2: 9-10", Describe(b));
+    }
+
+    [Fact]
+    public void Nobody_sits_alone_in_the_first_row_of_a_group()
+    {
+      var hall = Hall(Row(1, 10), Row(2, 10));
       var a = Group("A", 4);
       var b = Group("B", 4);
 
       Seat(hall, a, b);
 
-      Assert.Equal("rij 1: 6-6, rij 2: 8-10", Describe(b));
+      // One seat is left in the half row of A, so B starts in row 2.
+      Assert.Equal("rij 2: 7-10", Describe(b));
     }
 
     [Fact]
@@ -53,6 +66,97 @@ namespace Theaterverdeling.Tests
       Seat(hall, a);
 
       Assert.Equal("rij 1: 1-1, rij 1: 3-4", Describe(a));
+    }
+
+    [Fact]
+    public void Nobody_sits_alone_in_the_last_row_of_a_group()
+    {
+      var hall = Hall(Row(1, 10), Row(2, 10));
+      var a = Group("A", 6);
+
+      Seat(hall, a);
+
+      // Five fit in the half row, but then the sixth would sit alone in row 2.
+      Assert.Equal("rij 1: 7-10, rij 2: 9-10", Describe(a));
+    }
+
+    [Fact]
+    public void Seat_that_is_left_open_goes_to_a_later_group_that_fits_in_it()
+    {
+      var hall = Hall(Row(1, 10), Row(2, 10));
+      var a = Group("A", 6);
+      var b = Group("B", 2);
+      var c = Group("C", 1);
+
+      Seat(hall, a, b, c);
+
+      Assert.Equal("rij 1: 1-2", Describe(b));
+      Assert.Equal("rij 1: 6-6", Describe(c));
+    }
+
+    [Fact]
+    public void One_person_stays_in_the_last_row_when_a_neighbour_would_leave_somebody_alone_in_the_row_before()
+    {
+      var hall = Hall(Row(1, 4), Row(2, 4));
+      var a = Group("A", 3);
+
+      Seat(hall, a);
+
+      Assert.Equal("rij 1: 3-4, rij 2: 4-4", Describe(a));
+    }
+
+    [Fact]
+    public void Group_that_would_sit_on_both_sides_of_the_walkway_starts_behind_it()
+    {
+      var hall = Hall(Row(1, 10), Walkway, Row(2, 10), Row(3, 10));
+      var a = Group("A", 3);
+      var b = Group("B", 4);
+
+      Seat(hall, a, b);
+
+      Assert.Equal("rij 1: 8-10", Describe(a));
+      Assert.Equal("rij 2: 7-10", Describe(b));
+    }
+
+    [Fact]
+    public void Seats_left_open_before_the_walkway_go_to_a_later_group_that_fits_in_them()
+    {
+      var hall = Hall(Row(1, 10), Walkway, Row(2, 10), Row(3, 10));
+      var a = Group("A", 3);
+      var b = Group("B", 4);
+      var c = Group("C", 2);
+
+      Seat(hall, a, b, c);
+
+      Assert.Equal("rij 1: 6-7", Describe(c));
+    }
+
+    [Fact]
+    public void Group_that_does_not_fit_behind_the_walkway_sits_on_both_sides_of_it()
+    {
+      var hall = Hall(Row(1, 10), Walkway, Row(2, 10));
+      var a = Group("A", 3);
+      var b = Group("B", 7);
+
+      Seat(hall, a, b);
+
+      Assert.Equal("rij 1: 6-7, rij 2: 6-10", Describe(b));
+    }
+
+    [Fact]
+    public void Hall_that_is_too_full_for_the_rules_is_seated_row_by_row_with_every_seat_used()
+    {
+      var hall = Hall(Row(1, 10), Walkway, Row(2, 10));
+      var a = Group("A", 3);
+      var b = Group("B", 4);
+      var c = Group("C", 5);
+      var d = Group("D", 6);
+
+      Seat(hall, a, b, c, d);
+
+      // With the rules B starts behind the walkway, and then D finds no place. So nobody skips the walkway.
+      Assert.Equal("rij 1: 6-7, rij 2: 9-10", Describe(b));
+      Assert.Equal(new[] { 3, 4, 5, 6 }, new[] { a, b, c, d }.Select(group => hall.SeatsOf(group)));
     }
 
     [Fact]

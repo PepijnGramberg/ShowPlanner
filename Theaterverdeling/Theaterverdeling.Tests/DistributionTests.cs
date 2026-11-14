@@ -66,7 +66,7 @@ namespace Theaterverdeling.Tests
     }
 
     [Fact]
-    public void Group_goes_to_the_preferred_showing_with_the_most_free_seats()
+    public void Group_goes_to_the_preferred_showing_that_stays_the_least_full()
     {
       var small = Showing(Monday, 10, seats: 10);
       var large = Showing(Tuesday, 10, seats: 20);
@@ -78,7 +78,7 @@ namespace Theaterverdeling.Tests
     }
 
     [Fact]
-    public void Group_without_preferred_dates_goes_to_the_showing_with_the_most_free_seats()
+    public void Group_without_preferred_dates_goes_to_the_showing_that_stays_the_least_full()
     {
       var small = Showing(Monday, 10, seats: 10);
       var large = Showing(Tuesday, 10, seats: 20);
@@ -87,6 +87,21 @@ namespace Theaterverdeling.Tests
       Plan(small, large).With(a).Distribute();
 
       Assert.Same(large, a.Voorstelling);
+    }
+
+    [Fact]
+    public void Showings_of_different_size_fill_up_evenly_for_their_size()
+    {
+      var small = Showing(Monday, 10, seats: 10);
+      var large = Showing(Tuesday, 10, seats: 20);
+      var a = Wish("A", 8, Monday, Tuesday);
+      var b = Wish("B", 5, Monday, Tuesday);
+
+      Plan(small, large).With(a, b).Distribute();
+
+      // The large showing still has the most free seats after A, but B leaves the small one half empty.
+      Assert.Same(large, a.Voorstelling);
+      Assert.Same(small, b.Voorstelling);
     }
 
     [Fact]
