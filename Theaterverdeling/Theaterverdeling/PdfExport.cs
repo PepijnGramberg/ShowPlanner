@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Pdf;
 
@@ -24,7 +25,14 @@ namespace Theaterverdeling
         written.Add(path);
       }
 
-      var folder = Path.GetDirectoryName(path);
+      // The files of an earlier export under this name go first, so no file stays behind of a
+      // showing that is gone.
+      foreach (var earlier in EarlierFiles(path))
+      {
+        File.Delete(earlier);
+      }
+
+      var folder = Path.GetDirectoryName(Path.GetFullPath(path));
       var name = Path.GetFileNameWithoutExtension(path);
       for (var i = 0; i < plan.Shows.Count; i++)
       {
@@ -35,6 +43,20 @@ namespace Theaterverdeling
         written.Add(file);
       }
       return written;
+    }
+
+    // The files per showing that an earlier export to this path left next to it.
+    public static List<string> EarlierFiles(string path)
+    {
+      var folder = Path.GetDirectoryName(Path.GetFullPath(path));
+      var start = Path.GetFileNameWithoutExtension(path) + " Voorstelling ";
+      if (!Directory.Exists(folder))
+      {
+        return new List<string>();
+      }
+      return Directory.GetFiles(folder, start + "*.pdf")
+        .Where(file => int.TryParse(Path.GetFileNameWithoutExtension(file).Substring(start.Length), out _))
+        .ToList();
     }
 
     private static void AddPage(PdfDocument document, Voorstelling show, string showName)

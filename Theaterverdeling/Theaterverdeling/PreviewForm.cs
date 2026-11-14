@@ -327,6 +327,12 @@ namespace Theaterverdeling
       {
         return;
       }
+      // The save dialog only asks about the file with all showings.
+      if (PdfExport.EarlierFiles(dialog.FileName).Count > 0
+          && !Confirm("Naast dit bestand staan de PDF's per voorstelling van een eerdere export. Die worden vervangen. Doorgaan?"))
+      {
+        return;
+      }
       try
       {
         ExportPdf(dialog.FileName);

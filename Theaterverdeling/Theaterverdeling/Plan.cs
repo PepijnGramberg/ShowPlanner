@@ -347,27 +347,69 @@ namespace Theaterverdeling
 
     public static Plan Load(string path)
     {
-      var file = JsonSerializer.Deserialize<PlanFile>(File.ReadAllText(path));
+      PlanFile file;
+      try
+      {
+        file = JsonSerializer.Deserialize<PlanFile>(File.ReadAllText(path));
+      }
+      catch (JsonException)
+      {
+        throw new InvalidDataException("Dit is geen planbestand: het kan niet worden gelezen.");
+      }
       if (file == null || file.Version != FileVersion)
       {
         throw new InvalidDataException($"Dit is geen planbestand van versie {FileVersion}.");
       }
 
+      // A file that was changed by hand can hold what the dialogs refuse. It is refused here too,
+      // so the plan on screen is always one the dialogs could have made.
       var plan = new Plan { ShowName = file.ShowName ?? "" };
       foreach (var showing in file.Showings ?? new List<ShowingFile>())
       {
+        if (string.IsNullOrWhiteSpace(showing.Hall))
+        {
+          throw Wrong("een voorstelling heeft geen zaal");
+        }
+        if (!TryParse(showing.Date, DateFormat, out var date) || !TryParse(showing.Time, TimeFormat, out var clock))
+        {
+          throw Wrong("een voorstelling heeft geen geldige datum of tijd");
+        }
+        var time = date + clock.TimeOfDay;
+        if (plan.CheckShowing(date, time) != null)
+        {
+          throw Wrong($"er zijn twee voorstellingen op {time.ToString(MomentFormat, CultureInfo.InvariantCulture)}");
+        }
         var hall = Zaal.Load(showing.Hall);
         foreach (var section in showing.SwitchedOff ?? new List<string>())
         {
           hall.SwitchOff(section);
         }
-        var date = ParseDate(showing.Date);
-        var time = date + DateTime.ParseExact(showing.Time, TimeFormat, CultureInfo.InvariantCulture).TimeOfDay;
         plan.Shows.Add(new Voorstelling(time, hall, date));
       }
       foreach (var group in file.Groups ?? new List<GroupFile>())
       {
-        var dates = (group.PreferredDates ?? new List<string>()).Select(ParseDate).ToList();
+        var name = (group.Name ?? "").Trim();
+        if (name == "")
+        {
+          throw Wrong("een groep heeft geen naam");
+        }
+        if (group.People < 1)
+        {
+          throw Wrong($"de groep \"{name}\" heeft geen geldig aantal personen");
+        }
+        if (plan.Groups.Any(other => string.Equals(other.Name.Trim(), name, StringComparison.CurrentCultureIgnoreCase)))
+        {
+          throw Wrong($"de groep \"{name}\" staat er twee keer in");
+        }
+        var dates = new List<DateTime>();
+        foreach (var text in group.PreferredDates ?? new List<string>())
+        {
+          if (!TryParse(text, DateFormat, out var preferred))
+          {
+            throw Wrong($"de groep \"{name}\" heeft een ongeldige voorkeursdatum");
+          }
+          dates.Add(preferred);
+        }
         var loaded = new Group(group.Name, group.People, group.FrontRows, group.Morning, dates);
         // A pin on a showing that is not in the file is dropped.
         loaded.Voorstelling = group.PinnedTo == null ? null : plan.Shows.FirstOrDefault(show => show.Start.ToString(MomentFormat, CultureInfo.InvariantCulture) == group.PinnedTo);
@@ -382,9 +424,14 @@ namespace Theaterverdeling
       return plan;
     }
 
-    private static DateTime ParseDate(string date)
+    private static bool TryParse(string text, string format, out DateTime moment)
     {
-      return DateTime.ParseExact(date, DateFormat, CultureInfo.InvariantCulture);
+      return DateTime.TryParseExact(text, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out moment);
+    }
+
+    private static InvalidDataException Wrong(string what)
+    {
+      return new InvalidDataException($"Het planbestand klopt niet: {what}.");
     }
 
     // The shape of the JSON file.

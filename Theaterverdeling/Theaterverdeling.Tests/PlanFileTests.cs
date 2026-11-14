@@ -98,6 +98,48 @@ namespace Theaterverdeling.Tests
       Assert.Throws<InvalidDataException>(() => Plan.Load(path));
     }
 
+    private const string GoodShowing = "{\"Date\":\"2026-03-16\",\"Time\":\"10:00:00\",\"Hall\":\"Lampegiet\"}";
+
+    [Theory]
+    [InlineData("{\"Date\":\"2026-03-16\",\"Time\":\"10:00:00\"}", "", "een voorstelling heeft geen zaal")]
+    [InlineData("{\"Date\":\"2026-03-16\",\"Hall\":\"Lampegiet\"}", "", "een voorstelling heeft geen geldige datum of tijd")]
+    [InlineData(GoodShowing + "," + GoodShowing, "", "er zijn twee voorstellingen op 2026-03-16 10:00")]
+    [InlineData(GoodShowing, "{\"People\":28}", "een groep heeft geen naam")]
+    [InlineData(GoodShowing, "{\"Name\":\"De Regenboog\",\"People\":0}", "de groep \"De Regenboog\" heeft geen geldig aantal personen")]
+    [InlineData(GoodShowing, "{\"Name\":\"De Regenboog\",\"People\":28},{\"Name\":\"de regenboog\",\"People\":20}", "de groep \"de regenboog\" staat er twee keer in")]
+    [InlineData(GoodShowing, "{\"Name\":\"De Regenboog\",\"People\":28,\"PreferredDates\":[\"maandag\"]}", "de groep \"De Regenboog\" heeft een ongeldige voorkeursdatum")]
+    public void File_with_what_the_dialogs_refuse_is_refused_with_the_reason(string showings, string groups, string reason)
+    {
+      var path = NewPlanPath();
+      File.WriteAllText(path, "{\"Version\":1,\"Showings\":[" + showings + "],\"Groups\":[" + groups + "]}");
+
+      var error = Assert.Throws<InvalidDataException>(() => Plan.Load(path));
+
+      Assert.Equal($"Het planbestand klopt niet: {reason}.", error.Message);
+    }
+
+    [Fact]
+    public void File_that_is_no_plan_is_refused_in_Dutch()
+    {
+      var path = NewPlanPath();
+      File.WriteAllText(path, "dit is geen json");
+
+      var error = Assert.Throws<InvalidDataException>(() => Plan.Load(path));
+
+      Assert.Equal("Dit is geen planbestand: het kan niet worden gelezen.", error.Message);
+    }
+
+    [Fact]
+    public void Plan_with_a_hall_that_is_not_there_says_which_hall_is_missing()
+    {
+      var path = NewPlanPath();
+      File.WriteAllText(path, "{\"Version\":1,\"Showings\":[{\"Date\":\"2026-03-16\",\"Time\":\"10:00:00\",\"Hall\":\"Schouwburg\"}]}");
+
+      var error = Assert.Throws<FileNotFoundException>(() => Plan.Load(path));
+
+      Assert.Equal("De zaal \"Schouwburg\" staat niet in de map Zalen naast het programma. Zet het zaalbestand in die map, of maak de zaal met \"Zalen beheren\".", error.Message);
+    }
+
     private static Plan SaveAndLoad(Plan plan)
     {
       var path = NewPlanPath();

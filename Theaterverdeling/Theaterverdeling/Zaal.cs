@@ -212,9 +212,20 @@ namespace Theaterverdeling
     // Loads a hall from the halls folder next to the app.
     public static Zaal Load(string name)
     {
-      var hall = LoadFromFile<Zaal>(HallFile(name));
-      hall.Name = Path.GetFileName(name);
-      return hall;
+      if (!Exists(name))
+      {
+        throw new FileNotFoundException($"De zaal \"{Path.GetFileName(name)}\" staat niet in de map Zalen naast het programma. Zet het zaalbestand in die map, of maak de zaal met \"Zalen beheren\".");
+      }
+      try
+      {
+        var hall = LoadFromFile<Zaal>(HallFile(name));
+        hall.Name = Path.GetFileName(name);
+        return hall;
+      }
+      catch (JsonException)
+      {
+        throw new InvalidDataException($"Het bestand van de zaal \"{Path.GetFileName(name)}\" kan niet worden gelezen.");
+      }
     }
 
     // Writes the hall to the halls folder under the given name, over a hall that already has that name.
