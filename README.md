@@ -115,7 +115,7 @@ Open, in this order (decided 2026-11-14):
    - "Opslaan" writes the hall to `Zalen/<name>.json` next to the exe. Saving under the name of another hall asks first.
    - A changed hall counts for showings that are added afterwards and for plans that are loaded afterwards.
    - The seat map is its own control (`SeatMapControl`, with `SeatMapLayout` for the positions). It is drawn by the PDF drawing code and reports the row, seat and group of a click, so the manual corrections can use it too.
-2. [ ] Choose the hall per showing in the add-showing dialog. Halls already load by name and the plan file stores the hall per showing.
+2. [x] Choose the hall per showing: the showing dialog lists the halls in the halls folder and shows the sections of the chosen hall. A new showing starts in the hall of the showing before it. Once a plan uses more than one hall, the lists of showings name the hall. Not done: the hall name on the PDF page.
 3. [ ] Manual corrections: move a group to another showing, pin a group, then re-run seating.
 4. [ ] Smarter seating: balance showings, avoid splitting a group across the walkway, keep a group in adjacent rows, avoid a single leftover seat at the far edge of the next row.
 5. [ ] Distribution: single-file self-contained publish instead of an MSI.

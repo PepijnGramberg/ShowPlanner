@@ -17,7 +17,7 @@ namespace Theaterverdeling
       _plan = plan;
       foreach (var show in plan.Shows)
       {
-        Showingslist.Items.Add(show.Description);
+        Showingslist.Items.Add(plan.Describe(show));
       }
       if (Showingslist.Items.Count > 0)
       {

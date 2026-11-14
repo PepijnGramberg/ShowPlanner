@@ -99,7 +99,7 @@ namespace Theaterverdeling
       foreach (var show in _plan.Shows)
       {
         // The list is narrow, so the full text is also shown as tooltip.
-        Voorstellingviewer.Items.Add(show.Description).ToolTipText = show.Description;
+        Voorstellingviewer.Items.Add(_plan.Describe(show)).ToolTipText = _plan.Describe(show);
       }
     }
     #endregion

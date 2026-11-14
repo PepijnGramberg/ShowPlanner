@@ -7,9 +7,6 @@ namespace Theaterverdeling
   // Dialog to add a showing to the plan, or to change a showing that is already in it.
   public partial class Addshowform : Form
   {
-    // The only hall for now. Becomes a choice in this dialog once there are more hall files.
-    private const string HallName = "Lampegiet";
-
     private readonly Plan _plan;
 
     public delegate void AddingshowEventHandler(object sender, EventArgs e);
@@ -19,9 +16,17 @@ namespace Theaterverdeling
       InitializeComponent();
       _plan = plan;
       Editing = editing;
-      foreach (var section in Zaal.Load(HallName).Sections)
+      foreach (var name in Zaal.HallNames())
       {
-        Sectionsoff.Items.Add(section);
+        Hallchoice.Items.Add(name);
+      }
+      // A new showing starts in the hall of the showing that was added last.
+      var hall = editing?.Zaal.Name ?? plan.Shows.LastOrDefault()?.Zaal.Name;
+      var index = hall == null ? -1 : Hallchoice.FindStringExact(hall);
+      if (Hallchoice.Items.Count > 0)
+      {
+        // Choosing the hall lists its sections.
+        Hallchoice.SelectedIndex = Math.Max(index, 0);
       }
 
       if (editing != null)
@@ -37,8 +42,33 @@ namespace Theaterverdeling
       }
     }
 
+    // Lists the sections of the chosen hall that can be switched off. Sections that were ticked
+    // and that the newly chosen hall also has stay ticked.
+    private void HallchoiceSelectedIndexChanged(object sender, EventArgs e)
+    {
+      var ticked = Sectionsoff.CheckedItems.Cast<string>().ToList();
+      Sectionsoff.Items.Clear();
+      Errorlabel.Text = "";
+      try
+      {
+        foreach (var section in Zaal.Load((string)Hallchoice.SelectedItem).Sections)
+        {
+          Sectionsoff.Items.Add(section, ticked.Contains(section));
+        }
+      }
+      catch (Exception ex)
+      {
+        Errorlabel.Text = $"De zaal kan niet worden geopend: {ex.Message}";
+      }
+    }
+
     private void AddshowClick(object sender, EventArgs e)
     {
+      if (Hallchoice.SelectedItem == null)
+      {
+        Errorlabel.Text = "Er is geen zaal. Maak eerst een zaal met \"Zalen\".";
+        return;
+      }
       var error = _plan.CheckShowing(Datumkeuze.Value.Date, Time.Value, Editing);
       if (error != null)
       {
@@ -46,7 +76,16 @@ namespace Theaterverdeling
         return;
       }
 
-      var zaal = Zaal.Load(HallName);
+      Zaal zaal;
+      try
+      {
+        zaal = Zaal.Load((string)Hallchoice.SelectedItem);
+      }
+      catch (Exception ex)
+      {
+        Errorlabel.Text = $"De zaal kan niet worden geopend: {ex.Message}";
+        return;
+      }
       foreach (string section in Sectionsoff.CheckedItems)
       {
         zaal.SwitchOff(section);

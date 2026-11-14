@@ -19,6 +19,13 @@ namespace Theaterverdeling
     public List<Voorstelling> Shows { get; } = new List<Voorstelling>();
     public List<Group> Groups { get; } = new List<Group>();
 
+    // How a showing is named in lists. The hall is part of the name once the plan uses more than one hall.
+    public string Describe(Voorstelling show)
+    {
+      var severalHalls = Shows.Select(other => other.Zaal.Name).Distinct().Count() > 1;
+      return severalHalls ? $"{show.Description} {show.Zaal.Name}" : show.Description;
+    }
+
     // Divides the groups over the showings and gives them their seats.
     // Returns the groups that fit in no showing.
     public List<Group> Distribute()

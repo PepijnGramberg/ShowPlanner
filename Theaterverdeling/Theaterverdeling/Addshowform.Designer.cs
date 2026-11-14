@@ -111,6 +111,27 @@
             this.Sectionsoff.Size = new System.Drawing.Size(189, 49);
             this.Sectionsoff.TabIndex = 11;
             // 
+            // Halllabel
+            // 
+            this.Halllabel = new System.Windows.Forms.Label();
+            this.Halllabel.AutoSize = true;
+            this.Halllabel.Location = new System.Drawing.Point(226, 56);
+            this.Halllabel.Name = "Halllabel";
+            this.Halllabel.Size = new System.Drawing.Size(28, 13);
+            this.Halllabel.TabIndex = 13;
+            this.Halllabel.Text = "Zaal";
+            // 
+            // Hallchoice
+            // 
+            this.Hallchoice = new System.Windows.Forms.ComboBox();
+            this.Hallchoice.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.Hallchoice.FormattingEnabled = true;
+            this.Hallchoice.Location = new System.Drawing.Point(229, 72);
+            this.Hallchoice.Name = "Hallchoice";
+            this.Hallchoice.Size = new System.Drawing.Size(100, 21);
+            this.Hallchoice.TabIndex = 14;
+            this.Hallchoice.SelectedIndexChanged += new System.EventHandler(this.HallchoiceSelectedIndexChanged);
+            // 
             // Errorlabel
             // 
             this.Errorlabel.AutoSize = true;
@@ -125,6 +146,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(340, 187);
+            this.Controls.Add(this.Hallchoice);
+            this.Controls.Add(this.Halllabel);
             this.Controls.Add(this.Errorlabel);
             this.Controls.Add(this.Sectionslabel);
             this.Controls.Add(this.Sectionsoff);
@@ -153,5 +176,7 @@
         private System.Windows.Forms.CheckedListBox Sectionsoff;
         private System.Windows.Forms.Label Sectionslabel;
         private System.Windows.Forms.Label Errorlabel;
+        private System.Windows.Forms.Label Halllabel;
+        private System.Windows.Forms.ComboBox Hallchoice;
     }
 }
