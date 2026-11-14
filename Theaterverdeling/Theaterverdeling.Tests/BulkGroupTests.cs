@@ -16,6 +16,24 @@ namespace Theaterverdeling.Tests
     private static readonly DateTime Sunday = new DateTime(2026, 3, 15);
 
     [Fact]
+    public void Pasting_from_Excel_is_explained_at_the_top_of_the_dialog()
+    {
+      OnUiThread(() =>
+      {
+        using var main = MainWithTwoShowings();
+        OpenGrid(main);
+
+        var hint = Find<Label>(Dialog(), "Hintlabel");
+        var paste = Find<Button>(Dialog(), "Pastebutton");
+        Assert.StartsWith("Plak hier de groepen uit Excel", hint.Text);
+        Assert.Contains("niets aangevinkt betekent dat elke datum goed is", hint.Text);
+        Assert.Equal("Plakken uit Excel", paste.Text);
+        Assert.Equal(DockStyle.Top, hint.Parent.Dock);
+        Assert.Same(hint.Parent, paste.Parent);
+      });
+    }
+
+    [Fact]
     public void Grid_has_a_tick_column_for_every_showing_date()
     {
       OnUiThread(() =>
@@ -24,7 +42,7 @@ namespace Theaterverdeling.Tests
         var grid = OpenGrid(main);
 
         Assert.Equal(
-          new[] { "Naam", "Aantal", "Vooraan", "Ochtend", "14-03-2026", "15-03-2026", "Melding" },
+          new[] { "Naam", "Aantal", "Vooraan", "Ochtend", "Voorkeur" + Environment.NewLine + "14-03-2026", "Voorkeur" + Environment.NewLine + "15-03-2026", "Melding" },
           grid.Columns.Cast<DataGridViewColumn>().Select(column => column.HeaderText));
       });
     }

@@ -30,6 +30,7 @@ namespace Theaterverdeling
         {
             this.Groupgrid = new System.Windows.Forms.DataGridView();
             this.Bottompanel = new System.Windows.Forms.Panel();
+            this.Toppanel = new System.Windows.Forms.Panel();
             this.Hintlabel = new System.Windows.Forms.Label();
             this.Pastebutton = new System.Windows.Forms.Button();
             this.Addbutton = new System.Windows.Forms.Button();
@@ -48,10 +49,18 @@ namespace Theaterverdeling
             this.Groupgrid.TabIndex = 0;
             this.Groupgrid.KeyDown += new System.Windows.Forms.KeyEventHandler(this.GroupgridKeyDown);
             //
+            // Toppanel
+            //
+            this.Toppanel.Controls.Add(this.Hintlabel);
+            this.Toppanel.Controls.Add(this.Pastebutton);
+            this.Toppanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.Toppanel.Location = new System.Drawing.Point(0, 0);
+            this.Toppanel.Name = "Toppanel";
+            this.Toppanel.Size = new System.Drawing.Size(860, 56);
+            this.Toppanel.TabIndex = 2;
+            //
             // Bottompanel
             //
-            this.Bottompanel.Controls.Add(this.Hintlabel);
-            this.Bottompanel.Controls.Add(this.Pastebutton);
             this.Bottompanel.Controls.Add(this.Addbutton);
             this.Bottompanel.Controls.Add(this.Closebutton);
             this.Bottompanel.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -62,21 +71,22 @@ namespace Theaterverdeling
             //
             // Hintlabel
             //
-            this.Hintlabel.AutoSize = true;
-            this.Hintlabel.Location = new System.Drawing.Point(9, 17);
+            this.Hintlabel.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right));
+            this.Hintlabel.Location = new System.Drawing.Point(9, 7);
             this.Hintlabel.Name = "Hintlabel";
-            this.Hintlabel.Size = new System.Drawing.Size(330, 13);
+            this.Hintlabel.Size = new System.Drawing.Size(690, 44);
             this.Hintlabel.TabIndex = 0;
-            this.Hintlabel.Text = "Typ de groepen, of plak rijen uit Excel: naam en aantal per rij.";
+            this.Hintlabel.Text = "Plak hier de groepen uit Excel: selecteer daar de kolommen met de naam en het aantal, kopieer ze, en klik hier op \"Plakken uit Excel\" of druk op Ctrl+V. Typen kan ook. " +
+                "Vink per groep de datums aan die de voorkeur hebben; niets aangevinkt betekent dat elke datum goed is.";
             //
             // Pastebutton
             //
             this.Pastebutton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.Pastebutton.Location = new System.Drawing.Point(591, 11);
+            this.Pastebutton.Location = new System.Drawing.Point(718, 12);
             this.Pastebutton.Name = "Pastebutton";
-            this.Pastebutton.Size = new System.Drawing.Size(80, 24);
+            this.Pastebutton.Size = new System.Drawing.Size(130, 28);
             this.Pastebutton.TabIndex = 1;
-            this.Pastebutton.Text = "Plakken";
+            this.Pastebutton.Text = "Plakken uit Excel";
             this.Pastebutton.UseVisualStyleBackColor = true;
             this.Pastebutton.Click += new System.EventHandler(this.PastebuttonClick);
             //
@@ -109,6 +119,7 @@ namespace Theaterverdeling
             this.ClientSize = new System.Drawing.Size(860, 420);
             this.Controls.Add(this.Groupgrid);
             this.Controls.Add(this.Bottompanel);
+            this.Controls.Add(this.Toppanel);
             this.MinimumSize = new System.Drawing.Size(600, 250);
             this.CancelButton = this.Closebutton;
             this.Name = "Bulkgroupform";
@@ -124,6 +135,7 @@ namespace Theaterverdeling
 
         private System.Windows.Forms.DataGridView Groupgrid;
         private System.Windows.Forms.Panel Bottompanel;
+        private System.Windows.Forms.Panel Toppanel;
         private System.Windows.Forms.Label Hintlabel;
         private System.Windows.Forms.Button Pastebutton;
         private System.Windows.Forms.Button Addbutton;

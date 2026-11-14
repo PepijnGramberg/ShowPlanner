@@ -47,7 +47,7 @@ namespace Theaterverdeling
       Groupgrid.Columns.Add(new DataGridViewCheckBoxColumn { Name = "Ochtend", HeaderText = "Ochtend", Width = 60 });
       for (var i = 0; i < _dates.Count; i++)
       {
-        Groupgrid.Columns.Add(new DataGridViewCheckBoxColumn { Name = DateColumn(i), HeaderText = _dates[i].ToShortDateString(), Width = 75 });
+        Groupgrid.Columns.Add(new DataGridViewCheckBoxColumn { Name = DateColumn(i), HeaderText = "Voorkeur" + Environment.NewLine + _dates[i].ToShortDateString(), Width = 75 });
       }
       var message = new DataGridViewTextBoxColumn
       {
