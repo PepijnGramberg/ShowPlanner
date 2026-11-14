@@ -40,13 +40,16 @@ namespace Theaterverdeling
       Zaal.AssignSeats();
     }
 
-    // Draws one page for this showing: show name, date and time, then the hall with its legend.
+    // Draws one page for this showing: show name, then date, time and hall name, then the hall with its legend.
     public void Draw(IDrawingContext ctx, string showName)
     {
       const float titleTop = 20;
       const float lineHeight = 16;
       ctx.DrawString(showName, new RectangleF(0, titleTop, ctx.PageWidth, lineHeight));
-      ctx.DrawString($"{Datum.ToShortDateString()} {Time.ToShortTimeString()}", new RectangleF(0, titleTop + lineHeight, ctx.PageWidth, lineHeight));
+      // The hall is named too, so a plan with more than one venue shows where to go.
+      var moment = $"{Datum.ToShortDateString()} {Time.ToShortTimeString()}";
+      var title = string.IsNullOrEmpty(Zaal.Name) ? moment : $"{moment}, {Zaal.Name}";
+      ctx.DrawString(title, new RectangleF(0, titleTop + lineHeight, ctx.PageWidth, lineHeight));
       Zaal.Draw(ctx);
     }
 

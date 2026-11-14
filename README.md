@@ -115,7 +115,7 @@ Open, in this order (decided 2026-11-14):
    - "Opslaan" writes the hall to `Zalen/<name>.json` next to the exe. Saving under the name of another hall asks first.
    - A changed hall counts for showings that are added afterwards and for plans that are loaded afterwards.
    - The seat map is its own control (`SeatMapControl`, with `SeatMapLayout` for the positions). It is drawn by the PDF drawing code and reports the row, seat and group of a click, so the manual corrections can use it too.
-2. [x] Choose the hall per showing: the showing dialog lists the halls in the halls folder and shows the sections of the chosen hall. A new showing starts in the hall of the showing before it. Once a plan uses more than one hall, the lists of showings name the hall. Not done: the hall name on the PDF page.
+2. [x] Choose the hall per showing: the showing dialog lists the halls in the halls folder and shows the sections of the chosen hall. A new showing starts in the hall of the showing before it. Once a plan uses more than one hall, the lists of showings name the hall. The PDF page of a showing names its hall after the date and time.
 3. [x] Manual corrections in the preview window, which now shows the clickable seat map of the chosen showing with its groups in a list.
    - A click on a seat or on a list entry chooses a group and outlines its seats. A click next to the seats chooses none.
    - "Verplaats naar" lists the other showings with enough free seats. Moving seats both showings again and pins the group to its new showing, also against its wishes, such as a morning group in an afternoon showing.

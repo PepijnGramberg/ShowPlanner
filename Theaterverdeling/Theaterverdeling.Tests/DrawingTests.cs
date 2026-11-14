@@ -195,6 +195,19 @@ namespace Theaterverdeling.Tests
       Assert.Contains("14-03-2026 10:30", texts);
     }
 
+    [Fact]
+    public void Title_of_a_showing_names_its_hall()
+    {
+      CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("nl-NL");
+      var show = new Voorstelling(new DateTime(2026, 3, 14, 10, 30, 0), Zaal.Load("Lampegiet"), new DateTime(2026, 3, 14));
+      show.Assignseats();
+      var drawing = new RecordingDrawingContext();
+
+      show.Draw(drawing, "Kikker is jarig");
+
+      Assert.Contains("14-03-2026 10:30, Lampegiet", drawing.Texts.Select(text => text.Text));
+    }
+
     private static float LegendTop(RecordingDrawingContext drawing)
     {
       return drawing.Texts.First(text => text.Text.StartsWith("rij ")).Rect.Top;
