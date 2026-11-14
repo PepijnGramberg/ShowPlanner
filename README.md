@@ -52,7 +52,7 @@ The preview shows the seat map of the chosen showing, with its groups in a list.
 
 ### PDF
 
-"Exporteer PDF" in the preview writes one file with a page for every showing, and one file per showing next to it. A page has the show name, the date, time and hall, the seat map coloured per group, and a legend with the rows and seats of every group.
+"Exporteer PDF" in the preview writes one file with a page for every showing, and one file per showing next to it. Afterwards the preview says what was saved and offers to open the PDF. A page has the show name, the date, time and hall, the seat map coloured per group, and a legend with the rows and seats of every group.
 
 The first twelve groups of a showing each get their own light colour. Later groups get the same colours with one or two dark stripes on each seat, which tells 36 groups apart. Seats nobody can sit on are grey.
 

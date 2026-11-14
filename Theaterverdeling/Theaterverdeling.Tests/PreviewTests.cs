@@ -116,6 +116,7 @@ namespace Theaterverdeling.Tests
         using var document = PdfReader.Open(path, PdfDocumentOpenMode.InformationOnly);
         Assert.Equal(2, document.PageCount);
         Assert.True(File.Exists(Path.Combine(folder, "Indeling Voorstelling 2.pdf")));
+        Assert.Equal("Opgeslagen als Indeling.pdf, met een PDF per voorstelling ernaast.", Find<Label>(preview, "Messagelabel").Text);
       });
     }
 

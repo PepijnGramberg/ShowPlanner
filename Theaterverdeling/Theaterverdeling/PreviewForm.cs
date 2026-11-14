@@ -35,7 +35,14 @@ namespace Theaterverdeling
     public void ExportPdf(string path)
     {
       PdfExport.Write(_plan, path);
+      Messagelabel.ForeColor = SystemColors.ControlText;
+      Messagelabel.Text = $"Opgeslagen als {System.IO.Path.GetFileName(path)}, met een PDF per voorstelling ernaast.";
     }
+
+    // Asks a yes or no question. Replaced in tests, where nobody can answer a message box.
+    [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
+    public Func<string, bool> Confirm { get; set; } =
+      question => MessageBox.Show(question, "Indeling", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
 
     // The showing that is chosen in the list, or null when the groups without a showing are chosen.
     private Voorstelling CurrentShow =>
@@ -265,6 +272,18 @@ namespace Theaterverdeling
       catch (Exception ex)
       {
         MessageBox.Show($"Exporteren is niet gelukt: {ex.Message}");
+        return;
+      }
+      if (Confirm($"De PDF is opgeslagen in {System.IO.Path.GetDirectoryName(dialog.FileName)}. Nu openen?"))
+      {
+        try
+        {
+          System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(dialog.FileName) { UseShellExecute = true });
+        }
+        catch (Exception ex)
+        {
+          MessageBox.Show($"Openen is niet gelukt: {ex.Message}");
+        }
       }
     }
   }

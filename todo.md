@@ -9,13 +9,13 @@ Outcome of the UX review. Each point is one commit; tick it off in that commit.
 - [x] A new showing starts at 10:00 and the time has no seconds.
 - [x] After "Laden", tell the user to press "Verdeel groepen" to see the seating again.
 - [x] Say why the preview closed when the plan changes in the main window.
-- [ ] After "Exporteer PDF", say where the files are and offer to open the PDF. Make the way to the PDF visible from the main window.
+- [x] After "Exporteer PDF", say where the files are and offer to open the PDF.
 - [ ] Make the showing and group dialogs modal, so only one is open and the main window waits.
 
 ## 2. Unclear wording and missing guidance
 
 - [ ] Use two words for the show and a showing: "Voorstelling naam" and "Maak voorstelling" mean different things now.
-- [ ] Show the order of the steps in the main window and make "Verdeel groepen" the main button, away from "Reset".
+- [ ] Show the order of the steps in the main window and make "Verdeel groepen" the main button, away from "Reset". The steps name the PDF, so the way to it is visible from the main window.
 - [ ] Show the groups in columns (Naam, Aantal, Vooraan, Ochtend) instead of "O" and "V", and write the seat counter in words.
 - [ ] Give the numbers with "Te weinig stoelen" and the reason with "Niet ingedeeld".
 - [ ] Clearer labels: "Uitzetten", "Eisen", "Datum voorkeuren" (nothing ticked means any date), "Vastzetten", the window title "Voorbeeld".
