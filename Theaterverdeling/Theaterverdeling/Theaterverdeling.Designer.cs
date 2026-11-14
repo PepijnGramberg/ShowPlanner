@@ -56,7 +56,7 @@ namespace Theaterverdeling
             this.Addshow.Name = "Addshow";
             this.Addshow.Size = new System.Drawing.Size(146, 23);
             this.Addshow.TabIndex = 1;
-            this.Addshow.Text = "Maak voorstelling";
+            this.Addshow.Text = "Voorstelling toevoegen";
             this.Addshow.UseVisualStyleBackColor = true;
             this.Addshow.Click += new System.EventHandler(this.AddshowClick);
             // 
@@ -66,7 +66,7 @@ namespace Theaterverdeling
             this.Addgroupbutton.Name = "Addgroupbutton";
             this.Addgroupbutton.Size = new System.Drawing.Size(114, 23);
             this.Addgroupbutton.TabIndex = 2;
-            this.Addgroupbutton.Text = "Maak groep";
+            this.Addgroupbutton.Text = "Groep toevoegen";
             this.Addgroupbutton.UseVisualStyleBackColor = true;
             this.Addgroupbutton.Click += new System.EventHandler(this.AddgroupClick);
             // 
@@ -119,7 +119,7 @@ namespace Theaterverdeling
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(90, 13);
             this.label1.TabIndex = 7;
-            this.label1.Text = "Voorstelling naam";
+            this.label1.Text = "Titel van de voorstelling";
             // 
             // voorstellingnaambox
             // 
@@ -136,7 +136,7 @@ namespace Theaterverdeling
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(73, 13);
             this.label2.TabIndex = 9;
-            this.label2.Text = "Voorstellingen";
+            this.label2.Text = "Voorstellingen (datum en tijd)";
             // 
             // label3
             // 

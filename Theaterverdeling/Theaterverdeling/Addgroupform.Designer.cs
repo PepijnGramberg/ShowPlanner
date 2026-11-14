@@ -184,7 +184,7 @@
             this.Controls.Add(this.Cancelbutton);
             this.Controls.Add(this.Addgroupbutton);
             this.Name = "Addgroupform";
-            this.Text = "Groepstoevoeging";
+            this.Text = "Groep toevoegen";
             ((System.ComponentModel.ISupportInitialize)(this.Groepsgrootte)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

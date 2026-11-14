@@ -159,7 +159,7 @@
             this.Controls.Add(this.Addshow);
             this.Controls.Add(this.Datumkeuze);
             this.Name = "Addshowform";
-            this.Text = "Voorstelling Toevoegen";
+            this.Text = "Voorstelling toevoegen";
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -14,6 +14,8 @@ namespace Theaterverdeling
       InitializeComponent();
     }
 
+    private const string NoShowing = "Voeg eerst een voorstelling toe: de datum en de tijd waarop gespeeld wordt.";
+
     private Plan _plan = new Plan();
 
     // True when the plan on screen has changes that are not in a file.
@@ -184,7 +186,7 @@ namespace Theaterverdeling
     private void AddgroupClick(object sender, EventArgs e)
     {
       if (_plan.Shows.Count == 0)
-        Tell("Voeg eerst de voorstelling toe");
+        Tell(NoShowing);
       else
       {
         OpenGroupDialog(null);
@@ -195,7 +197,7 @@ namespace Theaterverdeling
     {
       if (_plan.Shows.Count == 0)
       {
-        Tell("Voeg eerst de voorstelling toe");
+        Tell(NoShowing);
         return;
       }
       var bulkgroupform = new Bulkgroupform(_plan);
