@@ -112,8 +112,9 @@ namespace Theaterverdeling
     private readonly Graphics _graphics;
     private readonly SizeF _pageSize;
     // Sized in the units of the page, so the text scales along with the Graphics.
-    private readonly Font _font = new Font("Verdana", 10, GraphicsUnit.World);
-    private readonly Pen _pen = new Pen(Color.Black, 0.5f);
+    // One font and one pen for every context: a context is made for each paint, and nothing disposes it.
+    private static readonly Font _font = new Font("Verdana", 10, GraphicsUnit.World);
+    private static readonly Pen _pen = new Pen(Color.Black, 0.5f);
 
     public GdiDrawingContext(Graphics graphics, SizeF pageSize)
     {

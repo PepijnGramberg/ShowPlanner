@@ -205,7 +205,7 @@ namespace Theaterverdeling.Tests
     {
       var hall = Hall(Row(1, 10, true, 9, 10));
 
-      var reloaded = Zaal.FromJson<Zaal>(hall.ToJson());
+      var reloaded = Zaal.FromJson(hall.ToJson());
 
       Assert.Equal(8, reloaded.Seats);
     }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Drawing;
-using PdfSharpCore.Drawing;
 
 namespace Theaterverdeling
 {
@@ -51,11 +50,6 @@ namespace Theaterverdeling
       var title = string.IsNullOrEmpty(Zaal.Name) ? moment : $"{moment}, {Zaal.Name}";
       ctx.DrawString(title, new RectangleF(0, titleTop + lineHeight, ctx.PageWidth, lineHeight));
       Zaal.Draw(ctx);
-    }
-
-    public void Draw(XGraphics gr, string showName)
-    {
-      Draw(new XGraphicsDrawingContext(gr), showName);
     }
   }
 }

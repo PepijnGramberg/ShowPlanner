@@ -51,7 +51,7 @@ namespace Theaterverdeling.Tests
     {
       var hall = Hall(SectionRow(1, 4, "Voor"), Row(2, 4));
 
-      var reloaded = Zaal.FromJson<Zaal>(hall.ToJson());
+      var reloaded = Zaal.FromJson(hall.ToJson());
 
       Assert.Equal(new[] { "Voor" }, reloaded.Sections);
     }

@@ -95,13 +95,9 @@ namespace Theaterverdeling
       }
       else if (typeName == "ChairRow")
       {
-        // Read the object into a JsonDocument first
+        // Read the object into a JsonDocument, to get the properties needed for the constructor
         using var jsonDoc = JsonDocument.ParseValue(ref reader);
-        var json = jsonDoc.RootElement.GetRawText();
-        
-        // Extract properties needed for constructor
-        using var jsonDoc2 = JsonDocument.Parse(json);
-        var root = jsonDoc2.RootElement;
+        var root = jsonDoc.RootElement;
         
         int seatCount = 0;
         // A row is in use unless the file says otherwise.
@@ -218,7 +214,7 @@ namespace Theaterverdeling
       }
       try
       {
-        var hall = LoadFromFile<Zaal>(HallFile(name));
+        var hall = LoadFromFile(HallFile(name));
         hall.Name = Path.GetFileName(name);
         return hall;
       }
@@ -828,7 +824,6 @@ namespace Theaterverdeling
       // Create a serializable representation
       var zaalData = new ZaalSerializationData
       {
-        ZaalType = GetType().Name,
         Rows = _rows
       };
       
@@ -836,7 +831,7 @@ namespace Theaterverdeling
     }
 
     // Deserialize from JSON
-    public static T FromJson<T>(string json) where T : Zaal, new()
+    public static Zaal FromJson(string json)
     {
       var options = new JsonSerializerOptions
       {
@@ -846,8 +841,7 @@ namespace Theaterverdeling
       
       var zaalData = JsonSerializer.Deserialize<ZaalSerializationData>(json, options);
       
-      // Create a new instance of the specific Zaal type
-      T result = new T();
+      var result = new Zaal();
       
       // Populate the rows
       if (zaalData.Rows != null)
@@ -865,7 +859,7 @@ namespace Theaterverdeling
     }
 
     // Load from a JSON file
-    public static T LoadFromFile<T>(string filePath) where T : Zaal, new()
+    public static Zaal LoadFromFile(string filePath)
     {
       if (!File.Exists(filePath))
       {
@@ -873,7 +867,7 @@ namespace Theaterverdeling
       }
       
       string json = File.ReadAllText(filePath);
-      return FromJson<T>(json);
+      return FromJson(json);
     }
 
     // Seats a group row by row on one side of the hall, starting at the row that side has reached.
@@ -938,7 +932,6 @@ namespace Theaterverdeling
   // Helper class for serialization
   public class ZaalSerializationData
   {
-    public string ZaalType { get; set; }
     public List<Row> Rows { get; set; }
   }
 

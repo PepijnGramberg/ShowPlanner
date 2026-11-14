@@ -35,7 +35,7 @@ namespace Theaterverdeling.Tests
     {
       var hall = HallDraft.FromHall(Hall(Row(1, 6, true, 1, 6), Walkway, SectionRow(2, 8, "Balkon"), Row(3, 4, false))).ToHall();
 
-      var reloaded = Zaal.FromJson<Zaal>(hall.ToJson());
+      var reloaded = Zaal.FromJson(hall.ToJson());
 
       Assert.Equal(hall.ToJson(), reloaded.ToJson());
       Assert.Equal(12, reloaded.Seats);
@@ -45,7 +45,7 @@ namespace Theaterverdeling.Tests
     [Fact]
     public void Row_without_in_use_in_the_file_is_in_use()
     {
-      var hall = Zaal.FromJson<Zaal>("{\"Rows\":[{\"Type\":\"ChairRow\",\"RowNr\":1,\"SeatCount\":5}]}");
+      var hall = Zaal.FromJson("{\"Rows\":[{\"Type\":\"ChairRow\",\"RowNr\":1,\"SeatCount\":5}]}");
 
       Assert.Equal(5, hall.Seats);
     }
