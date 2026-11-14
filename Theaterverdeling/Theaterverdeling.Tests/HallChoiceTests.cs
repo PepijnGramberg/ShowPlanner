@@ -61,7 +61,7 @@ namespace Theaterverdeling.Tests
 
         Find<Button>(dialog, "Addshow").PerformClick();
 
-        Assert.Equal("0/560 stoelen", Find<Label>(main, "Seatlabel").Text);
+        Assert.Equal("0 personen, 560 stoelen", Find<Label>(main, "Seatlabel").Text);
         Assert.Equal(
           new[] { "14-03-2026 10:00 Lampegiet", "15-03-2026 10:00 " + name },
           Find<ListView>(main, "Voorstellingviewer").Items.Cast<ListViewItem>().Select(item => item.Text));

@@ -74,6 +74,7 @@ namespace Theaterverdeling
             // 
             this.Voorstellingviewer.Location = new System.Drawing.Point(12, 92);
             this.Voorstellingviewer.Name = "Voorstellingviewer";
+            this.Voorstellingviewer.HideSelection = false;
             this.Voorstellingviewer.ShowItemToolTips = true;
             this.Voorstellingviewer.ItemActivate += new System.EventHandler(this.EditshowClick);
             this.Voorstellingviewer.Size = new System.Drawing.Size(160, 380);
@@ -89,9 +90,14 @@ namespace Theaterverdeling
             this.Groupviewer.ItemActivate += new System.EventHandler(this.EditgroupClick);
             this.Groupviewer.Size = new System.Drawing.Size(275, 380);
             this.Groupviewer.TabIndex = 5;
-            this.Groupviewer.TileSize = new System.Drawing.Size(220, 30);
+            this.Groupviewer.Columns.Add("Naam", 140);
+            this.Groupviewer.Columns.Add("Aantal", 48, System.Windows.Forms.HorizontalAlignment.Right);
+            this.Groupviewer.Columns.Add("Vooraan", 56);
+            this.Groupviewer.Columns.Add("Ochtend", 56);
+            this.Groupviewer.FullRowSelect = true;
+            this.Groupviewer.HideSelection = false;
             this.Groupviewer.UseCompatibleStateImageBehavior = false;
-            this.Groupviewer.View = System.Windows.Forms.View.Tile;
+            this.Groupviewer.View = System.Windows.Forms.View.Details;
             // 
             // Seatlabel
             // 
@@ -100,7 +106,7 @@ namespace Theaterverdeling
             this.Seatlabel.Name = "Seatlabel";
             this.Seatlabel.Size = new System.Drawing.Size(63, 13);
             this.Seatlabel.TabIndex = 5;
-            this.Seatlabel.Text = "0/0 Stoelen";
+            this.Seatlabel.Text = "0 personen, 0 stoelen";
             // 
             // Dividebutton
             // 

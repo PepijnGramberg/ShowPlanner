@@ -180,7 +180,8 @@ namespace Theaterverdeling
     {
       var personen = _plan.Groups.Sum(group => group.Personen);
       var stoelen = _plan.Shows.Sum(show => show.Zaal.Seats);
-      Seatlabel.Text = $"{personen}/{stoelen} stoelen";
+      Seatlabel.Text = $"{personen} personen, {stoelen} stoelen";
+      Seatlabel.ForeColor = personen > stoelen ? System.Drawing.Color.Firebrick : System.Drawing.SystemColors.ControlText;
     }
     #region Groepen
     private void AddgroupClick(object sender, EventArgs e)
@@ -255,8 +256,10 @@ namespace Theaterverdeling
       Groupviewer.Items.Clear();
       foreach (var group in _plan.Groups)
       {
-        var text = $"{group.Name} {group.Personen}{(group.Morning ? "  O" : "")}{(group.Firstrows ? " V" : "")}";
-        Groupviewer.Items.Add(text);
+        var item = Groupviewer.Items.Add(group.Name);
+        item.SubItems.Add(group.Personen.ToString());
+        item.SubItems.Add(group.Firstrows ? "ja" : "");
+        item.SubItems.Add(group.Morning ? "ja" : "");
       }
     }
 

@@ -43,6 +43,49 @@ namespace Theaterverdeling.Tests
     }
 
     [Fact]
+    public void Groups_are_listed_in_columns_with_their_wishes_in_words()
+    {
+      OnUiThread(() =>
+      {
+        using var main = new Theaterverdeling();
+        main.Show();
+        AddShowing(main, new DateTime(2026, 3, 14), new DateTime(2026, 3, 14, 10, 30, 0));
+        Find<Button>(main, "Addgroupbutton").PerformClick();
+        var dialog = Application.OpenForms.OfType<Addgroupform>().Single();
+        Find<TextBox>(dialog, "Groepnaam").Text = "De Regenboog";
+        Find<NumericUpDown>(dialog, "Groepsgrootte").Value = 28;
+        Find<CheckBox>(dialog, "Morningcheck").Checked = true;
+        Find<Button>(dialog, "Addgroupbutton").PerformClick();
+
+        var groups = Find<ListView>(main, "Groupviewer");
+        Assert.Equal(new[] { "Naam", "Aantal", "Vooraan", "Ochtend" }, groups.Columns.Cast<ColumnHeader>().Select(column => column.Text));
+        Assert.Equal(
+          new[] { "De Regenboog", "28", "", "ja" },
+          groups.Items[0].SubItems.Cast<ListViewItem.ListViewSubItem>().Select(cell => cell.Text));
+      });
+    }
+
+    [Fact]
+    public void Seat_counter_is_in_words_and_red_when_there_are_too_few_seats()
+    {
+      OnUiThread(() =>
+      {
+        using var main = new Theaterverdeling();
+        main.Show();
+        AddShowing(main, new DateTime(2026, 3, 14), new DateTime(2026, 3, 14, 10, 30, 0));
+        var counter = Find<Label>(main, "Seatlabel");
+
+        AddGroup(main, "De Regenboog", 300);
+        Assert.Equal("300 personen, 550 stoelen", counter.Text);
+        Assert.Equal(System.Drawing.SystemColors.ControlText, counter.ForeColor);
+
+        AddGroup(main, "Het Kompas", 300);
+        Assert.Equal("600 personen, 550 stoelen", counter.Text);
+        Assert.Equal(System.Drawing.Color.Firebrick, counter.ForeColor);
+      });
+    }
+
+    [Fact]
     public void Adding_a_group_without_a_showing_says_what_a_showing_is()
     {
       OnUiThread(() =>

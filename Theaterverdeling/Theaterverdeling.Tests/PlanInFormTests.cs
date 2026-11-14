@@ -29,7 +29,7 @@ namespace Theaterverdeling.Tests
         Assert.Equal("Kikker is jarig", Find<TextBox>(main, "voorstellingnaambox").Text);
         Assert.Equal(new[] { "14-03-2026 10:30 (Balkon uit)" }, Texts(main, "Voorstellingviewer"));
         Assert.Equal(new[] { "De Regenboog 28" }, Texts(main, "Groupviewer"));
-        Assert.Equal("28/363 stoelen", Find<Label>(main, "Seatlabel").Text);
+        Assert.Equal("28 personen, 363 stoelen", Find<Label>(main, "Seatlabel").Text);
       });
     }
 
@@ -129,7 +129,9 @@ namespace Theaterverdeling.Tests
 
     private static List<string> Texts(Control main, string listName)
     {
-      return Find<ListView>(main, listName).Items.Cast<ListViewItem>().Select(item => item.Text).ToList();
+      return Find<ListView>(main, listName).Items.Cast<ListViewItem>()
+        .Select(item => string.Join(" ", item.SubItems.Cast<ListViewItem.ListViewSubItem>().Select(cell => cell.Text).Where(text => text != "")))
+        .ToList();
     }
 
     private static string NewPlanPath()

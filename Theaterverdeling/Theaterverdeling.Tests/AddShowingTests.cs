@@ -20,7 +20,7 @@ namespace Theaterverdeling.Tests
 
         AddShowing(main, new DateTime(2026, 3, 14), new DateTime(2026, 3, 14, 10, 30, 0));
 
-        Assert.Equal("0/550 stoelen", Find<Label>(main, "Seatlabel").Text);
+        Assert.Equal("0 personen, 550 stoelen", Find<Label>(main, "Seatlabel").Text);
       });
     }
 
@@ -65,7 +65,7 @@ namespace Theaterverdeling.Tests
 
         AddShowing(main, new DateTime(2026, 3, 14), new DateTime(2026, 3, 14, 10, 30, 0), "Balkon");
 
-        Assert.Equal("0/363 stoelen", Find<Label>(main, "Seatlabel").Text);
+        Assert.Equal("0 personen, 363 stoelen", Find<Label>(main, "Seatlabel").Text);
       });
     }
 
@@ -100,7 +100,7 @@ namespace Theaterverdeling.Tests
         main.Confirm = question => true;
         Find<Button>(main, "ResetButton").PerformClick();
 
-        Assert.Equal("0/0 stoelen", Find<Label>(main, "Seatlabel").Text);
+        Assert.Equal("0 personen, 0 stoelen", Find<Label>(main, "Seatlabel").Text);
       });
     }
 

@@ -56,7 +56,7 @@ namespace Theaterverdeling.Tests
         Find<Button>(Dialog(), "Addbutton").PerformClick();
 
         Assert.Equal(new[] { "De Regenboog 28", "Het Kompas 31" }, Texts(main, "Groupviewer"));
-        Assert.Equal("59/1100 stoelen", Find<Label>(main, "Seatlabel").Text);
+        Assert.Equal("59 personen, 1100 stoelen", Find<Label>(main, "Seatlabel").Text);
         Assert.Empty(Application.OpenForms.OfType<Bulkgroupform>());
       });
     }
@@ -161,7 +161,9 @@ namespace Theaterverdeling.Tests
 
     private static List<string> Texts(Control main, string listName)
     {
-      return Find<ListView>(main, listName).Items.Cast<ListViewItem>().Select(item => item.Text).ToList();
+      return Find<ListView>(main, listName).Items.Cast<ListViewItem>()
+        .Select(item => string.Join(" ", item.SubItems.Cast<ListViewItem.ListViewSubItem>().Select(cell => cell.Text).Where(text => text != "")))
+        .ToList();
     }
 
     private static Plan SavedPlan(Theaterverdeling main)
