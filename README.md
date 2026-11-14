@@ -102,15 +102,13 @@ Inside `Theaterverdeling/`:
 - [x] Show switched-off rows and seats that are never used in grey on the seat map.
 - [ ] Choose the hall per showing in the add-showing dialog, once there is more than one hall file. Halls already load by name and the plan file stores the hall per showing.
 - [ ] Hall editor in `EditorForm`, so a second venue needs no code.
-- [ ] Bulk input of groups: a "Meerdere groepen" dialog with a grid to add many groups at once. This replaces the planned CSV or Excel import, because rows copied from Excel or an email can be pasted into the grid.
-  - Columns: name, size, "Vooraan", "Ochtend", and one tick column per showing date for the preferences.
-  - Each row is checked with the same rules as the group dialog, plus duplicate names within the grid. A row with a problem shows its message and stays in the grid; "Toevoegen" adds the valid rows.
-  - Decision: what a paste may contain. Proposal: name and size only, and the ticks are set in the grid afterwards.
-  - Decision: whether a paste may also carry "vooraan", "ochtend" or preferred dates, and in which notation.
-  - Decision: how to treat a pasted header row and rows with a missing or non-numeric size. Proposal: skip a first row whose size is not a number, and keep other bad rows in the grid with a message.
-  - Decision: whether valid rows are added while bad rows remain, or nothing is added until every row is valid. Proposal: add the valid rows.
-  - Decision: whether the grid later replaces the group list in the main window, so groups are edited in place. Proposal: keep it a separate dialog first.
-  - Decision: whether a file import is still needed on top of pasting.
+- [x] Bulk input of groups: "Meerdere groepen" opens a grid to add many groups at once. This replaces the planned CSV or Excel import, because rows copied from Excel can be pasted into the grid with Ctrl+V or "Plakken".
+  - Columns: name, size, "Vooraan", "Ochtend", one tick column per showing date, and a message column.
+  - Each row is checked with the same rules as the group dialog, plus duplicate names within the grid. "Toevoegen" adds the valid rows; a row with a problem stays in the grid with its message.
+  - Decided: a paste carries the name and the size, separated by a tab or a semicolon. The ticks are set in the grid.
+  - Decided: a first pasted row whose size is not a number is treated as a header and skipped. A number inside a name, such as "groep 5", stays part of the name.
+  - Decided: it is a separate dialog. The group list in the main window stays as it is.
+  - Decided: no file import.
 - [ ] Distribution: single-file self-contained publish instead of an MSI.
 
 ## Build and run

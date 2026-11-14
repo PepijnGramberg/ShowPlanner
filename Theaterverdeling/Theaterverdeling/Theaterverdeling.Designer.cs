@@ -47,6 +47,7 @@ namespace Theaterverdeling
             this.LoadButton = new System.Windows.Forms.Button();
             this.Editshowbutton = new System.Windows.Forms.Button();
             this.Editgroupbutton = new System.Windows.Forms.Button();
+            this.Bulkgroupbutton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // Addshow
@@ -216,11 +217,22 @@ namespace Theaterverdeling
             this.Editgroupbutton.UseVisualStyleBackColor = true;
             this.Editgroupbutton.Click += new System.EventHandler(this.EditgroupClick);
             // 
+            // Bulkgroupbutton
+            // 
+            this.Bulkgroupbutton.Location = new System.Drawing.Point(568, 202);
+            this.Bulkgroupbutton.Name = "Bulkgroupbutton";
+            this.Bulkgroupbutton.Size = new System.Drawing.Size(113, 23);
+            this.Bulkgroupbutton.TabIndex = 18;
+            this.Bulkgroupbutton.Text = "Meerdere groepen";
+            this.Bulkgroupbutton.UseVisualStyleBackColor = true;
+            this.Bulkgroupbutton.Click += new System.EventHandler(this.BulkgroupClick);
+            // 
             // Theaterverdeling
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(700, 520);
+            this.Controls.Add(this.Bulkgroupbutton);
             this.Controls.Add(this.Editgroupbutton);
             this.Controls.Add(this.Editshowbutton);
             this.Controls.Add(this.LoadButton);
@@ -265,6 +277,7 @@ namespace Theaterverdeling
         private System.Windows.Forms.Button LoadButton;
         private System.Windows.Forms.Button Editshowbutton;
         private System.Windows.Forms.Button Editgroupbutton;
+        private System.Windows.Forms.Button Bulkgroupbutton;
     }
 }
 

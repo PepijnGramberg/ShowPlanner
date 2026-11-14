@@ -120,6 +120,29 @@ namespace Theaterverdeling
       }
     }
 
+    private void BulkgroupClick(object sender, EventArgs e)
+    {
+      if (_plan.Shows.Count == 0)
+      {
+        MessageBox.Show("Voeg eerst de voorstelling toe");
+        return;
+      }
+      var bulkgroupform = new Bulkgroupform(_plan);
+      bulkgroupform.Addinggroups += BulkgroupformAddinggroups;
+      bulkgroupform.Show();
+    }
+
+    void BulkgroupformAddinggroups(object sender, EventArgs e)
+    {
+      if (sender is Bulkgroupform bulkGroupForm)
+      {
+        _plan.Groups.AddRange(bulkGroupForm.Groups);
+        Groupviewerupdate();
+        ClosePreview();
+        Updatestoelen();
+      }
+    }
+
     private void EditgroupClick(object sender, EventArgs e)
     {
       if (Groupviewer.SelectedIndices.Count > 0)

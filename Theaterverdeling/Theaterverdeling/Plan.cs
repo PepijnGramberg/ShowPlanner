@@ -103,6 +103,42 @@ namespace Theaterverdeling
       return null;
     }
 
+    // Checks rows that are to be added together. Gives for every row why it cannot be added,
+    // or null when it can. A name that is twice in the rows is refused the second time.
+    public List<string> CheckNewGroups(IReadOnlyList<GroupEntry> entries)
+    {
+      var messages = new List<string>();
+      var accepted = new List<string>();
+      foreach (var entry in entries)
+      {
+        var name = (entry.Name ?? "").Trim();
+        string message;
+        if (name == "")
+        {
+          message = "Vul een groepsnaam in.";
+        }
+        else if (!entry.TryGetPeople(out var people))
+        {
+          message = "Vul bij aantal een heel getal in.";
+        }
+        else
+        {
+          message = CheckGroup(name, people);
+          if (message == null && accepted.Any(other => string.Equals(other, name, StringComparison.CurrentCultureIgnoreCase)))
+          {
+            message = $"Er is al een groep met de naam \"{name}\".";
+          }
+        }
+
+        if (message == null)
+        {
+          accepted.Add(name);
+        }
+        messages.Add(message);
+      }
+      return messages;
+    }
+
     public void ReplaceGroup(Group old, Group replacement)
     {
       // The dialogs stay open next to the main window, so the old group can be removed meanwhile.
