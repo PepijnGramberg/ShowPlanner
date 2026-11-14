@@ -42,7 +42,7 @@ namespace Theaterverdeling
     private void AddgroupbuttonClick(object sender, EventArgs e)
     {
       var data = Datumvoorkeurenbox.CheckedItems.Cast<DateTime>().ToList();
-      var error = _plan.CheckGroup(Groepnaam.Text, (int)Groepsgrootte.Value, data, Editing);
+      var error = _plan.CheckGroup(Groepnaam.Text, (int)Groepsgrootte.Value, Editing);
       if (error != null)
       {
         Errorlabel.Text = error;

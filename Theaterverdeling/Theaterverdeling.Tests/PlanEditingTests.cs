@@ -10,14 +10,13 @@ namespace Theaterverdeling.Tests
   {
     private static readonly DateTime Monday = new DateTime(2026, 3, 16);
     private static readonly DateTime Tuesday = new DateTime(2026, 3, 17);
-    private static readonly DateTime[] OnMonday = { Monday };
 
     [Fact]
     public void Group_that_meets_all_rules_is_accepted()
     {
       var plan = PlanWith(Showing(Monday, 10, 30, seats: 10));
 
-      Assert.Null(plan.CheckGroup("De Regenboog", 10, OnMonday));
+      Assert.Null(plan.CheckGroup("De Regenboog", 10));
     }
 
     [Theory]
@@ -27,7 +26,7 @@ namespace Theaterverdeling.Tests
     {
       var plan = PlanWith(Showing(Monday, 10, 30, seats: 10));
 
-      Assert.Equal("Vul een groepsnaam in.", plan.CheckGroup(name, 5, OnMonday));
+      Assert.Equal("Vul een groepsnaam in.", plan.CheckGroup(name, 5));
     }
 
     [Fact]
@@ -36,7 +35,7 @@ namespace Theaterverdeling.Tests
       var plan = PlanWith(Showing(Monday, 10, 30, seats: 10));
       plan.Groups.Add(Group("De Regenboog", 5));
 
-      Assert.Equal("Er is al een groep met de naam \"de regenboog\".", plan.CheckGroup(" de regenboog ", 5, OnMonday));
+      Assert.Equal("Er is al een groep met de naam \"de regenboog\".", plan.CheckGroup(" de regenboog ", 5));
     }
 
     [Fact]
@@ -46,7 +45,7 @@ namespace Theaterverdeling.Tests
       var existing = Group("De Regenboog", 5);
       plan.Groups.Add(existing);
 
-      Assert.Null(plan.CheckGroup("De Regenboog", 6, OnMonday, existing));
+      Assert.Null(plan.CheckGroup("De Regenboog", 6, existing));
     }
 
     [Fact]
@@ -54,15 +53,7 @@ namespace Theaterverdeling.Tests
     {
       var plan = PlanWith(Showing(Monday, 10, 30, seats: 10), Showing(Tuesday, 10, 30, seats: 12));
 
-      Assert.Equal("De groep past in geen enkele voorstelling. De grootste heeft 12 stoelen.", plan.CheckGroup("Groot", 13, OnMonday));
-    }
-
-    [Fact]
-    public void Group_must_prefer_at_least_one_date()
-    {
-      var plan = PlanWith(Showing(Monday, 10, 30, seats: 10));
-
-      Assert.Equal("Kies minstens één datum.", plan.CheckGroup("De Regenboog", 5, new DateTime[0]));
+      Assert.Equal("De groep past in geen enkele voorstelling. De grootste heeft 12 stoelen.", plan.CheckGroup("Groot", 13));
     }
 
     [Fact]

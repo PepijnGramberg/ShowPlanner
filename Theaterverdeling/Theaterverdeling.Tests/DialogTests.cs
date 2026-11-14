@@ -51,6 +51,25 @@ namespace Theaterverdeling.Tests
     }
 
     [Fact]
+    public void Group_without_a_preferred_date_is_added()
+    {
+      OnUiThread(() =>
+      {
+        using var main = new Theaterverdeling();
+        main.Show();
+        AddShowing(main, Day, HalfPastTen);
+
+        Find<Button>(main, "Addgroupbutton").PerformClick();
+        var dialog = Application.OpenForms.OfType<Addgroupform>().Single();
+        Find<TextBox>(dialog, "Groepnaam").Text = "De Regenboog";
+        Find<NumericUpDown>(dialog, "Groepsgrootte").Value = 28;
+        Find<Button>(dialog, "Addgroupbutton").PerformClick();
+
+        Assert.Equal(new[] { "De Regenboog 28" }, Texts(main, "Groupviewer"));
+      });
+    }
+
+    [Fact]
     public void Second_showing_at_the_same_moment_is_refused_in_the_dialog()
     {
       OnUiThread(() =>

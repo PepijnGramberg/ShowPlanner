@@ -78,6 +78,18 @@ namespace Theaterverdeling.Tests
     }
 
     [Fact]
+    public void Group_without_preferred_dates_goes_to_the_showing_with_the_most_free_seats()
+    {
+      var small = Showing(Monday, 10, seats: 10);
+      var large = Showing(Tuesday, 10, seats: 20);
+      var a = new Group("A", 5, false, false, new List<DateTime>());
+
+      Plan(small, large).With(a).Distribute();
+
+      Assert.Same(large, a.Voorstelling);
+    }
+
+    [Fact]
     public void With_equal_room_the_earlier_showing_is_used()
     {
       var tuesday = Showing(Tuesday, 10, seats: 10);

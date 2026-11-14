@@ -72,7 +72,7 @@ namespace Theaterverdeling
 
     // Says why a group with these details cannot be in the plan, or null when it can.
     // Pass the group that is being edited as replacing, so it is not compared with itself.
-    public string CheckGroup(string name, int people, IReadOnlyCollection<DateTime> preferredDates, Group replacing = null)
+    public string CheckGroup(string name, int people, Group replacing = null)
     {
       var trimmed = (name ?? "").Trim();
       if (trimmed == "")
@@ -87,10 +87,6 @@ namespace Theaterverdeling
       if (people > largest)
       {
         return $"De groep past in geen enkele voorstelling. De grootste heeft {largest} stoelen.";
-      }
-      if (preferredDates.Count == 0)
-      {
-        return "Kies minstens één datum.";
       }
       return null;
     }

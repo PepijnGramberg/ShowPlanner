@@ -13,7 +13,7 @@ Parity with the 2013 output and with old `.wet` save files is not required.
 ## Requirements that still stand
 
 - One show at a time, with multiple showings (date + time), each in a hall.
-- Groups have a name, a size, preferred showings and a "front rows" wish.
+- Groups have a name, a size, preferred showings and a "front rows" wish. No preferred showing means any showing is fine.
 - Every group goes to exactly one showing and sits together.
 - Halls are data (JSON), not code. Rows, walkways, unusable seats and the sections that can be switched off per showing are described in the hall file.
 - Save and load the whole plan as one local JSON file.
@@ -86,7 +86,7 @@ Inside `Theaterverdeling/`:
 - [x] Move distribution and seating out of the form into plain classes without UI dependencies. Distribution lives in `Plan`, seating in `Zaal`. PDF export is still in the form.
 - [x] Tests for hall loading, seat filling, sections, drawing, the plan file, distribution and the add, save and load flows of the forms. Not covered: the PDF export and its file dialog.
 - [x] Replace `.wet` with one versioned JSON plan file: show name, showings with hall and switched-off sections, groups with their wishes. Dates do not depend on language settings. Old `.wet` files are not supported.
-- [x] Input validation, shown as a message in the dialog: empty or duplicate group name, group larger than the largest showing, no preferred date ticked, two showings in the same minute.
+- [x] Input validation, shown as a message in the dialog: empty or duplicate group name, group larger than the largest showing, two showings in the same minute. A group without a preferred date is allowed and means "no preference".
 - [x] Edit an existing group or showing with "Wijzig groep" and "Wijzig voorstelling". When a showing moves to another date and no showing is left on the old date, the groups that preferred the old date follow.
 - [x] Report all unplaced groups in one summary instead of one message box per group.
 
