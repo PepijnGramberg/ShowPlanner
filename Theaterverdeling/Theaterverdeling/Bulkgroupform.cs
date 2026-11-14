@@ -15,6 +15,7 @@ namespace Theaterverdeling
     public Bulkgroupform(Plan plan)
     {
       InitializeComponent();
+      Icon = AppIcon.Value;
       _plan = plan;
       _dates = plan.Shows.Select(show => show.Datum).Distinct().OrderBy(datum => datum).ToList();
       AddColumns();
@@ -42,12 +43,12 @@ namespace Theaterverdeling
         HeaderText = "Naam",
         Width = 200
       });
-      Groupgrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "Aantal", HeaderText = "Aantal", Width = 55 });
-      Groupgrid.Columns.Add(new DataGridViewCheckBoxColumn { Name = "Vooraan", HeaderText = "Vooraan", Width = 60 });
-      Groupgrid.Columns.Add(new DataGridViewCheckBoxColumn { Name = "Ochtend", HeaderText = "Ochtend", Width = 60 });
+      Groupgrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "Aantal", HeaderText = "Aantal", MinimumWidth = 55, AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells });
+      Groupgrid.Columns.Add(new DataGridViewCheckBoxColumn { Name = "Vooraan", HeaderText = "Vooraan", AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells });
+      Groupgrid.Columns.Add(new DataGridViewCheckBoxColumn { Name = "Ochtend", HeaderText = "Ochtend", AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells });
       for (var i = 0; i < _dates.Count; i++)
       {
-        Groupgrid.Columns.Add(new DataGridViewCheckBoxColumn { Name = DateColumn(i), HeaderText = "Voorkeur" + Environment.NewLine + _dates[i].ToShortDateString(), Width = 75 });
+        Groupgrid.Columns.Add(new DataGridViewCheckBoxColumn { Name = DateColumn(i), HeaderText = "Voorkeur" + Environment.NewLine + _dates[i].ToShortDateString(), AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells });
       }
       var message = new DataGridViewTextBoxColumn
       {

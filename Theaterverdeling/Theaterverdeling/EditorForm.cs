@@ -23,6 +23,7 @@ namespace Theaterverdeling
     public EditorForm()
     {
       InitializeComponent();
+      Icon = AppIcon.Value;
       AddColumns();
       FillPicker(null);
     }
@@ -77,9 +78,9 @@ namespace Theaterverdeling
 
     private void AddColumns()
     {
-      Rowsgrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "Soort", HeaderText = "Soort", Width = 60, ReadOnly = true });
-      Rowsgrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "Rij", HeaderText = "Rij", Width = 40 });
-      Rowsgrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "Stoelen", HeaderText = "Stoelen", Width = 55 });
+      Rowsgrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "Soort", HeaderText = "Soort", AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells, ReadOnly = true });
+      Rowsgrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "Rij", HeaderText = "Rij", MinimumWidth = 40, AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells });
+      Rowsgrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "Stoelen", HeaderText = "Stoelen", AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells });
       Rowsgrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "Deel", HeaderText = "Deel", Width = 90 });
       Rowsgrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "Nietgebruikt", HeaderText = "Niet gebruikt", Width = 90 });
       var message = new DataGridViewTextBoxColumn

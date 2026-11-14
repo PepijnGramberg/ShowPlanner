@@ -5,7 +5,7 @@ One show has several showings. School groups are distributed over the showings a
 then seated in the hall. The result is a PDF per showing with a colour-coded seat map
 and the rows and seats of every group.
 
-It is a Windows app (WinForms, .NET 9). The user interface is in Dutch.
+It is a Windows app (WinForms, .NET 9). The user interface is in Dutch. Every window uses one font, Segoe UI 10, set in `Program.cs`.
 
 ## What it does
 
@@ -152,5 +152,6 @@ Everything is in [Theaterverdeling/](Theaterverdeling/): the app in `Theaterverd
 | `Theaterverdeling.cs` | The main window. |
 | `Addshowform.cs`, `Addgroupform.cs`, `Bulkgroupform.cs` | The dialogs for showings and groups. |
 | `PreviewForm.cs`, `EditorForm.cs` | The preview with the corrections by hand, and the hall editor. |
+| `AppIcon.cs`, `Theaterverdeling.ico` | The icon of the app and of every window. |
 
 [AGENTS.md](AGENTS.md) has the conventions for working on the code.

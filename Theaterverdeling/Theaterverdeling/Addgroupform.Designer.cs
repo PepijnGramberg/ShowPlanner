@@ -45,7 +45,7 @@
             // 
             // Addgroupbutton
             // 
-            this.Addgroupbutton.Location = new System.Drawing.Point(285, 185);
+            this.Addgroupbutton.Location = new System.Drawing.Point(321, 185);
             this.Addgroupbutton.Name = "Addgroupbutton";
             this.Addgroupbutton.Size = new System.Drawing.Size(131, 23);
             this.Addgroupbutton.TabIndex = 5;
@@ -55,7 +55,7 @@
             // 
             // Cancelbutton
             // 
-            this.Cancelbutton.Location = new System.Drawing.Point(422, 185);
+            this.Cancelbutton.Location = new System.Drawing.Point(458, 185);
             this.Cancelbutton.Name = "Cancelbutton";
             this.Cancelbutton.Size = new System.Drawing.Size(75, 23);
             this.Cancelbutton.TabIndex = 6;
@@ -68,7 +68,7 @@
             this.Datumvoorkeurenbox.FormattingEnabled = true;
             this.Datumvoorkeurenbox.Location = new System.Drawing.Point(320, 34);
             this.Datumvoorkeurenbox.Name = "Datumvoorkeurenbox";
-            this.Datumvoorkeurenbox.Size = new System.Drawing.Size(175, 94);
+            this.Datumvoorkeurenbox.Size = new System.Drawing.Size(213, 94);
             this.Datumvoorkeurenbox.TabIndex = 4;
             // 
             // label1
@@ -179,7 +179,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(512, 222);
+            this.ClientSize = new System.Drawing.Size(548, 222);
             this.Controls.Add(this.Datehint);
             this.Controls.Add(this.Errorlabel);
             this.Controls.Add(this.label4);

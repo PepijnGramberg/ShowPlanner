@@ -30,4 +30,4 @@ Outcome of the UX review. Each point is one commit; tick it off in that commit.
 - [x] The lists of the main window grow with the window.
 - [x] "Meerdere groepen": make pasting from Excel easy to find and say that the date columns are preferences.
 - [x] Move "Zalen" away from "Opslaan" and "Laden".
-- [ ] An app icon, and the same readable font in every window.
+- [x] An app icon, and the same readable font in every window.

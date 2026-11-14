@@ -12,6 +12,14 @@ namespace Theaterverdeling
     public Theaterverdeling()
     {
       InitializeComponent();
+      Icon = AppIcon.Value;
+      // Columns and tiles are sized in pixels and do not scale with the font, so they are fitted here.
+      foreach (var column in Groupviewer.Columns.Cast<ColumnHeader>().Skip(1))
+      {
+        column.Width = TextRenderer.MeasureText(column.Text, Groupviewer.Font).Width + 14;
+      }
+      GroupviewerResize(this, EventArgs.Empty);
+      Voorstellingviewer.TileSize = new System.Drawing.Size(Voorstellingviewer.ClientSize.Width - 8, Voorstellingviewer.Font.Height * 2 + 6);
     }
 
     private const string NoShowing = "Voeg eerst een voorstelling toe: de datum en de tijd waarop gespeeld wordt.";

@@ -14,6 +14,7 @@ namespace Theaterverdeling
     public Addshowform(Plan plan, Voorstelling editing = null)
     {
       InitializeComponent();
+      Icon = AppIcon.Value;
       _plan = plan;
       Editing = editing;
       // Most school showings are in the morning, and nobody plans one to the second.

@@ -12,6 +12,7 @@ namespace Theaterverdeling
     public Addgroupform(Plan plan, Group editing = null)
     {
       InitializeComponent();
+      Icon = AppIcon.Value;
       _plan = plan;
       Editing = editing;
       // Typing starts in the name, and the size is replaced by what is typed.

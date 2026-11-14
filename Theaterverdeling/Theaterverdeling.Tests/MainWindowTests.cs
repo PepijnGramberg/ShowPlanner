@@ -140,6 +140,43 @@ namespace Theaterverdeling.Tests
     }
 
     [Fact]
+    public void Every_window_shows_the_icon_of_the_app()
+    {
+      OnUiThread(() =>
+      {
+        using var main = new Theaterverdeling();
+        main.Show();
+        AddShowing(main, new DateTime(2026, 3, 14), new DateTime(2026, 3, 14, 10, 30, 0));
+        AddGroup(main, "De Regenboog", 28);
+        Find<Button>(main, "Dividebutton").PerformClick();
+        Find<Button>(main, "Hallsbutton").PerformClick();
+        using var showing = new Addshowform(new Plan());
+        using var group = new Addgroupform(new Plan());
+        using var groups = new Bulkgroupform(new Plan());
+
+        var windows = Application.OpenForms.Cast<Form>().Concat(new Form[] { showing, group, groups }).ToList();
+
+        Assert.Equal(6, windows.Count);
+        Assert.All(windows, window => Assert.Same(AppIcon.Value, window.Icon));
+      });
+    }
+
+    [Fact]
+    public void Column_headers_of_the_group_list_are_not_cut_off()
+    {
+      OnUiThread(() =>
+      {
+        using var main = new Theaterverdeling();
+        main.Show();
+        var groups = Find<ListView>(main, "Groupviewer");
+
+        Assert.All(
+          groups.Columns.Cast<ColumnHeader>(),
+          column => Assert.True(column.Width >= TextRenderer.MeasureText(column.Text, groups.Font).Width, column.Text));
+      });
+    }
+
+    [Fact]
     public void Adding_a_group_without_a_showing_says_what_a_showing_is()
     {
       OnUiThread(() =>

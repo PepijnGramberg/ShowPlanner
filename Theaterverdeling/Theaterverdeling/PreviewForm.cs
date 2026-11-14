@@ -30,12 +30,15 @@ namespace Theaterverdeling
     public PreviewForm(Plan plan)
     {
       InitializeComponent();
+      Icon = AppIcon.Value;
       _plan = plan;
       if (plan.ShowName != "")
       {
         Text = $"Indeling - {plan.ShowName}";
       }
       // What the buttons do is not in their short names.
+      // A line of the group list is as high as its text, with room for the colour marker.
+      Grouplist.ItemHeight = Grouplist.Font.Height + 4;
       _tips = new ToolTip();
       var tips = _tips;
       tips.SetToolTip(Pinbutton, "Een vastgezette groep blijft in deze voorstelling als de groepen opnieuw worden verdeeld.");
