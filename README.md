@@ -93,7 +93,7 @@ Inside `Theaterverdeling/`:
 ### Phase 3: next level
 
 - [x] On-screen preview: "Verdeel groepen" distributes and opens a preview window with the page of each showing, drawn by the same code as the PDF. "Exporteer PDF" in that window writes the files. The preview closes when the plan changes, because it is then out of date.
-- [ ] Preferences per showing (date and time) instead of the morning flag.
+- [x] Decided 2026-11-14: preferences stay as preferred dates plus the "Ochtend" flag. Preferences per showing are not built.
 - [ ] Manual corrections: move a group to another showing, pin a group, then re-run seating.
 - [x] Double-click or Enter on a group or showing opens it for editing. The group dialog already listed the dates as short dates.
 - [ ] Smarter seating: balance showings, avoid splitting a group across the walkway, keep a group in adjacent rows, avoid a single leftover seat at the far edge of the next row.
