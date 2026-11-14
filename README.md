@@ -29,7 +29,8 @@ It is a Windows app (WinForms, .NET 9). The user interface is in Dutch.
 - Front-row groups choose first, then morning groups, then the larger groups.
 - A group goes to the showing on a date it prefers that stays the least full for its size with the group in it. When no preferred date has room, it goes to any other showing. The earlier showing wins a tie.
 - A morning group only goes to a showing before noon.
-- Groups that fit in no showing are reported in one message and listed under "Niet ingedeeld" in the preview.
+- Groups that fit in no showing are reported in one message that says why, and listed under "Niet ingedeeld" in the preview.
+- When the groups have more people than the showings have seats, nothing is distributed and a message gives both numbers.
 
 A change to the plan in the main window closes the preview, because it is out of date. The main window says so and asks to distribute again.
 

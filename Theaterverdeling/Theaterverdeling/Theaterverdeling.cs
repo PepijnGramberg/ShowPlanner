@@ -67,9 +67,12 @@ namespace Theaterverdeling
     // from where it can be exported to PDF.
     private void Divideshows(object sender, EventArgs eventArgs)
     {
-      if (_plan.Groups.Sum(group => group.Personen) > _plan.Shows.Sum(show => show.Zaal.Seats))
+      var problem = _plan.Shows.Count == 0 ? NoShowing
+        : _plan.Groups.Count == 0 ? "Voeg eerst de groepen toe."
+        : _plan.CheckSeats();
+      if (problem != null)
       {
-        Tell("Te weinig stoelen");
+        Tell(problem);
         return;
       }
 
@@ -80,7 +83,7 @@ namespace Theaterverdeling
       Voorstellingviewerupdate();
       if (unplaced.Count > 0)
       {
-        Tell("Niet ingedeeld:" + Environment.NewLine + string.Join(Environment.NewLine, unplaced.Select(group => group.Name)));
+        Tell(_plan.DescribeUnplaced(unplaced));
       }
 
       ClosePreview();

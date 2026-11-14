@@ -88,6 +88,37 @@ namespace Theaterverdeling
     // The groups that are in no showing after the last distribution.
     public List<Group> Unplaced => Groups.Where(group => !Shows.Any(show => show.Groups.Contains(group))).ToList();
 
+    // Says that the groups have more people than the showings have seats, or null when there is room.
+    public string CheckSeats()
+    {
+      var people = Groups.Sum(group => group.Personen);
+      var seats = Shows.Sum(show => show.Zaal.Seats);
+      return people > seats
+        ? $"Er zijn te weinig stoelen: {people} personen en {seats} stoelen. Voeg een voorstelling toe of maak een groep kleiner."
+        : null;
+    }
+
+    // Says why a group is in no showing after the last distribution.
+    public string WhyUnplaced(Group group)
+    {
+      if (group.Morning && !Shows.Any(IsMorning))
+      {
+        return "wil 's ochtends, maar er is geen voorstelling voor 12:00";
+      }
+      return group.Morning
+        ? $"wil 's ochtends, maar geen ochtendvoorstelling heeft nog {group.Personen} stoelen vrij"
+        : $"geen voorstelling heeft nog {group.Personen} stoelen vrij";
+    }
+
+    // The message about the groups that are in no showing: who, why, and what to do about it.
+    public string DescribeUnplaced(IEnumerable<Group> unplaced)
+    {
+      var lines = unplaced.Select(group => $"- {group.Name} ({group.Personen}): {WhyUnplaced(group)}");
+      return "Niet ingedeeld:" + Environment.NewLine
+        + string.Join(Environment.NewLine, lines) + Environment.NewLine + Environment.NewLine
+        + "Deze groepen staan in de indeling onder \"Niet ingedeeld\". Voeg een voorstelling toe, of verplaats ze daar met de hand.";
+    }
+
     // Moves a group to another showing by hand and pins it there, also when its wishes say otherwise.
     // Both showings are seated again. Says why the group cannot move, or null when it did.
     public string Move(Group group, Voorstelling target)
@@ -127,8 +158,13 @@ namespace Theaterverdeling
 
     private static bool Fits(Group group, Voorstelling show)
     {
-      var timeSuits = !group.Morning || show.Time.Hour < 12;
+      var timeSuits = !group.Morning || IsMorning(show);
       return timeSuits && show.Freeseats >= group.Personen;
+    }
+
+    private static bool IsMorning(Voorstelling show)
+    {
+      return show.Time.Hour < 12;
     }
 
     // Says why a group with these details cannot be in the plan, or null when it can.
