@@ -95,10 +95,11 @@ Inside `Theaterverdeling/`:
 - [ ] On-screen preview of each showing before exporting, using the existing screen drawing context.
 - [ ] Preferences per showing (date and time) instead of the morning flag.
 - [ ] Manual corrections: move a group to another showing, pin a group, then re-run seating.
-- [ ] Double-click a group or showing to edit it. Show preferred dates as short dates in the group dialog.
+- [x] Double-click or Enter on a group or showing opens it for editing. The group dialog already listed the dates as short dates.
 - [ ] Smarter seating: balance showings, avoid splitting a group across the walkway, keep a group in adjacent rows, avoid a single leftover seat at the far edge of the next row.
-- [ ] PDF legend: colours repeat after nine groups and the legend holds 50 lines in two columns. Extend both.
-- [ ] Show switched-off rows as closed in the seat map.
+- [x] Group colours for any number of groups: twelve clearly different light colours, and from the thirteenth group on the same colours with one or two dark stripes on each seat. That tells 36 groups in one showing apart.
+- [x] PDF legend that always fits: one row per group with its rows and seats, four per line, and the lines are squeezed together for a full hall.
+- [x] Show switched-off rows and seats that are never used in grey on the seat map.
 - [ ] Choose the hall per showing in the add-showing dialog, once there is more than one hall file. Halls already load by name and the plan file stores the hall per showing.
 - [ ] Hall editor in `EditorForm`, so a second venue needs no code.
 - [ ] Bulk input of groups: a "Meerdere groepen" dialog with a grid to add many groups at once. This replaces the planned CSV or Excel import, because rows copied from Excel or an email can be pasted into the grid.

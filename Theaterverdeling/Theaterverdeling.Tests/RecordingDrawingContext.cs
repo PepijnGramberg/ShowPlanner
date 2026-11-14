@@ -15,6 +15,8 @@ namespace Theaterverdeling.Tests
 
     public float PageWidth => 595;
 
+    public float PageHeight => 842;
+
     public void DrawRectangles(IReadOnlyCollection<RectangleF> rects)
     {
     }

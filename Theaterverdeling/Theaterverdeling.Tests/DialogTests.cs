@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 using Xunit;
 using static Theaterverdeling.Tests.FormDriver;
@@ -169,6 +170,58 @@ namespace Theaterverdeling.Tests
     }
 
     [Fact]
+    public void Double_click_or_Enter_on_a_group_opens_it_for_editing()
+    {
+      OnUiThread(() =>
+      {
+        using var main = new Theaterverdeling();
+        main.Show();
+        AddShowing(main, Day, HalfPastTen);
+        AddGroup(main, "De Regenboog", 28);
+
+        Select(main, "Groupviewer", 0);
+        Activate(main, "Groupviewer");
+
+        var dialog = Application.OpenForms.OfType<Addgroupform>().Single();
+        Assert.Equal("De Regenboog", Find<TextBox>(dialog, "Groepnaam").Text);
+      });
+    }
+
+    [Fact]
+    public void Double_click_or_Enter_on_a_showing_opens_it_for_editing()
+    {
+      OnUiThread(() =>
+      {
+        using var main = new Theaterverdeling();
+        main.Show();
+        AddShowing(main, Day, HalfPastTen);
+
+        Select(main, "Voorstellingviewer", 0);
+        Activate(main, "Voorstellingviewer");
+
+        var dialog = Application.OpenForms.OfType<Addshowform>().Single();
+        Assert.Equal(Day, Find<DateTimePicker>(dialog, "Datumkeuze").Value.Date);
+      });
+    }
+
+    [Fact]
+    public void Group_dialog_lists_the_showing_dates_as_short_dates()
+    {
+      OnUiThread(() =>
+      {
+        using var main = new Theaterverdeling();
+        main.Show();
+        AddShowing(main, Day, HalfPastTen);
+
+        Find<Button>(main, "Addgroupbutton").PerformClick();
+
+        var dialog = Application.OpenForms.OfType<Addgroupform>().Single();
+        var dates = Find<CheckedListBox>(dialog, "Datumvoorkeurenbox");
+        Assert.Equal("14-03-2026", dates.GetItemText(dates.Items[0]));
+      });
+    }
+
+    [Fact]
     public void Edit_buttons_do_nothing_without_a_selection()
     {
       OnUiThread(() =>
@@ -184,6 +237,13 @@ namespace Theaterverdeling.Tests
         Assert.Empty(Application.OpenForms.OfType<Addgroupform>());
         Assert.Empty(Application.OpenForms.OfType<Addshowform>());
       });
+    }
+
+    // What the list does on a double-click or on Enter.
+    private static void Activate(Control main, string listName)
+    {
+      var list = Find<ListView>(main, listName);
+      typeof(ListView).GetMethod("OnItemActivate", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(list, new object[] { EventArgs.Empty });
     }
 
     private static void Select(Control main, string listName, int index)

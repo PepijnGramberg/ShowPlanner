@@ -11,6 +11,7 @@ namespace Theaterverdeling
   public interface IDrawingContext
   {
     float PageWidth { get; }
+    float PageHeight { get; }
     void DrawRectangles(IReadOnlyCollection<RectangleF> rects);
     void FillRectangle(RectangleF rect, Color color);
 
@@ -42,6 +43,7 @@ namespace Theaterverdeling
     }
 
     public float PageWidth => (float)_graphics.PageSize.Width;
+    public float PageHeight => (float)_graphics.PageSize.Height;
 
     public void DrawRectangles(IReadOnlyCollection<RectangleF> rects)
     {
@@ -115,6 +117,7 @@ namespace Theaterverdeling
     }
 
     public float PageWidth => _graphics.VisibleClipBounds.Width;
+    public float PageHeight => _graphics.VisibleClipBounds.Height;
 
     public void DrawRectangles(IReadOnlyCollection<RectangleF> rects)
     {

@@ -74,6 +74,7 @@ namespace Theaterverdeling
             this.Voorstellingviewer.Location = new System.Drawing.Point(12, 112);
             this.Voorstellingviewer.Name = "Voorstellingviewer";
             this.Voorstellingviewer.ShowItemToolTips = true;
+            this.Voorstellingviewer.ItemActivate += new System.EventHandler(this.EditshowClick);
             this.Voorstellingviewer.Size = new System.Drawing.Size(146, 351);
             this.Voorstellingviewer.TabIndex = 3;
             this.Voorstellingviewer.TileSize = new System.Drawing.Size(110, 40);
@@ -84,6 +85,7 @@ namespace Theaterverdeling
             // 
             this.Groupviewer.Location = new System.Drawing.Point(337, 112);
             this.Groupviewer.Name = "Groupviewer";
+            this.Groupviewer.ItemActivate += new System.EventHandler(this.EditgroupClick);
             this.Groupviewer.Size = new System.Drawing.Size(225, 351);
             this.Groupviewer.TabIndex = 4;
             this.Groupviewer.TileSize = new System.Drawing.Size(220, 30);

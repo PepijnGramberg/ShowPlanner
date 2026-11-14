@@ -258,18 +258,78 @@ namespace Theaterverdeling
       Draw(new GdiDrawingContext(gr));
     }
 
-    private static readonly Color[] GroupColors =
+    // How a group looks on the seat map and in the legend. Twelve light colours can be told apart
+    // well; more cannot. So the first twelve groups of a showing get a colour, and later groups get
+    // the same colours again with one dark stripe (groups 13-24) or two (groups 25-36) on each seat.
+    // The hue jumps 150 degrees per group, so groups that are seated after each other, and so sit
+    // next to each other, are far apart in colour.
+    private const int ColourCount = 12;
+
+    // Seats nobody can sit on in a showing: rows that are switched off and seats that are never used.
+    public static readonly Color ClosedSeatColor = Color.FromArgb(205, 205, 205);
+
+    public static Color GroupColor(int index)
     {
-      Color.FromArgb(119, 170, 221),
-      Color.FromArgb(170, 170, 0),
-      Color.FromArgb(238, 136, 102),
-      Color.FromArgb(238, 221, 136),
-      Color.FromArgb(255, 170, 187),
-      Color.FromArgb(153, 221, 255),
-      Color.FromArgb(68, 187, 153),
-      Color.FromArgb(187, 204, 51),
-      Color.FromArgb(153, 153, 153)
-    };
+      var colour = index % ColourCount;
+      return FromHsl(GroupHue(index), 0.9, colour % 2 == 0 ? 0.70 : 0.84);
+    }
+
+    // Number of dark stripes on the seats of the n-th group: 0, 1 or 2.
+    public static int GroupStripes(int index)
+    {
+      return index / ColourCount % 3;
+    }
+
+    // The stripes are a dark shade of the colour of the group.
+    public static Color GroupStripeColor(int index)
+    {
+      return FromHsl(GroupHue(index), 0.9, 0.35);
+    }
+
+    private static double GroupHue(int index)
+    {
+      return (210 + index % ColourCount * 150) % 360;
+    }
+
+    // Fills a seat or legend marker the way the n-th group looks: its colour, with its stripes
+    // along the bottom edge and, for two stripes, also along the top edge.
+    private static void FillForGroup(IDrawingContext ctx, RectangleF rect, int index)
+    {
+      ctx.FillRectangle(rect, GroupColor(index));
+      var stripes = GroupStripes(index);
+      var height = rect.Height * 0.22f;
+      if (stripes >= 1)
+      {
+        ctx.FillRectangle(new RectangleF(rect.X, rect.Bottom - height, rect.Width, height), GroupStripeColor(index));
+      }
+      if (stripes >= 2)
+      {
+        ctx.FillRectangle(new RectangleF(rect.X, rect.Y, rect.Width, height), GroupStripeColor(index));
+      }
+    }
+
+    private static Color FromHsl(double hue, double saturation, double lightness)
+    {
+      var chroma = (1 - Math.Abs(2 * lightness - 1)) * saturation;
+      var sector = hue / 60;
+      var x = chroma * (1 - Math.Abs(sector % 2 - 1));
+      var (r, g, b) = (int)sector switch
+      {
+        0 => (chroma, x, 0.0),
+        1 => (x, chroma, 0.0),
+        2 => (0.0, chroma, x),
+        3 => (0.0, x, chroma),
+        4 => (x, 0.0, chroma),
+        _ => (chroma, 0.0, x)
+      };
+      var m = lightness - chroma / 2;
+      return Color.FromArgb(ToByte(r + m), ToByte(g + m), ToByte(b + m));
+    }
+
+    private static int ToByte(double value)
+    {
+      return (int)Math.Round(Math.Min(Math.Max(value, 0), 1) * 255);
+    }
 
     // Draws the stage label, the seat map coloured per group and the legend with the seats of each group.
     // The space above the stage label is left free for a title.
@@ -313,11 +373,16 @@ namespace Theaterverdeling
 
             for (var j = 0; j < chairs.Count; j++)
             {
-              // Colour the chair of the group that sits on it; free chairs stay white.
-              var groupIndex = groups.IndexOf(chairRow.Seats[j].Group);
+              // Colour the chair of the group that sits on it. Chairs nobody can sit on are grey; free chairs stay white.
+              var seat = chairRow.Seats[j];
+              var groupIndex = groups.IndexOf(seat.Group);
               if (groupIndex >= 0)
               {
-                ctx.FillRectangle(chairs[j], GroupColors[groupIndex % GroupColors.Length]);
+                FillForGroup(ctx, chairs[j], groupIndex);
+              }
+              else if (!chairRow.Available || !seat.Usable)
+              {
+                ctx.FillRectangle(chairs[j], ClosedSeatColor);
               }
               // Seats in the real world are not 0 indexed so we increment the number for display purposes.
               ctx.DrawString((j + 1).ToString(), chairs[j]);
@@ -331,43 +396,54 @@ namespace Theaterverdeling
       DrawLegend(ctx, groups, mapTop + Rows.Count * seatSize + lineHeight, lineHeight);
     }
 
-    // Lists per group the rows and seats it got, in columns of 25 lines below the seat map.
+    // Lists the groups below the seat map: marker, name, then the rows and seats of the group,
+    // four per line. The lines are squeezed together when a full hall would not fit on the page.
     private static void DrawLegend(IDrawingContext ctx, List<Group> groups, float top, float lineHeight)
     {
-      const int linesPerColumn = 25;
+      const int rangesPerLine = 4;
       const float left = 20;
-      const float columnWidth = 285;
-      const float nameWidth = 150;
+      const float bottomMargin = 20;
       const float markerSize = 10;
+      const float nameWidth = 170;
+      const float rangeWidth = 85;
 
-      var line = 0;
+      var lineCount = groups.Sum(group => LegendLines(group, rangesPerLine));
+      if (lineCount == 0)
+      {
+        return;
+      }
+      lineHeight = Math.Min(lineHeight, (ctx.PageHeight - bottomMargin - top) / lineCount);
+      var markerHeight = Math.Min(markerSize, lineHeight - 2);
+      var nameLeft = left + markerSize + 4;
+      var rangesLeft = nameLeft + nameWidth;
+
+      var y = top;
       for (var g = 0; g < groups.Count; g++)
       {
         var group = groups[g];
-        var x = left + (line / linesPerColumn) * columnWidth;
-        var y = top + (line % linesPerColumn) * lineHeight;
-
         if (g > 0)
         {
-          ctx.DrawLine(new PointF(x, y), new PointF(x + columnWidth - 10, y));
+          ctx.DrawLine(new PointF(left, y), new PointF(rangesLeft + rangesPerLine * rangeWidth, y));
         }
-        var marker = new RectangleF(x, y + (lineHeight - markerSize) / 2, markerSize, markerSize);
-        ctx.FillRectangle(marker, GroupColors[g % GroupColors.Length]);
+        var marker = new RectangleF(left, y + (lineHeight - markerHeight) / 2, markerSize, markerHeight);
+        FillForGroup(ctx, marker, g);
         ctx.DrawRectangles(new[] { marker });
-        ctx.DrawText(group.Name, new RectangleF(x + markerSize + 4, y, nameWidth - markerSize - 4, lineHeight));
+        ctx.DrawText(group.Name, new RectangleF(nameLeft, y, nameWidth, lineHeight));
 
-        foreach (var range in group.Seats)
+        for (var i = 0; i < group.Seats.Count; i++)
         {
-          x = left + (line / linesPerColumn) * columnWidth;
-          y = top + (line % linesPerColumn) * lineHeight;
-          ctx.DrawText($"Rij {range.Row} Stoel {range.StartSeat} t/m {range.EndSeat}", new RectangleF(x + nameWidth, y, columnWidth - nameWidth, lineHeight));
-          line++;
+          var range = group.Seats[i];
+          var seats = range.StartSeat == range.EndSeat ? $"{range.StartSeat}" : $"{range.StartSeat}-{range.EndSeat}";
+          var position = new RectangleF(rangesLeft + i % rangesPerLine * rangeWidth, y + i / rangesPerLine * lineHeight, rangeWidth, lineHeight);
+          ctx.DrawText($"rij {range.Row}: {seats}", position);
         }
-        if (group.Seats.Count == 0)
-        {
-          line++;
-        }
+        y += LegendLines(group, rangesPerLine) * lineHeight;
       }
+    }
+
+    private static int LegendLines(Group group, int rangesPerLine)
+    {
+      return Math.Max(1, (group.Seats.Count + rangesPerLine - 1) / rangesPerLine);
     }
 
     // Serialize the Zaal to JSON
