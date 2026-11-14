@@ -45,7 +45,7 @@ A change to the plan in the main window closes the preview, because it is out of
 
 ### Correcting by hand
 
-The preview shows the seat map of the chosen showing, with its groups in a list. A click on a seat or on a list entry chooses a group and outlines its seats.
+The preview shows the seat map of the chosen showing, with its groups in a list. Every group in the list has the colour of its seats. A click on a seat or on a list entry chooses a group and outlines its seats.
 
 - "Verplaats naar" moves the chosen group to another showing with enough free seats, also against its wishes. Both showings are seated again and the group is pinned to its new showing.
 - "Vastzetten" pins a group to its showing and "Losmaken" lets it go. "Verdeel groepen" leaves pinned groups where they are and distributes the rest around them.

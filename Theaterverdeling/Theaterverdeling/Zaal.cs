@@ -603,6 +603,14 @@ namespace Theaterverdeling
       return (210 + index % ColourCount * 150) % 360;
     }
 
+    // Draws the marker that stands for the n-th group of a showing in a legend or a list:
+    // a box that looks like the seats of the group.
+    public static void DrawGroupMarker(IDrawingContext ctx, RectangleF rect, int index)
+    {
+      FillForGroup(ctx, rect, index);
+      ctx.DrawRectangles(new[] { rect });
+    }
+
     // Fills a seat or legend marker the way the n-th group looks: its colour, with its stripes
     // along the bottom edge and, for two stripes, also along the top edge.
     private static void FillForGroup(IDrawingContext ctx, RectangleF rect, int index)
@@ -744,8 +752,7 @@ namespace Theaterverdeling
           ctx.DrawLine(new PointF(left, y), new PointF(rangesLeft + rangesPerLine * rangeWidth, y));
         }
         var marker = new RectangleF(left, y + (lineHeight - markerHeight) / 2, markerSize, markerHeight);
-        FillForGroup(ctx, marker, g);
-        ctx.DrawRectangles(new[] { marker });
+        DrawGroupMarker(ctx, marker, g);
         ctx.DrawText(group.Name, new RectangleF(nameLeft, y, nameWidth, lineHeight));
 
         for (var i = 0; i < group.Seats.Count; i++)

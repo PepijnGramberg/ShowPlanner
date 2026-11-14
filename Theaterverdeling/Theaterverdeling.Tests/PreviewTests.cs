@@ -84,6 +84,24 @@ namespace Theaterverdeling.Tests
     }
 
     [Fact]
+    public void Group_list_of_the_preview_shows_the_colour_of_each_group()
+    {
+      OnUiThread(() =>
+      {
+        using var main = PlanOnScreen();
+        Find<Button>(main, "Dividebutton").PerformClick();
+        var preview = Application.OpenForms.OfType<PreviewForm>().Single();
+        var groups = Find<ListBox>(preview, "Grouplist");
+        Assert.Equal(1, groups.Items.Count);
+
+        using var list = Picture(groups);
+
+        Assert.True(Contains(list, Zaal.GroupColor(0)));
+        Assert.False(Contains(list, Zaal.GroupColor(1)));
+      });
+    }
+
+    [Fact]
     public void Distributing_again_replaces_the_preview()
     {
       OnUiThread(() =>

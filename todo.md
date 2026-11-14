@@ -20,7 +20,7 @@ Outcome of the UX review. Each point is one commit; tick it off in that commit.
 - [x] Give the numbers with "Te weinig stoelen" and the reason with "Niet ingedeeld".
 - [x] Clearer labels: "Uitzetten", "Eisen", "Datum voorkeuren" (nothing ticked means any date), "Vastzetten", the window title "Voorbeeld".
 - [x] Show the whole help text in the preview; it is cut off now.
-- [ ] Show the colour of each group in the group list of the preview.
+- [x] Show the colour of each group in the group list of the preview.
 - [ ] Change single seats only in a mode that is switched on, so a stray click does not free a seat.
 
 ## 3. Friction

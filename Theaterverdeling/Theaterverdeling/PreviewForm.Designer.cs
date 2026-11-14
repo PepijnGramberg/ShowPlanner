@@ -104,6 +104,9 @@ namespace Theaterverdeling
             this.Grouplist.Name = "Grouplist";
             this.Grouplist.Size = new System.Drawing.Size(264, 234);
             this.Grouplist.TabIndex = 3;
+            this.Grouplist.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.Grouplist.ItemHeight = 19;
+            this.Grouplist.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.GrouplistDrawItem);
             this.Grouplist.SelectedIndexChanged += new System.EventHandler(this.GrouplistSelectedIndexChanged);
             //
             // Actionpanel

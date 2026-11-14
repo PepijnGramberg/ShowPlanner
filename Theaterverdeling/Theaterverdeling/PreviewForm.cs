@@ -161,6 +161,29 @@ namespace Theaterverdeling
       }
     }
 
+    // Draws a group in the list with the colour its seats have on the map, so the map can be read
+    // without clicking. Groups without a showing have no seats and no colour.
+    private void GrouplistDrawItem(object sender, DrawItemEventArgs e)
+    {
+      e.DrawBackground();
+      if (e.Index < 0 || e.Index >= Grouplist.Items.Count)
+      {
+        return;
+      }
+      var left = e.Bounds.Left + 3;
+      if (CurrentShow != null)
+      {
+        var size = e.Bounds.Height - 6;
+        var marker = new RectangleF(left, e.Bounds.Top + 3, size, size);
+        Zaal.DrawGroupMarker(new GdiDrawingContext(e.Graphics, e.Bounds.Size), marker, e.Index);
+        left += size + 5;
+      }
+      var room = new Rectangle(left, e.Bounds.Top, e.Bounds.Right - left, e.Bounds.Height);
+      TextRenderer.DrawText(e.Graphics, (string)Grouplist.Items[e.Index], e.Font, room, e.ForeColor,
+        TextFormatFlags.Left | TextFormatFlags.VerticalCenter | TextFormatFlags.EndEllipsis | TextFormatFlags.NoPrefix);
+      e.DrawFocusRectangle();
+    }
+
     // A click on a seat of another group chooses that group. With a group chosen, a click on one of
     // its seats makes that seat free and a click on a free seat gives it to the group, so single
     // seats can be changed by hand. A click next to the seats chooses no group.
