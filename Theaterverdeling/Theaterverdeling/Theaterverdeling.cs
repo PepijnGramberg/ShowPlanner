@@ -50,6 +50,7 @@ namespace Theaterverdeling
         return;
       }
 
+      Hintlabel.Text = "";
       _plan.ShowName = voorstellingnaambox.Text;
       var unplaced = _plan.Distribute();
       Groupviewerupdate();
@@ -243,6 +244,7 @@ namespace Theaterverdeling
       }
       _plan = new Plan();
       ClosePreview();
+      Hintlabel.Text = "";
       Groupviewer.Items.Clear();
       Voorstellingviewer.Items.Clear();
       _filling = true;
@@ -327,6 +329,10 @@ namespace Theaterverdeling
       Groupviewerupdate();
       ClosePreview();
       Updatestoelen();
+      // The file holds the plan, not the seating: that is made again from the plan.
+      Hintlabel.Text = _plan.Shows.Count > 0 && _plan.Groups.Count > 0
+        ? "Het plan is geladen. Klik op \"Verdeel groepen\" om de indeling weer te zien."
+        : "";
     }
 
     private void SaveButton_Click(object sender, EventArgs e)

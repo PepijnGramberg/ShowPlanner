@@ -34,6 +34,26 @@ namespace Theaterverdeling.Tests
     }
 
     [Fact]
+    public void Loading_a_plan_tells_how_to_get_the_seating_back()
+    {
+      OnUiThread(() =>
+      {
+        var path = SavedPlan();
+        using var main = new Theaterverdeling();
+        main.Show();
+
+        main.LoadPlan(path);
+
+        var hint = Find<Label>(main, "Hintlabel");
+        Assert.Equal("Het plan is geladen. Klik op \"Verdeel groepen\" om de indeling weer te zien.", hint.Text);
+
+        Find<Button>(main, "Dividebutton").PerformClick();
+
+        Assert.Equal("", hint.Text);
+      });
+    }
+
+    [Fact]
     public void Loading_a_plan_replaces_what_was_on_screen()
     {
       OnUiThread(() =>

@@ -116,7 +116,7 @@ Halls made in the hall editor are saved in that `Zalen` folder, so keep the fold
 }
 ```
 
-`PinnedTo` is only there for a pinned group, and `Seats` only for a group with hand-chosen seats. The outcome of a distribution is not saved otherwise: press "Verdeel groepen" after loading.
+`PinnedTo` is only there for a pinned group, and `Seats` only for a group with hand-chosen seats. The outcome of a distribution is not saved otherwise: press "Verdeel groepen" after loading. The main window says so after "Laden".
 
 ### Hall file
 
