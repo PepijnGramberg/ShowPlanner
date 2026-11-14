@@ -100,6 +100,30 @@ namespace Theaterverdeling.Tests
     }
 
     [Fact]
+    public void Lists_grow_with_the_window_and_the_buttons_stay_next_to_them()
+    {
+      OnUiThread(() =>
+      {
+        using var main = new Theaterverdeling();
+        main.Show();
+        var groups = Find<ListView>(main, "Groupviewer");
+        var showings = Find<ListView>(main, "Voorstellingviewer");
+        var add = Find<Button>(main, "Addgroupbutton");
+        var divide = Find<Button>(main, "Dividebutton");
+        var before = (groups.Size, showings.Height, Gap: add.Left - groups.Right, Below: divide.Top - groups.Bottom, Name: groups.Columns[0].Width);
+
+        main.Size = new System.Drawing.Size(main.Width + 200, main.Height + 150);
+
+        Assert.Equal(before.Size.Width + 200, groups.Width);
+        Assert.Equal(before.Size.Height + 150, groups.Height);
+        Assert.Equal(before.Height + 150, showings.Height);
+        Assert.Equal(before.Gap, add.Left - groups.Right);
+        Assert.Equal(before.Below, divide.Top - groups.Bottom);
+        Assert.Equal(before.Name + 200, groups.Columns[0].Width);
+      });
+    }
+
+    [Fact]
     public void Adding_a_group_without_a_showing_says_what_a_showing_is()
     {
       OnUiThread(() =>

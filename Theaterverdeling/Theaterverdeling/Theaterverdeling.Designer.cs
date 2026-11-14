@@ -62,6 +62,7 @@ namespace Theaterverdeling
             // 
             // Addgroupbutton
             // 
+            this.Addgroupbutton.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right));
             this.Addgroupbutton.Location = new System.Drawing.Point(631, 92);
             this.Addgroupbutton.Name = "Addgroupbutton";
             this.Addgroupbutton.Size = new System.Drawing.Size(137, 25);
@@ -72,6 +73,7 @@ namespace Theaterverdeling
             // 
             // Voorstellingviewer
             // 
+            this.Voorstellingviewer.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
             this.Voorstellingviewer.Location = new System.Drawing.Point(12, 92);
             this.Voorstellingviewer.Name = "Voorstellingviewer";
             this.Voorstellingviewer.HideSelection = false;
@@ -85,8 +87,10 @@ namespace Theaterverdeling
             // 
             // Groupviewer
             // 
+            this.Groupviewer.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right));
             this.Groupviewer.Location = new System.Drawing.Point(335, 92);
             this.Groupviewer.Name = "Groupviewer";
+            this.Groupviewer.Resize += new System.EventHandler(this.GroupviewerResize);
             this.Groupviewer.ItemActivate += new System.EventHandler(this.EditgroupClick);
             this.Groupviewer.Size = new System.Drawing.Size(290, 380);
             this.Groupviewer.TabIndex = 5;
@@ -110,6 +114,7 @@ namespace Theaterverdeling
             // 
             // Dividebutton
             // 
+            this.Dividebutton.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
             this.Dividebutton.Location = new System.Drawing.Point(12, 524);
             this.Dividebutton.Name = "Dividebutton";
             this.Dividebutton.Size = new System.Drawing.Size(170, 36);
@@ -158,6 +163,7 @@ namespace Theaterverdeling
             // 
             // ResetButton
             // 
+            this.ResetButton.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
             this.ResetButton.Location = new System.Drawing.Point(668, 580);
             this.ResetButton.Name = "ResetButton";
             this.ResetButton.Size = new System.Drawing.Size(100, 25);
@@ -168,6 +174,7 @@ namespace Theaterverdeling
             // 
             // RemoveGroupbut
             // 
+            this.RemoveGroupbut.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right));
             this.RemoveGroupbut.Location = new System.Drawing.Point(631, 185);
             this.RemoveGroupbut.Name = "RemoveGroupbut";
             this.RemoveGroupbut.Size = new System.Drawing.Size(137, 25);
@@ -188,6 +195,7 @@ namespace Theaterverdeling
             // 
             // SaveButton
             // 
+            this.SaveButton.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
             this.SaveButton.Location = new System.Drawing.Point(12, 580);
             this.SaveButton.Name = "SaveButton";
             this.SaveButton.Size = new System.Drawing.Size(100, 25);
@@ -198,6 +206,7 @@ namespace Theaterverdeling
             // 
             // LoadButton
             // 
+            this.LoadButton.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
             this.LoadButton.Location = new System.Drawing.Point(118, 580);
             this.LoadButton.Name = "LoadButton";
             this.LoadButton.Size = new System.Drawing.Size(100, 25);
@@ -218,6 +227,7 @@ namespace Theaterverdeling
             // 
             // Editgroupbutton
             // 
+            this.Editgroupbutton.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right));
             this.Editgroupbutton.Location = new System.Drawing.Point(631, 154);
             this.Editgroupbutton.Name = "Editgroupbutton";
             this.Editgroupbutton.Size = new System.Drawing.Size(137, 25);
@@ -228,6 +238,7 @@ namespace Theaterverdeling
             // 
             // Bulkgroupbutton
             // 
+            this.Bulkgroupbutton.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right));
             this.Bulkgroupbutton.Location = new System.Drawing.Point(631, 123);
             this.Bulkgroupbutton.Name = "Bulkgroupbutton";
             this.Bulkgroupbutton.Size = new System.Drawing.Size(137, 25);
@@ -239,6 +250,7 @@ namespace Theaterverdeling
             // Hallsbutton
             // 
             this.Hallsbutton = new System.Windows.Forms.Button();
+            this.Hallsbutton.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
             this.Hallsbutton.Location = new System.Drawing.Point(224, 580);
             this.Hallsbutton.Name = "Hallsbutton";
             this.Hallsbutton.Size = new System.Drawing.Size(100, 25);
@@ -250,6 +262,7 @@ namespace Theaterverdeling
             // Hintlabel
             // 
             this.Hintlabel = new System.Windows.Forms.Label();
+            this.Hintlabel.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right));
             this.Hintlabel.Location = new System.Drawing.Point(12, 478);
             this.Hintlabel.Name = "Hintlabel";
             this.Hintlabel.Size = new System.Drawing.Size(756, 16);
@@ -260,6 +273,7 @@ namespace Theaterverdeling
             this.Steplabel3 = new System.Windows.Forms.Label();
             this.Steplabel3.AutoSize = true;
             this.Steplabel3.Font = new System.Drawing.Font(System.Windows.Forms.Control.DefaultFont, System.Drawing.FontStyle.Bold);
+            this.Steplabel3.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
             this.Steplabel3.Location = new System.Drawing.Point(12, 504);
             this.Steplabel3.Name = "Steplabel3";
             this.Steplabel3.Size = new System.Drawing.Size(70, 13);
@@ -270,6 +284,7 @@ namespace Theaterverdeling
             // 
             this.Stephint = new System.Windows.Forms.Label();
             this.Stephint.AutoSize = true;
+            this.Stephint.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
             this.Stephint.Location = new System.Drawing.Point(190, 536);
             this.Stephint.Name = "Stephint";
             this.Stephint.Size = new System.Drawing.Size(300, 13);

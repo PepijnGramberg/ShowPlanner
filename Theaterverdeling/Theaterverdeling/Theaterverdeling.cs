@@ -254,6 +254,18 @@ namespace Theaterverdeling
       }
     }
 
+    // The name column takes the room the other columns leave, so a wider window shows longer names.
+    private void GroupviewerResize(object sender, EventArgs e)
+    {
+      // The list gets its size before its columns while the window is built.
+      if (Groupviewer.Columns.Count == 0)
+      {
+        return;
+      }
+      var others = Groupviewer.Columns.Cast<ColumnHeader>().Skip(1).Sum(column => column.Width);
+      Groupviewer.Columns[0].Width = Math.Max(80, Groupviewer.ClientSize.Width - others);
+    }
+
     private void Groupviewerupdate()
     {
       Groupviewer.Items.Clear();
