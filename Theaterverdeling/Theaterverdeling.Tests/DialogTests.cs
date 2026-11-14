@@ -222,6 +222,22 @@ namespace Theaterverdeling.Tests
     }
 
     [Fact]
+    public void New_showing_starts_at_ten_o_clock_without_seconds()
+    {
+      OnUiThread(() =>
+      {
+        using var main = new Theaterverdeling();
+        main.Show();
+
+        Find<Button>(main, "Addshow").PerformClick();
+
+        var time = Find<DateTimePicker>(Application.OpenForms.OfType<Addshowform>().Single(), "Time");
+        Assert.Equal(new TimeSpan(10, 0, 0), time.Value.TimeOfDay);
+        Assert.Equal("10:00", time.Text);
+      });
+    }
+
+    [Fact]
     public void Edit_buttons_do_nothing_without_a_selection()
     {
       OnUiThread(() =>

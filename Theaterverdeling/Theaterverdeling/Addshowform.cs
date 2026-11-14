@@ -16,6 +16,8 @@ namespace Theaterverdeling
       InitializeComponent();
       _plan = plan;
       Editing = editing;
+      // Most school showings are in the morning, and nobody plans one to the second.
+      Time.Value = DateTime.Today.AddHours(10);
       foreach (var name in Zaal.HallNames())
       {
         Hallchoice.Items.Add(name);

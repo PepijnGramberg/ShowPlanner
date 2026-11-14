@@ -86,7 +86,8 @@
             // 
             // Time
             // 
-            this.Time.Format = System.Windows.Forms.DateTimePickerFormat.Time;
+            this.Time.CustomFormat = "HH:mm";
+            this.Time.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.Time.Location = new System.Drawing.Point(229, 25);
             this.Time.Name = "Time";
             this.Time.ShowUpDown = true;
