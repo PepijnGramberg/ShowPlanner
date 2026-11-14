@@ -123,7 +123,9 @@ Open, in this order (decided 2026-11-14):
    - Groups that fit in no showing are listed under "Niet ingedeeld" and can be placed by hand from there.
    - Single seats: with a group chosen, a click on one of its seats makes that seat free and a click on a free seat gives it to the group. The list shows how many people of the group still have no seat.
    - Pins are saved in the plan file. A pin is dropped when its showing is removed or has no room left.
-   - Not done: seats that are changed by hand are not saved in the plan file, and they are lost when the showing is seated again, which happens at "Verdeel groepen" and when a group moves into or out of that showing.
+   - A group whose seats were changed by hand keeps exactly those seats and is pinned to its showing. When the showing is seated again, the other groups are seated around it. The list marks it with "eigen stoelen".
+   - "Automatisch plaatsen" lets go of the hand-chosen seats and seats the group by the rules again. "Losmaken" and moving the group to another showing do the same.
+   - Hand-chosen seats are saved in the plan file, per group as rows with a first and last seat. After loading, "Verdeel groepen" puts them back, as far as the hall still has those seats.
 4. [x] Smarter seating. A group still sits row by row on one side of the hall, in adjacent rows. On top of that:
    - Balance: a group goes to the preferred showing that stays the least full for its size with the group in it. This only differs from "most free seats" when the halls differ in size.
    - Nobody sits alone: when the last row of a group would hold one person, the group leaves a seat free in the row before, so two sit together. A group also does not start on a row with one seat left.

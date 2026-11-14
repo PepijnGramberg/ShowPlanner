@@ -268,22 +268,81 @@ namespace Theaterverdeling
     // - seats that these two rules leave open go to a later group that fits in them completely.
     // When a group finds no place that way, the hall is too full for these rules and all groups
     // are seated the plain way: row by row, using every seat.
+    // A group whose seats were changed by hand keeps exactly those seats; the other groups are
+    // seated around it.
     public virtual void AssignSeats()
     {
-      ClearSeats();
+      var byHand = SeatsByHand();
+      ClearSeats(byHand);
       if (!AssignSeatsWithRules())
       {
-        ClearSeats();
+        ClearSeats(byHand);
         AssignSeatsRowByRow();
       }
     }
 
-    private void ClearSeats()
+    // The seats in this hall of the groups that were seated by hand. A group that has no seat here,
+    // because it came from another showing or the hall changed, is seated like the others again.
+    private Dictionary<Group, List<Seat>> SeatsByHand()
+    {
+      var byHand = new Dictionary<Group, List<Seat>>();
+      foreach (var group in Groups.Where(group => group.HandSeated))
+      {
+        var seats = _rows.OfType<ChairRow>()
+          .Where(row => row.Available)
+          .SelectMany(row => row.Seats)
+          .Where(seat => seat.Usable && seat.Group == group)
+          .ToList();
+        if (seats.Count == 0)
+        {
+          group.HandSeated = false;
+        }
+        else
+        {
+          byHand[group] = seats;
+        }
+      }
+      return byHand;
+    }
+
+    // Makes every seat free, except the seats that were given by hand.
+    private void ClearSeats(Dictionary<Group, List<Seat>> byHand)
     {
       foreach (var seat in _rows.OfType<ChairRow>().SelectMany(row => row.Seats))
       {
         seat.Group = null;
       }
+      foreach (var entry in byHand)
+      {
+        foreach (var seat in entry.Value)
+        {
+          seat.Group = entry.Key;
+        }
+      }
+    }
+
+    // Gives a group the seats in the given rows by hand, as far as those seats exist and are free.
+    // Used to put back the seats that were saved with a plan.
+    public void SeatByHand(Group group, IEnumerable<SeatRange> ranges)
+    {
+      foreach (var range in ranges)
+      {
+        var row = _rows.OfType<ChairRow>().FirstOrDefault(candidate => candidate.RowNr == range.Row && candidate.Available);
+        if (row == null)
+        {
+          continue;
+        }
+        for (var number = Math.Max(range.StartSeat, 1); number <= Math.Min(range.EndSeat, row.Seats.Length); number++)
+        {
+          var seat = row.Seats[number - 1];
+          if (seat.Usable && seat.Group == null)
+          {
+            seat.Group = group;
+          }
+        }
+      }
+      group.Seats = SeatRangesOf(group);
+      group.HandSeated = group.Seats.Count > 0;
     }
 
     // One side of the hall while it is being filled.
@@ -336,7 +395,7 @@ namespace Theaterverdeling
       foreach (var group in Groups)
       {
         List<RowPart> seats = null;
-        if (group.Personen > 0)
+        if (group.Personen > 0 && !group.HandSeated)
         {
           // Seats that were left open come first, when the whole group fits in them.
           var gap = gaps.OrderBy(open => open.Start).FirstOrDefault(open => Take(rows, open.Side, open.Start, open.End, group.Personen) != null);
@@ -457,7 +516,8 @@ namespace Theaterverdeling
       var right = 0;
       foreach (var group in Groups)
       {
-        var remaining = group.Personen;
+        // A group that was seated by hand already has its seats.
+        var remaining = group.HandSeated ? 0 : group.Personen;
         while (remaining > 0 && (left < rows.Count || right < rows.Count))
         {
           // The side that is the fewest rows along gets the group. The right side wins a tie.
@@ -506,6 +566,7 @@ namespace Theaterverdeling
         seat.Group = group;
       }
       group.Seats = SeatRangesOf(group);
+      group.HandSeated = true;
       return null;
     }
 

@@ -249,14 +249,14 @@ namespace Theaterverdeling.Tests
 
         map.ClickAt(Centre(map.SeatBounds(0, 11)));
 
-        Assert.Equal("Het Kompas (30 van 31 geplaatst)", groups.Items[0]);
+        Assert.Equal("Het Kompas (30 van 31 geplaatst) - vast, eigen stoelen", groups.Items[0]);
         Assert.Equal("Kies nog 1 stoel voor Het Kompas.", Find<Label>(preview, "Messagelabel").Text);
         Assert.StartsWith("rij 1: 13-21", Find<Label>(preview, "Seatslabel").Text);
 
         // The last seat of the hall is free.
         map.ClickAt(Centre(map.SeatBounds(19, 33)));
 
-        Assert.Equal("Het Kompas (31)", groups.Items[0]);
+        Assert.Equal("Het Kompas (31) - vast, eigen stoelen", groups.Items[0]);
         Assert.Equal(0, groups.SelectedIndex);
         Assert.Equal("Het Kompas heeft weer 31 stoelen.", Find<Label>(preview, "Messagelabel").Text);
         Assert.EndsWith("rij 19: 34", Find<Label>(preview, "Seatslabel").Text);
@@ -387,6 +387,154 @@ namespace Theaterverdeling.Tests
         Assert.Equal(new[] { "16-03-2026 14:00" }, Items(preview, "Showingslist"));
         Assert.Equal(new[] { "De Vroege Vogel (20) - vast" }, Items(preview, "Grouplist"));
       });
+    }
+
+    [Fact]
+    public void Seats_changed_by_hand_stay_when_the_groups_are_distributed_again()
+    {
+      var monday = new Voorstelling(DateTime.Today.AddHours(10), Hall(Row(1, 10), Row(2, 10)), Monday);
+      var a = Wish("A", 4, Monday);
+      var b = Wish("B", 2, Monday);
+      var plan = Plan(monday).With(a, b);
+      plan.Distribute();
+      MoveSeat(monday, a, fromRow: 0, fromSeat: 6, toRow: 1, toSeat: 7);
+      a.Pinned = true;
+
+      plan.Distribute();
+
+      Assert.Equal("rij 1: 8-10, rij 2: 8-8", Describe(a));
+      // B is seated around A: it now gets the seat that A left.
+      Assert.Equal("rij 1: 6-7", Describe(b));
+    }
+
+    [Fact]
+    public void Group_that_is_no_longer_seated_by_hand_gets_its_seats_from_the_rules_again()
+    {
+      var monday = new Voorstelling(DateTime.Today.AddHours(10), Hall(Row(1, 10), Row(2, 10)), Monday);
+      var a = Wish("A", 4, Monday);
+      var plan = Plan(monday).With(a);
+      plan.Distribute();
+      MoveSeat(monday, a, fromRow: 0, fromSeat: 6, toRow: 1, toSeat: 7);
+
+      a.HandSeated = false;
+      plan.Distribute();
+
+      Assert.Equal("rij 1: 7-10", Describe(a));
+    }
+
+    [Fact]
+    public void Group_that_moves_to_another_showing_leaves_its_hand_chosen_seats_behind()
+    {
+      var monday = new Voorstelling(DateTime.Today.AddHours(10), Hall(Row(1, 10), Row(2, 10)), Monday);
+      var tuesday = Showing(Tuesday, 10, seats: 10);
+      var a = Wish("A", 4, Monday);
+      var plan = Plan(monday, tuesday).With(a);
+      plan.Distribute();
+      MoveSeat(monday, a, fromRow: 0, fromSeat: 6, toRow: 1, toSeat: 7);
+
+      plan.Move(a, tuesday);
+
+      Assert.False(a.HandSeated);
+      Assert.Equal("rij 1: 7-10", Describe(a));
+      Assert.Equal(0, monday.Zaal.SeatsOf(a));
+    }
+
+    [Fact]
+    public void Seats_changed_by_hand_are_saved_with_the_plan()
+    {
+      var plan = new Plan();
+      plan.Shows.Add(new Voorstelling(Monday.AddHours(10), Zaal.Load("Lampegiet"), Monday));
+      var a = Wish("A", 4, Monday);
+      var b = Wish("B", 3, Monday);
+      plan.With(a, b).Distribute();
+      // A sits on seats 18-21 of row 1; its first seat moves to the last seat of the hall.
+      MoveSeat(plan.Shows[0], a, fromRow: 0, fromSeat: 17, toRow: 18, toSeat: 33);
+      a.Pinned = true;
+      var path = Path.Combine(AppContext.BaseDirectory, Guid.NewGuid() + ".json");
+      try
+      {
+        plan.Save(path);
+
+        var loaded = global::Theaterverdeling.Plan.Load(path);
+        loaded.Distribute();
+
+        Assert.Equal("rij 1: 19-21, rij 19: 34-34", Describe(loaded.Groups[0]));
+        Assert.True(loaded.Groups[0].HandSeated);
+        Assert.False(loaded.Groups[1].HandSeated);
+        Assert.Equal(3, loaded.Shows[0].Zaal.SeatsOf(loaded.Groups[1]));
+      }
+      finally
+      {
+        File.Delete(path);
+      }
+    }
+
+    [Fact]
+    public void Automatic_seating_button_lets_go_of_the_seats_chosen_by_hand()
+    {
+      OnUiThread(() =>
+      {
+        var preview = Preview(out _);
+        var map = Find<SeatMapControl>(preview, "Seatmap");
+        var groups = Find<ListBox>(preview, "Grouplist");
+        groups.SelectedIndex = 0;
+        Assert.False(Find<Button>(preview, "Autoseatbutton").Enabled);
+        map.ClickAt(Centre(map.SeatBounds(0, 11)));
+        map.ClickAt(Centre(map.SeatBounds(19, 33)));
+
+        Find<Button>(preview, "Autoseatbutton").PerformClick();
+
+        Assert.Equal("Het Kompas (31) - vast", groups.Items[0]);
+        Assert.StartsWith("rij 1: 12-21", Find<Label>(preview, "Seatslabel").Text);
+        Assert.Null(((ChairRow)map.Hall.Rows[19]).Seats[33].Group);
+      });
+    }
+
+    [Fact]
+    public void Seats_chosen_by_hand_stay_when_the_main_window_distributes_again()
+    {
+      OnUiThread(() =>
+      {
+        var preview = Preview(out var main);
+        var map = Find<SeatMapControl>(preview, "Seatmap");
+        Find<ListBox>(preview, "Grouplist").SelectedIndex = 0;
+        map.ClickAt(Centre(map.SeatBounds(0, 11)));
+        map.ClickAt(Centre(map.SeatBounds(19, 33)));
+
+        Find<Button>(main, "Dividebutton").PerformClick();
+
+        var again = Application.OpenForms.OfType<PreviewForm>().Single();
+        Assert.Equal(new[] { "Het Kompas (31) - vast, eigen stoelen", "De Regenboog (28)" }, Items(again, "Grouplist"));
+        var hall = Find<SeatMapControl>(again, "Seatmap").Hall;
+        Assert.Equal("Het Kompas", ((ChairRow)hall.Rows[19]).Seats[33].Group.Name);
+      });
+    }
+
+    [Fact]
+    public void Letting_a_group_go_also_lets_go_of_its_seats_chosen_by_hand()
+    {
+      OnUiThread(() =>
+      {
+        var preview = Preview(out _);
+        var map = Find<SeatMapControl>(preview, "Seatmap");
+        var groups = Find<ListBox>(preview, "Grouplist");
+        groups.SelectedIndex = 0;
+        map.ClickAt(Centre(map.SeatBounds(0, 11)));
+        map.ClickAt(Centre(map.SeatBounds(19, 33)));
+
+        Find<Button>(preview, "Pinbutton").PerformClick();
+
+        Assert.Equal("Het Kompas (31)", groups.Items[0]);
+        Assert.Null(((ChairRow)map.Hall.Rows[19]).Seats[33].Group);
+      });
+    }
+
+    // Takes one seat of a group away and gives it another one, like two clicks on the seat map do.
+    private static void MoveSeat(Voorstelling show, Group group, int fromRow, int fromSeat, int toRow, int toSeat)
+    {
+      var rows = show.Zaal.Rows.OfType<ChairRow>().ToList();
+      Assert.Null(show.Zaal.ChangeSeat(rows[fromRow], fromSeat, group));
+      Assert.Null(show.Zaal.ChangeSeat(rows[toRow], toSeat, group));
     }
 
     // Two showings in the Lampegiet and two groups that both prefer the first one.

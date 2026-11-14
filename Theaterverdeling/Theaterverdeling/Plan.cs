@@ -66,6 +66,7 @@ namespace Theaterverdeling
         if (chosen == null)
         {
           group.Seats = new List<SeatRange>();
+          group.HandSeated = false;
           unplaced.Add(group);
         }
         else
@@ -268,7 +269,10 @@ namespace Theaterverdeling
           FrontRows = group.Firstrows,
           Morning = group.Morning,
           PreferredDates = group.Datum.Select(date => date.ToString(DateFormat, CultureInfo.InvariantCulture)).ToList(),
-          PinnedTo = group.Pinned && group.Voorstelling != null ? group.Voorstelling.Start.ToString(MomentFormat, CultureInfo.InvariantCulture) : null
+          PinnedTo = group.Pinned && group.Voorstelling != null ? group.Voorstelling.Start.ToString(MomentFormat, CultureInfo.InvariantCulture) : null,
+          Seats = group.Pinned && group.HandSeated && group.Voorstelling != null
+            ? group.Seats.Select(range => new SeatsFile { Row = range.Row, From = range.StartSeat, To = range.EndSeat }).ToList()
+            : null
         }).ToList()
       };
       File.WriteAllText(path, JsonSerializer.Serialize(file, new JsonSerializerOptions { WriteIndented = true }));
@@ -301,6 +305,11 @@ namespace Theaterverdeling
         // A pin on a showing that is not in the file is dropped.
         loaded.Voorstelling = group.PinnedTo == null ? null : plan.Shows.FirstOrDefault(show => show.Start.ToString(MomentFormat, CultureInfo.InvariantCulture) == group.PinnedTo);
         loaded.Pinned = loaded.Voorstelling != null;
+        // Seats that were changed by hand go back to the group, as far as the hall still has them.
+        if (loaded.Pinned && group.Seats != null)
+        {
+          loaded.Voorstelling.Zaal.SeatByHand(loaded, group.Seats.Select(seats => new SeatRange(seats.Row, seats.From, seats.To)));
+        }
         plan.Groups.Add(loaded);
       }
       return plan;
@@ -339,6 +348,18 @@ namespace Theaterverdeling
       // Start of the showing the group is pinned to, or null when it is not pinned.
       [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
       public string PinnedTo { get; set; }
+
+      // The seats of a group that was seated by hand, or null when the seats follow from the distribution.
+      [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+      public List<SeatsFile> Seats { get; set; }
+    }
+
+    // Adjacent seats in one row, with seat numbers starting at 1.
+    private sealed class SeatsFile
+    {
+      public int Row { get; set; }
+      public int From { get; set; }
+      public int To { get; set; }
     }
   }
 }

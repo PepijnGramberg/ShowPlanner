@@ -94,7 +94,7 @@ namespace Theaterverdeling
       var group = CurrentGroup;
       Seatmap.HighlightedGroup = group;
       Seatslabel.Text = group == null
-        ? "Kies een groep in de lijst of op de plattegrond. Daarna maakt een klik op een stoel van de groep die stoel vrij, en geeft een klik op een vrije stoel die aan de groep."
+        ? "Kies een groep in de lijst of op de plattegrond. Daarna maakt een klik op een stoel van de groep die stoel vrij, en geeft een klik op een vrije stoel die aan de groep. De groep houdt die stoelen."
         : string.Join(", ", group.Seats.Select(range => range.StartSeat == range.EndSeat
             ? $"rij {range.Row}: {range.StartSeat}"
             : $"rij {range.Row}: {range.StartSeat}-{range.EndSeat}"));
@@ -116,6 +116,7 @@ namespace Theaterverdeling
       // A group without a showing has nothing to be pinned to.
       Pinbutton.Enabled = group != null && CurrentShow != null;
       Pinbutton.Text = group != null && group.Pinned ? "Losmaken" : "Vastzetten";
+      Autoseatbutton.Enabled = group != null && group.HandSeated;
     }
 
     private void ShowingslistSelectedIndexChanged(object sender, EventArgs e)
@@ -161,6 +162,8 @@ namespace Theaterverdeling
         Messagelabel.Text = problem;
         return;
       }
+      // Seats that are chosen by hand only count in this showing, so the group stays in it.
+      chosen.Pinned = true;
       _filling = true;
       Grouplist.Items[Grouplist.SelectedIndex] = GroupText(chosen);
       _filling = false;
@@ -179,7 +182,8 @@ namespace Theaterverdeling
     {
       var seated = CurrentShow?.Zaal.SeatsOf(group) ?? group.Personen;
       var size = seated == group.Personen ? $"{group.Personen}" : $"{seated} van {group.Personen} geplaatst";
-      return $"{group.Name} ({size}){(group.Pinned ? " - vast" : "")}";
+      var state = group.HandSeated ? " - vast, eigen stoelen" : group.Pinned ? " - vast" : "";
+      return $"{group.Name} ({size}){state}";
     }
 
     // Moves the chosen group to the chosen showing, pins it there and opens that showing.
@@ -212,11 +216,32 @@ namespace Theaterverdeling
         return;
       }
       group.Pinned = !group.Pinned;
+      if (!group.Pinned && group.HandSeated)
+      {
+        // Seats that were chosen by hand belong to this showing, so they go when the group is let go.
+        group.HandSeated = false;
+        CurrentShow.Assignseats();
+      }
       ShowShowing(group);
       Messagelabel.ForeColor = SystemColors.ControlText;
       Messagelabel.Text = group.Pinned
         ? $"{group.Name} blijft bij opnieuw verdelen in deze voorstelling."
         : $"{group.Name} wordt bij opnieuw verdelen weer vrij ingedeeld.";
+    }
+
+    // Lets go of the seats that were chosen by hand: the group is seated by the rules again.
+    private void AutoseatbuttonClick(object sender, EventArgs e)
+    {
+      var group = CurrentGroup;
+      if (group == null || CurrentShow == null)
+      {
+        return;
+      }
+      group.HandSeated = false;
+      CurrentShow.Assignseats();
+      ShowShowing(group);
+      Messagelabel.ForeColor = SystemColors.ControlText;
+      Messagelabel.Text = $"{group.Name} is weer automatisch geplaatst.";
     }
 
     private void ExportbuttonClick(object sender, EventArgs e)

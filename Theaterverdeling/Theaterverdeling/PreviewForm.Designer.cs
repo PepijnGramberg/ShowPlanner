@@ -39,6 +39,7 @@ namespace Theaterverdeling
             this.Movechoice = new System.Windows.Forms.ComboBox();
             this.Movebutton = new System.Windows.Forms.Button();
             this.Pinbutton = new System.Windows.Forms.Button();
+            this.Autoseatbutton = new System.Windows.Forms.Button();
             this.Messagelabel = new System.Windows.Forms.Label();
             this.Exportbutton = new System.Windows.Forms.Button();
             this.Mappanel = new System.Windows.Forms.Panel();
@@ -101,7 +102,7 @@ namespace Theaterverdeling
             this.Grouplist.IntegralHeight = false;
             this.Grouplist.Location = new System.Drawing.Point(8, 180);
             this.Grouplist.Name = "Grouplist";
-            this.Grouplist.Size = new System.Drawing.Size(264, 292);
+            this.Grouplist.Size = new System.Drawing.Size(264, 262);
             this.Grouplist.TabIndex = 3;
             this.Grouplist.SelectedIndexChanged += new System.EventHandler(this.GrouplistSelectedIndexChanged);
             //
@@ -112,12 +113,13 @@ namespace Theaterverdeling
             this.Actionpanel.Controls.Add(this.Movechoice);
             this.Actionpanel.Controls.Add(this.Movebutton);
             this.Actionpanel.Controls.Add(this.Pinbutton);
+            this.Actionpanel.Controls.Add(this.Autoseatbutton);
             this.Actionpanel.Controls.Add(this.Messagelabel);
             this.Actionpanel.Controls.Add(this.Exportbutton);
             this.Actionpanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.Actionpanel.Location = new System.Drawing.Point(8, 472);
+            this.Actionpanel.Location = new System.Drawing.Point(8, 442);
             this.Actionpanel.Name = "Actionpanel";
-            this.Actionpanel.Size = new System.Drawing.Size(264, 220);
+            this.Actionpanel.Size = new System.Drawing.Size(264, 250);
             this.Actionpanel.TabIndex = 4;
             //
             // Seatslabel
@@ -165,16 +167,26 @@ namespace Theaterverdeling
             this.Pinbutton.UseVisualStyleBackColor = true;
             this.Pinbutton.Click += new System.EventHandler(this.PinbuttonClick);
             //
+            // Autoseatbutton
+            // 
+            this.Autoseatbutton.Location = new System.Drawing.Point(0, 131);
+            this.Autoseatbutton.Name = "Autoseatbutton";
+            this.Autoseatbutton.Size = new System.Drawing.Size(264, 25);
+            this.Autoseatbutton.TabIndex = 7;
+            this.Autoseatbutton.Text = "Automatisch plaatsen";
+            this.Autoseatbutton.UseVisualStyleBackColor = true;
+            this.Autoseatbutton.Click += new System.EventHandler(this.AutoseatbuttonClick);
+            // 
             // Messagelabel
             //
-            this.Messagelabel.Location = new System.Drawing.Point(0, 132);
+            this.Messagelabel.Location = new System.Drawing.Point(0, 162);
             this.Messagelabel.Name = "Messagelabel";
             this.Messagelabel.Size = new System.Drawing.Size(264, 46);
             this.Messagelabel.TabIndex = 5;
             //
             // Exportbutton
             //
-            this.Exportbutton.Location = new System.Drawing.Point(0, 186);
+            this.Exportbutton.Location = new System.Drawing.Point(0, 216);
             this.Exportbutton.Name = "Exportbutton";
             this.Exportbutton.Size = new System.Drawing.Size(264, 30);
             this.Exportbutton.TabIndex = 6;
@@ -255,6 +267,7 @@ namespace Theaterverdeling
         private System.Windows.Forms.Button Movebutton;
         private System.Windows.Forms.Button Pinbutton;
         private System.Windows.Forms.Label Messagelabel;
+        private System.Windows.Forms.Button Autoseatbutton;
         private System.Windows.Forms.Button Exportbutton;
         private System.Windows.Forms.Panel Mappanel;
         private SeatMapControl Seatmap;

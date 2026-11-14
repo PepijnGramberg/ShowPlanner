@@ -20,6 +20,10 @@ namespace Theaterverdeling
 
     // True when the group was put in its showing by hand. A distribution leaves it there.
     public bool Pinned;
+
+    // True when seats of the group were changed by hand. The group then keeps exactly the seats it
+    // has when its showing is seated again.
+    public bool HandSeated;
     public List<SeatRange> Seats = new List<SeatRange>();
 
     public Group(string naam, int personen, bool first, bool morning, List<DateTime> datum)
