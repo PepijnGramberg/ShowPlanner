@@ -120,6 +120,7 @@ namespace Theaterverdeling.Tests
       OnUiThread(() =>
       {
         using var main = MainWithTwoShowings();
+        AddGroup(main, "Het Kompas", 31);
         Find<Button>(main, "Dividebutton").PerformClick();
         OpenGrid(main);
         Dialog().PasteText("De Regenboog\t28");
