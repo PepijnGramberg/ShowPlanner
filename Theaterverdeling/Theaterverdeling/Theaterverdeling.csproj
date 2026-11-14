@@ -9,22 +9,6 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
     <ApplicationIcon></ApplicationIcon>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>C:\Users\Peppor\Desktop\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>8</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <PublishWizardCompleted>true</PublishWizardCompleted>
-    <BootstrapperEnabled>false</BootstrapperEnabled>
     <NoWarn>$(NoWarn);CA1416</NoWarn>
   </PropertyGroup>
 
@@ -39,6 +23,7 @@
   <ItemGroup>
     <Content Include="Crountch-One-Piece-Jolly-Roger-Ace.ico" />
     <Content Include="Wet.ico" />
+    <Content Include="Zalen\*.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
