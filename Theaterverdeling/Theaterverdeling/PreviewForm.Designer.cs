@@ -244,7 +244,7 @@ namespace Theaterverdeling
             this.Controls.Add(this.Sidepanel);
             this.MinimumSize = new System.Drawing.Size(700, 520);
             this.Name = "PreviewForm";
-            this.Text = "Voorbeeld";
+            this.Text = "Indeling";
             this.Sidepanel.ResumeLayout(false);
             this.Actionpanel.ResumeLayout(false);
             this.Actionpanel.PerformLayout();

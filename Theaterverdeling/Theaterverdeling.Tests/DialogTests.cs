@@ -279,6 +279,41 @@ namespace Theaterverdeling.Tests
     }
 
     [Fact]
+    public void Group_dialog_says_what_the_wishes_mean()
+    {
+      OnUiThread(() =>
+      {
+        using var main = new Theaterverdeling();
+        main.Show();
+        AddShowing(main, Day, HalfPastTen);
+
+        Find<Button>(main, "Addgroupbutton").PerformClick();
+
+        var dialog = Application.OpenForms.OfType<Addgroupform>().Single();
+        Assert.Equal("Aantal personen", Find<Label>(dialog, "label3").Text);
+        Assert.Equal("Wil vooraan zitten", Find<CheckBox>(dialog, "Firstrowcheck").Text);
+        Assert.Equal("Alleen een ochtendvoorstelling (voor 12:00)", Find<CheckBox>(dialog, "Morningcheck").Text);
+        Assert.Equal("Voorkeur voor datum", Find<Label>(dialog, "label1").Text);
+        Assert.Equal("Niets aangevinkt: elke datum is goed.", Find<Label>(dialog, "Datehint").Text);
+      });
+    }
+
+    [Fact]
+    public void Showing_dialog_says_what_ticking_a_section_does()
+    {
+      OnUiThread(() =>
+      {
+        using var main = new Theaterverdeling();
+        main.Show();
+
+        Find<Button>(main, "Addshow").PerformClick();
+
+        var dialog = Application.OpenForms.OfType<Addshowform>().Single();
+        Assert.Equal("Niet gebruiken in deze voorstelling", Find<Label>(dialog, "Sectionslabel").Text);
+      });
+    }
+
+    [Fact]
     public void Edit_buttons_do_nothing_without_a_selection()
     {
       OnUiThread(() =>

@@ -101,7 +101,7 @@
             this.Sectionslabel.Name = "Sectionslabel";
             this.Sectionslabel.Size = new System.Drawing.Size(52, 13);
             this.Sectionslabel.TabIndex = 12;
-            this.Sectionslabel.Text = "Uitzetten";
+            this.Sectionslabel.Text = "Niet gebruiken in deze voorstelling";
             // 
             // Sectionsoff
             // 

@@ -55,6 +55,19 @@ namespace Theaterverdeling.Tests
     }
 
     [Fact]
+    public void Preview_is_called_the_seating_of_the_show()
+    {
+      OnUiThread(() =>
+      {
+        using var main = PlanOnScreen();
+
+        Find<Button>(main, "Dividebutton").PerformClick();
+
+        Assert.Equal("Indeling - Kikker is jarig", Application.OpenForms.OfType<PreviewForm>().Single().Text);
+      });
+    }
+
+    [Fact]
     public void Distributing_again_replaces_the_preview()
     {
       OnUiThread(() =>

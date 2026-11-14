@@ -86,6 +86,20 @@ namespace Theaterverdeling.Tests
     }
 
     [Fact]
+    public void Buttons_for_the_plan_file_say_that_they_are_about_the_plan()
+    {
+      OnUiThread(() =>
+      {
+        using var main = new Theaterverdeling();
+        main.Show();
+
+        Assert.Equal("Plan opslaan", Find<Button>(main, "SaveButton").Text);
+        Assert.Equal("Plan laden", Find<Button>(main, "LoadButton").Text);
+        Assert.Equal("Nieuw plan", Find<Button>(main, "ResetButton").Text);
+      });
+    }
+
+    [Fact]
     public void Adding_a_group_without_a_showing_says_what_a_showing_is()
     {
       OnUiThread(() =>

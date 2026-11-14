@@ -62,9 +62,9 @@ namespace Theaterverdeling
             // 
             // Addgroupbutton
             // 
-            this.Addgroupbutton.Location = new System.Drawing.Point(616, 92);
+            this.Addgroupbutton.Location = new System.Drawing.Point(631, 92);
             this.Addgroupbutton.Name = "Addgroupbutton";
-            this.Addgroupbutton.Size = new System.Drawing.Size(152, 25);
+            this.Addgroupbutton.Size = new System.Drawing.Size(137, 25);
             this.Addgroupbutton.TabIndex = 6;
             this.Addgroupbutton.Text = "Groep toevoegen";
             this.Addgroupbutton.UseVisualStyleBackColor = true;
@@ -88,12 +88,12 @@ namespace Theaterverdeling
             this.Groupviewer.Location = new System.Drawing.Point(335, 92);
             this.Groupviewer.Name = "Groupviewer";
             this.Groupviewer.ItemActivate += new System.EventHandler(this.EditgroupClick);
-            this.Groupviewer.Size = new System.Drawing.Size(275, 380);
+            this.Groupviewer.Size = new System.Drawing.Size(290, 380);
             this.Groupviewer.TabIndex = 5;
-            this.Groupviewer.Columns.Add("Naam", 140);
+            this.Groupviewer.Columns.Add("Naam", 122);
             this.Groupviewer.Columns.Add("Aantal", 48, System.Windows.Forms.HorizontalAlignment.Right);
             this.Groupviewer.Columns.Add("Vooraan", 56);
-            this.Groupviewer.Columns.Add("Ochtend", 56);
+            this.Groupviewer.Columns.Add("Ochtend", 60);
             this.Groupviewer.FullRowSelect = true;
             this.Groupviewer.HideSelection = false;
             this.Groupviewer.UseCompatibleStateImageBehavior = false;
@@ -162,15 +162,15 @@ namespace Theaterverdeling
             this.ResetButton.Name = "ResetButton";
             this.ResetButton.Size = new System.Drawing.Size(100, 25);
             this.ResetButton.TabIndex = 14;
-            this.ResetButton.Text = "Reset";
+            this.ResetButton.Text = "Nieuw plan";
             this.ResetButton.UseVisualStyleBackColor = true;
             this.ResetButton.Click += new System.EventHandler(this.ResetButtonClick);
             // 
             // RemoveGroupbut
             // 
-            this.RemoveGroupbut.Location = new System.Drawing.Point(616, 185);
+            this.RemoveGroupbut.Location = new System.Drawing.Point(631, 185);
             this.RemoveGroupbut.Name = "RemoveGroupbut";
-            this.RemoveGroupbut.Size = new System.Drawing.Size(152, 25);
+            this.RemoveGroupbut.Size = new System.Drawing.Size(137, 25);
             this.RemoveGroupbut.TabIndex = 9;
             this.RemoveGroupbut.Text = "Verwijder groep";
             this.RemoveGroupbut.UseVisualStyleBackColor = true;
@@ -192,7 +192,7 @@ namespace Theaterverdeling
             this.SaveButton.Name = "SaveButton";
             this.SaveButton.Size = new System.Drawing.Size(100, 25);
             this.SaveButton.TabIndex = 11;
-            this.SaveButton.Text = "Opslaan";
+            this.SaveButton.Text = "Plan opslaan";
             this.SaveButton.UseVisualStyleBackColor = true;
             this.SaveButton.Click += new System.EventHandler(this.SaveButton_Click);
             // 
@@ -202,7 +202,7 @@ namespace Theaterverdeling
             this.LoadButton.Name = "LoadButton";
             this.LoadButton.Size = new System.Drawing.Size(100, 25);
             this.LoadButton.TabIndex = 12;
-            this.LoadButton.Text = "Laden";
+            this.LoadButton.Text = "Plan laden";
             this.LoadButton.UseVisualStyleBackColor = true;
             this.LoadButton.Click += new System.EventHandler(this.LoadButton_Click);
             // 
@@ -218,9 +218,9 @@ namespace Theaterverdeling
             // 
             // Editgroupbutton
             // 
-            this.Editgroupbutton.Location = new System.Drawing.Point(616, 154);
+            this.Editgroupbutton.Location = new System.Drawing.Point(631, 154);
             this.Editgroupbutton.Name = "Editgroupbutton";
-            this.Editgroupbutton.Size = new System.Drawing.Size(152, 25);
+            this.Editgroupbutton.Size = new System.Drawing.Size(137, 25);
             this.Editgroupbutton.TabIndex = 8;
             this.Editgroupbutton.Text = "Wijzig groep";
             this.Editgroupbutton.UseVisualStyleBackColor = true;
@@ -228,9 +228,9 @@ namespace Theaterverdeling
             // 
             // Bulkgroupbutton
             // 
-            this.Bulkgroupbutton.Location = new System.Drawing.Point(616, 123);
+            this.Bulkgroupbutton.Location = new System.Drawing.Point(631, 123);
             this.Bulkgroupbutton.Name = "Bulkgroupbutton";
-            this.Bulkgroupbutton.Size = new System.Drawing.Size(152, 25);
+            this.Bulkgroupbutton.Size = new System.Drawing.Size(137, 25);
             this.Bulkgroupbutton.TabIndex = 7;
             this.Bulkgroupbutton.Text = "Meerdere groepen";
             this.Bulkgroupbutton.UseVisualStyleBackColor = true;

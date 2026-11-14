@@ -28,6 +28,15 @@ namespace Theaterverdeling
     {
       InitializeComponent();
       _plan = plan;
+      if (plan.ShowName != "")
+      {
+        Text = $"Indeling - {plan.ShowName}";
+      }
+      // What the buttons do is not in their short names.
+      var tips = new ToolTip();
+      tips.SetToolTip(Pinbutton, "Een vastgezette groep blijft in deze voorstelling als de groepen opnieuw worden verdeeld.");
+      tips.SetToolTip(Movebutton, "Zet de gekozen groep in de voorstelling hierboven en zet hem daar vast.");
+      tips.SetToolTip(Autoseatbutton, "Laat de zelf gekozen stoelen los: de groep krijgt weer stoelen volgens de regels.");
       ShowPlan(null);
     }
 

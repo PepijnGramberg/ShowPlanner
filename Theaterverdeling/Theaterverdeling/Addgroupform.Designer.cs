@@ -45,7 +45,7 @@
             // 
             // Addgroupbutton
             // 
-            this.Addgroupbutton.Location = new System.Drawing.Point(229, 247);
+            this.Addgroupbutton.Location = new System.Drawing.Point(285, 185);
             this.Addgroupbutton.Name = "Addgroupbutton";
             this.Addgroupbutton.Size = new System.Drawing.Size(131, 23);
             this.Addgroupbutton.TabIndex = 0;
@@ -55,7 +55,7 @@
             // 
             // Cancelbutton
             // 
-            this.Cancelbutton.Location = new System.Drawing.Point(366, 247);
+            this.Cancelbutton.Location = new System.Drawing.Point(422, 185);
             this.Cancelbutton.Name = "Cancelbutton";
             this.Cancelbutton.Size = new System.Drawing.Size(75, 23);
             this.Cancelbutton.TabIndex = 1;
@@ -66,31 +66,31 @@
             // Datumvoorkeurenbox
             // 
             this.Datumvoorkeurenbox.FormattingEnabled = true;
-            this.Datumvoorkeurenbox.Location = new System.Drawing.Point(313, 39);
+            this.Datumvoorkeurenbox.Location = new System.Drawing.Point(320, 34);
             this.Datumvoorkeurenbox.Name = "Datumvoorkeurenbox";
-            this.Datumvoorkeurenbox.Size = new System.Drawing.Size(120, 94);
+            this.Datumvoorkeurenbox.Size = new System.Drawing.Size(175, 94);
             this.Datumvoorkeurenbox.TabIndex = 2;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(310, 9);
+            this.label1.Location = new System.Drawing.Point(320, 15);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(95, 13);
             this.label1.TabIndex = 3;
-            this.label1.Text = "Datum voorkeuren";
+            this.label1.Text = "Voorkeur voor datum";
             // 
             // Groepnaam
             // 
-            this.Groepnaam.Location = new System.Drawing.Point(68, 12);
+            this.Groepnaam.Location = new System.Drawing.Point(120, 12);
             this.Groepnaam.MaxLength = 18;
             this.Groepnaam.Name = "Groepnaam";
-            this.Groepnaam.Size = new System.Drawing.Size(196, 20);
+            this.Groepnaam.Size = new System.Drawing.Size(180, 20);
             this.Groepnaam.TabIndex = 4;
             // 
             // Groepsgrootte
             // 
-            this.Groepsgrootte.Location = new System.Drawing.Point(68, 39);
+            this.Groepsgrootte.Location = new System.Drawing.Point(120, 39);
             this.Groepsgrootte.Maximum = new decimal(new int[] {
             500,
             0,
@@ -102,7 +102,7 @@
             0,
             0});
             this.Groepsgrootte.Name = "Groepsgrootte";
-            this.Groepsgrootte.Size = new System.Drawing.Size(120, 20);
+            this.Groepsgrootte.Size = new System.Drawing.Size(70, 20);
             this.Groepsgrootte.TabIndex = 5;
             this.Groepsgrootte.Value = new decimal(new int[] {
             1,
@@ -113,7 +113,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(27, 15);
+            this.label2.Location = new System.Drawing.Point(15, 15);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(35, 13);
             this.label2.TabIndex = 6;
@@ -122,55 +122,66 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(25, 41);
+            this.label3.Location = new System.Drawing.Point(15, 41);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(37, 13);
             this.label3.TabIndex = 7;
-            this.label3.Text = "Aantal";
+            this.label3.Text = "Aantal personen";
             // 
             // Firstrowcheck
             // 
             this.Firstrowcheck.AutoSize = true;
-            this.Firstrowcheck.Location = new System.Drawing.Point(28, 90);
+            this.Firstrowcheck.Location = new System.Drawing.Point(18, 92);
             this.Firstrowcheck.Name = "Firstrowcheck";
             this.Firstrowcheck.Size = new System.Drawing.Size(66, 17);
             this.Firstrowcheck.TabIndex = 8;
-            this.Firstrowcheck.Text = "Vooraan";
+            this.Firstrowcheck.Text = "Wil vooraan zitten";
             this.Firstrowcheck.UseVisualStyleBackColor = true;
             // 
             // Morningcheck
             // 
             this.Morningcheck.AutoSize = true;
-            this.Morningcheck.Location = new System.Drawing.Point(28, 114);
+            this.Morningcheck.Location = new System.Drawing.Point(18, 116);
             this.Morningcheck.Name = "Morningcheck";
             this.Morningcheck.Size = new System.Drawing.Size(123, 17);
             this.Morningcheck.TabIndex = 9;
-            this.Morningcheck.Text = "Ochtend voorstelling";
+            this.Morningcheck.Text = "Alleen een ochtendvoorstelling (voor 12:00)";
             this.Morningcheck.UseVisualStyleBackColor = true;
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(27, 74);
+            this.label4.Location = new System.Drawing.Point(15, 74);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(33, 13);
             this.label4.TabIndex = 10;
-            this.label4.Text = "Eisen";
+            this.label4.Text = "Wensen";
             // 
             // Errorlabel
             // 
             this.Errorlabel.AutoSize = true;
             this.Errorlabel.ForeColor = System.Drawing.Color.Firebrick;
-            this.Errorlabel.Location = new System.Drawing.Point(25, 222);
+            this.Errorlabel.Location = new System.Drawing.Point(15, 160);
             this.Errorlabel.Name = "Errorlabel";
             this.Errorlabel.Size = new System.Drawing.Size(0, 13);
             this.Errorlabel.TabIndex = 20;
+            // 
+            // Datehint
+            // 
+            this.Datehint = new System.Windows.Forms.Label();
+            this.Datehint.AutoSize = true;
+            this.Datehint.Location = new System.Drawing.Point(320, 134);
+            this.Datehint.Name = "Datehint";
+            this.Datehint.Size = new System.Drawing.Size(180, 13);
+            this.Datehint.TabIndex = 21;
+            this.Datehint.Text = "Niets aangevinkt: elke datum is goed.";
             // 
             // Addgroupform
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(512, 282);
+            this.ClientSize = new System.Drawing.Size(512, 222);
+            this.Controls.Add(this.Datehint);
             this.Controls.Add(this.Errorlabel);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.Morningcheck);
@@ -205,5 +216,6 @@
         private System.Windows.Forms.CheckBox Morningcheck;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label Errorlabel;
+        private System.Windows.Forms.Label Datehint;
     }
 }
