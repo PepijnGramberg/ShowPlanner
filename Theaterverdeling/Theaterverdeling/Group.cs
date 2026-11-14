@@ -17,6 +17,9 @@ namespace Theaterverdeling
     public int Personen { get { return _personen; } }
     public bool Firstrows { get { return _firstrows; } }
     public Voorstelling Voorstelling;
+
+    // True when the group was put in its showing by hand. A distribution leaves it there.
+    public bool Pinned;
     public List<SeatRange> Seats = new List<SeatRange>();
 
     public Group(string naam, int personen, bool first, bool morning, List<DateTime> datum)

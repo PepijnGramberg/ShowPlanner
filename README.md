@@ -116,7 +116,14 @@ Open, in this order (decided 2026-11-14):
    - A changed hall counts for showings that are added afterwards and for plans that are loaded afterwards.
    - The seat map is its own control (`SeatMapControl`, with `SeatMapLayout` for the positions). It is drawn by the PDF drawing code and reports the row, seat and group of a click, so the manual corrections can use it too.
 2. [x] Choose the hall per showing: the showing dialog lists the halls in the halls folder and shows the sections of the chosen hall. A new showing starts in the hall of the showing before it. Once a plan uses more than one hall, the lists of showings name the hall. Not done: the hall name on the PDF page.
-3. [ ] Manual corrections: move a group to another showing, pin a group, then re-run seating.
+3. [x] Manual corrections in the preview window, which now shows the clickable seat map of the chosen showing with its groups in a list.
+   - A click on a seat or on a list entry chooses a group and outlines its seats. A click next to the seats chooses none.
+   - "Verplaats naar" lists the other showings with enough free seats. Moving seats both showings again and pins the group to its new showing, also against its wishes, such as a morning group in an afternoon showing.
+   - "Vastzetten" pins the chosen group and "Losmaken" lets it go. "Verdeel groepen" leaves pinned groups in their showing and distributes the rest around them.
+   - Groups that fit in no showing are listed under "Niet ingedeeld" and can be placed by hand from there.
+   - Single seats: with a group chosen, a click on one of its seats makes that seat free and a click on a free seat gives it to the group. The list shows how many people of the group still have no seat.
+   - Pins are saved in the plan file. A pin is dropped when its showing is removed or has no room left.
+   - Not done: seats that are changed by hand are not saved in the plan file, and they are lost when the showing is seated again, which happens at "Verdeel groepen" and when a group moves into or out of that showing.
 4. [ ] Smarter seating: balance showings, avoid splitting a group across the walkway, keep a group in adjacent rows, avoid a single leftover seat at the far edge of the next row.
 5. [ ] Distribution: single-file self-contained publish instead of an MSI.
 

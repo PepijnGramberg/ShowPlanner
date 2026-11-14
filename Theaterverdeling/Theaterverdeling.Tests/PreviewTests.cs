@@ -29,7 +29,7 @@ namespace Theaterverdeling.Tests
         var showings = Find<ListBox>(preview, "Showingslist");
         Assert.Equal(new[] { "14-03-2026 10:30", "15-03-2026 13:00" }, showings.Items.Cast<string>());
         Assert.Equal(0, showings.SelectedIndex);
-        Assert.NotNull(Find<PictureBox>(preview, "Pagebox").Image);
+        Assert.Equal(550, Find<SeatMapControl>(preview, "Seatmap").Hall.Seats);
       });
     }
 
@@ -41,14 +41,16 @@ namespace Theaterverdeling.Tests
         using var main = PlanOnScreen();
         Find<Button>(main, "Dividebutton").PerformClick();
         var preview = Application.OpenForms.OfType<PreviewForm>().Single();
-        var page = Find<PictureBox>(preview, "Pagebox");
+        var map = Find<SeatMapControl>(preview, "Seatmap");
 
         // The only group sits in the first showing.
-        Assert.True(Contains((Bitmap)page.Image, Zaal.GroupColor(0)));
+        using var first = Picture(map);
+        Assert.True(Contains(first, Zaal.GroupColor(0)));
 
         Find<ListBox>(preview, "Showingslist").SelectedIndex = 1;
 
-        Assert.False(Contains((Bitmap)page.Image, Zaal.GroupColor(0)));
+        using var second = Picture(map);
+        Assert.False(Contains(second, Zaal.GroupColor(0)));
       });
     }
 
@@ -124,6 +126,13 @@ namespace Theaterverdeling.Tests
       AddShowing(main, Saturday, Saturday.AddHours(10).AddMinutes(30));
       AddGroup(main, "De Regenboog", 28);
       return main;
+    }
+
+    private static Bitmap Picture(Control control)
+    {
+      var image = new Bitmap(control.Width, control.Height);
+      control.DrawToBitmap(image, new Rectangle(Point.Empty, control.Size));
+      return image;
     }
 
     private static bool Contains(Bitmap image, Color colour)

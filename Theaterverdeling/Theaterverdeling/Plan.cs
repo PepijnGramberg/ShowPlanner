@@ -14,6 +14,7 @@ namespace Theaterverdeling
     private const int FileVersion = 1;
     private const string DateFormat = "yyyy-MM-dd";
     private const string TimeFormat = "HH:mm:ss";
+    private const string MomentFormat = "yyyy-MM-dd HH:mm";
 
     public string ShowName { get; set; } = "";
     public List<Voorstelling> Shows { get; } = new List<Voorstelling>();
@@ -36,12 +37,21 @@ namespace Theaterverdeling
       }
 
       var unplaced = new List<Group>();
+      // A pinned group keeps its showing, as long as that showing is still there and has room.
+      foreach (var group in InSeatingOrder(Groups.Where(group => group.Pinned)).ToList())
+      {
+        if (Shows.Contains(group.Voorstelling) && group.Voorstelling.Freeseats >= group.Personen)
+        {
+          group.Voorstelling.Groups.Add(group);
+        }
+        else
+        {
+          group.Pinned = false;
+        }
+      }
+
       // Front-row groups choose first, then morning groups, then the larger groups.
-      var inOrder = Groups
-        .OrderByDescending(group => group.Firstrows)
-        .ThenByDescending(group => group.Morning)
-        .ThenByDescending(group => group.Personen);
-      foreach (var group in inOrder)
+      foreach (var group in InSeatingOrder(Groups.Where(group => !group.Pinned)).ToList())
       {
         // The showing with the most free seats comes first. The earlier showing wins a tie.
         var possible = Shows
@@ -65,10 +75,52 @@ namespace Theaterverdeling
 
       foreach (var show in Shows)
       {
+        // Pinned groups were placed first, but they sit in the same order as the others.
+        show.Groups = InSeatingOrder(show.Groups).ToList();
         show.Assignseats();
       }
       Shows.Sort((x, y) => x.Start.CompareTo(y.Start));
       return unplaced;
+    }
+
+    // The groups that are in no showing after the last distribution.
+    public List<Group> Unplaced => Groups.Where(group => !Shows.Any(show => show.Groups.Contains(group))).ToList();
+
+    // Moves a group to another showing by hand and pins it there, also when its wishes say otherwise.
+    // Both showings are seated again. Says why the group cannot move, or null when it did.
+    public string Move(Group group, Voorstelling target)
+    {
+      if (target.Groups.Contains(group))
+      {
+        return "De groep zit al in die voorstelling.";
+      }
+      if (target.Freeseats < group.Personen)
+      {
+        return $"De groep past niet: er zijn {target.Freeseats} stoelen vrij.";
+      }
+      foreach (var show in Shows)
+      {
+        if (show.Groups.Remove(group))
+        {
+          show.Assignseats();
+        }
+      }
+      target.Groups = InSeatingOrder(target.Groups.Append(group)).ToList();
+      group.Voorstelling = target;
+      group.Pinned = true;
+      target.Assignseats();
+      return null;
+    }
+
+    // The order in which groups choose a showing and are seated: front-row groups first, then
+    // morning groups, then the larger groups. Groups that are equal keep the order of the plan.
+    private IEnumerable<Group> InSeatingOrder(IEnumerable<Group> groups)
+    {
+      return groups
+        .OrderByDescending(group => group.Firstrows)
+        .ThenByDescending(group => group.Morning)
+        .ThenByDescending(group => group.Personen)
+        .ThenBy(group => Groups.IndexOf(group));
     }
 
     private static bool Fits(Group group, Voorstelling show)
@@ -155,6 +207,9 @@ namespace Theaterverdeling
         Groups.Add(replacement);
         return;
       }
+      // The changed group stays pinned to its showing.
+      replacement.Voorstelling = old.Voorstelling;
+      replacement.Pinned = old.Pinned;
       Groups[index] = replacement;
     }
 
@@ -169,6 +224,11 @@ namespace Theaterverdeling
         return;
       }
       Shows[index] = replacement;
+      // Groups that are pinned to the showing stay pinned to it.
+      foreach (var group in Groups.Where(group => group.Voorstelling == old))
+      {
+        group.Voorstelling = replacement;
+      }
       if (old.Datum == replacement.Datum || Shows.Any(show => show.Datum == old.Datum))
       {
         return;
@@ -206,7 +266,8 @@ namespace Theaterverdeling
           People = group.Personen,
           FrontRows = group.Firstrows,
           Morning = group.Morning,
-          PreferredDates = group.Datum.Select(date => date.ToString(DateFormat, CultureInfo.InvariantCulture)).ToList()
+          PreferredDates = group.Datum.Select(date => date.ToString(DateFormat, CultureInfo.InvariantCulture)).ToList(),
+          PinnedTo = group.Pinned && group.Voorstelling != null ? group.Voorstelling.Start.ToString(MomentFormat, CultureInfo.InvariantCulture) : null
         }).ToList()
       };
       File.WriteAllText(path, JsonSerializer.Serialize(file, new JsonSerializerOptions { WriteIndented = true }));
@@ -235,7 +296,11 @@ namespace Theaterverdeling
       foreach (var group in file.Groups ?? new List<GroupFile>())
       {
         var dates = (group.PreferredDates ?? new List<string>()).Select(ParseDate).ToList();
-        plan.Groups.Add(new Group(group.Name, group.People, group.FrontRows, group.Morning, dates));
+        var loaded = new Group(group.Name, group.People, group.FrontRows, group.Morning, dates);
+        // A pin on a showing that is not in the file is dropped.
+        loaded.Voorstelling = group.PinnedTo == null ? null : plan.Shows.FirstOrDefault(show => show.Start.ToString(MomentFormat, CultureInfo.InvariantCulture) == group.PinnedTo);
+        loaded.Pinned = loaded.Voorstelling != null;
+        plan.Groups.Add(loaded);
       }
       return plan;
     }
@@ -269,6 +334,10 @@ namespace Theaterverdeling
       public bool FrontRows { get; set; }
       public bool Morning { get; set; }
       public List<string> PreferredDates { get; set; }
+
+      // Start of the showing the group is pinned to, or null when it is not pinned.
+      [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+      public string PinnedTo { get; set; }
     }
   }
 }

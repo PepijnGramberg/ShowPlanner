@@ -288,6 +288,42 @@ namespace Theaterverdeling
       }
     }
 
+    // Number of seats the group has in this hall.
+    public int SeatsOf(Group group)
+    {
+      return _rows.OfType<ChairRow>().SelectMany(row => row.Seats).Count(seat => seat.Group == group);
+    }
+
+    // Changes one seat by hand: a seat of the group becomes free, and a free seat goes to the group
+    // as long as the group has people without a seat. Says why the seat cannot change, or null when it did.
+    // Seats that are changed by hand last until the hall is seated again.
+    public string ChangeSeat(ChairRow row, int seatIndex, Group group)
+    {
+      var seat = row.Seats[seatIndex];
+      if (seat.Group == group)
+      {
+        seat.Group = null;
+      }
+      else if (seat.Group != null)
+      {
+        return $"Deze stoel is van {seat.Group.Name}.";
+      }
+      else if (!row.Available || !seat.Usable)
+      {
+        return "Deze stoel wordt niet gebruikt.";
+      }
+      else if (SeatsOf(group) >= group.Personen)
+      {
+        return $"{group.Name} heeft al {group.Personen} stoelen. Klik eerst op een stoel van de groep om die vrij te maken.";
+      }
+      else
+      {
+        seat.Group = group;
+      }
+      group.Seats = SeatRangesOf(group);
+      return null;
+    }
+
     // How a group looks on the seat map and in the legend. Twelve light colours can be told apart
     // well; more cannot. So the first twelve groups of a showing get a colour, and later groups get
     // the same colours again with one dark stripe (groups 13-24) or two (groups 25-36) on each seat.

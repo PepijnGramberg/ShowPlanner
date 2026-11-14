@@ -19,6 +19,7 @@ namespace Theaterverdeling
 
     private Zaal _hall;
     private int _selectedRow = -1;
+    private Group _highlightedGroup;
 
     public SeatMapControl()
     {
@@ -49,6 +50,18 @@ namespace Theaterverdeling
       set
       {
         _selectedRow = value;
+        Invalidate();
+      }
+    }
+
+    // The group whose seats get a thick outline, or null for none.
+    [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
+    public Group HighlightedGroup
+    {
+      get => _highlightedGroup;
+      set
+      {
+        _highlightedGroup = value;
         Invalidate();
       }
     }
@@ -120,6 +133,25 @@ namespace Theaterverdeling
       }
       var size = new SizeF(MapWidth, MapHeight);
       _hall.DrawMap(new GdiDrawingContext(graphics, size), new RectangleF(PointF.Empty, size));
+
+      if (_highlightedGroup != null)
+      {
+        using var pen = new Pen(Color.Black, 2f);
+        for (var row = 0; row < _hall.Rows.Count; row++)
+        {
+          if (_hall.Rows[row] is ChairRow chairRow)
+          {
+            for (var seat = 0; seat < chairRow.Seats.Length; seat++)
+            {
+              if (chairRow.Seats[seat].Group == _highlightedGroup)
+              {
+                var bounds = layout.SeatBounds(row, seat);
+                graphics.DrawRectangle(pen, bounds.X, bounds.Y, bounds.Width, bounds.Height);
+              }
+            }
+          }
+        }
+      }
     }
 
     // Pixels per point of the map.
