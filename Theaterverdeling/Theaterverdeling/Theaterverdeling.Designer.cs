@@ -124,6 +124,7 @@ namespace Theaterverdeling
             // 
             this.voorstellingnaambox.Location = new System.Drawing.Point(11, 32);
             this.voorstellingnaambox.Name = "voorstellingnaambox";
+            this.voorstellingnaambox.TextChanged += new System.EventHandler(this.ShowNameChanged);
             this.voorstellingnaambox.Size = new System.Drawing.Size(234, 20);
             this.voorstellingnaambox.TabIndex = 8;
             // 

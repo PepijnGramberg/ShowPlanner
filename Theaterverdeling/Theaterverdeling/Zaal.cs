@@ -248,16 +248,6 @@ namespace Theaterverdeling
       }
     }
 
-    public void Draw(XGraphics gr) 
-    {
-      Draw(new XGraphicsDrawingContext(gr));
-    }
-
-    public void Draw(Graphics gr)
-    {
-      Draw(new GdiDrawingContext(gr));
-    }
-
     // How a group looks on the seat map and in the legend. Twelve light colours can be told apart
     // well; more cannot. So the first twelve groups of a showing get a colour, and later groups get
     // the same colours again with one dark stripe (groups 13-24) or two (groups 25-36) on each seat.

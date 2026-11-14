@@ -89,6 +89,21 @@ namespace Theaterverdeling.Tests
     }
 
     [Fact]
+    public void Reset_empties_the_seat_count()
+    {
+      OnUiThread(() =>
+      {
+        using var main = new Theaterverdeling();
+        main.Show();
+        AddShowing(main, new DateTime(2026, 3, 14), new DateTime(2026, 3, 14, 10, 30, 0));
+
+        Find<Button>(main, "ResetButton").PerformClick();
+
+        Assert.Equal("0/0 stoelen", Find<Label>(main, "Seatlabel").Text);
+      });
+    }
+
+    [Fact]
     public void Front_rows_are_not_switched_off_for_the_whole_plan_anymore()
     {
       OnUiThread(() =>

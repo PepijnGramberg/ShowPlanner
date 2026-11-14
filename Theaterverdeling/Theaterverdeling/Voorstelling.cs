@@ -11,6 +11,17 @@ namespace Theaterverdeling
     public DateTime Time { get; set; }
     public Zaal Zaal { get; set; }
     public DateTime Datum { get; set; }
+    // How the showing is named in lists: its date and time, and the sections that are switched off.
+    public string Description
+    {
+      get
+      {
+        var text = $"{Datum.ToShortDateString()} {Time.ToShortTimeString()}";
+        var switchedOff = Zaal.SwitchedOffSections;
+        return switchedOff.Count > 0 ? text + $" ({string.Join(", ", switchedOff)} uit)" : text;
+      }
+    }
+
     // The moment the showing starts: its date with its time of day.
     public DateTime Start => Datum.Date + Time.TimeOfDay;
     public int Freeseats => Zaal.Seats - Groups.Sum(group => group.Personen);

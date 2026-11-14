@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using PdfSharpCore.Pdf;
-using PdfSharpCore.Drawing;
-using System.IO;
 
 
 namespace Theaterverdeling
@@ -18,8 +15,11 @@ namespace Theaterverdeling
 
     private Plan _plan = new Plan();
 
-    // Divides the groups over the showings and writes the seating to PDF files:
-    // one file with all showings and one file per showing.
+    // The preview of the last distribution, while it is open.
+    private PreviewForm _preview;
+
+    // Divides the groups over the showings and shows the outcome in the preview window,
+    // from where it can be exported to PDF.
     private void Divideshows(object sender, EventArgs eventArgs)
     {
       if (_plan.Groups.Sum(group => group.Personen) > _plan.Shows.Sum(show => show.Zaal.Seats))
@@ -28,6 +28,7 @@ namespace Theaterverdeling
         return;
       }
 
+      _plan.ShowName = voorstellingnaambox.Text;
       var unplaced = _plan.Distribute();
       Groupviewerupdate();
       Voorstellingviewerupdate();
@@ -36,57 +37,21 @@ namespace Theaterverdeling
         MessageBox.Show("Niet ingedeeld:" + Environment.NewLine + string.Join(Environment.NewLine, unplaced.Select(group => group.Name)));
       }
 
-      using var pdf = new PdfDocument();
-      var pdfs = new List<PdfDocument>();
+      ClosePreview();
+      _preview = new PreviewForm(_plan);
+      _preview.Show();
+    }
 
-      foreach (var voorstelling in _plan.Shows)
-      {
-        try
-        {
-          var page = new PdfPage();
-          pdf.AddPage(page);
-          using var gr = XGraphics.FromPdfPage(page);
-          voorstelling.Draw(gr, voorstellingnaambox.Text);
+    // The preview shows the last distribution, so it goes away as soon as the plan changes.
+    private void ClosePreview()
+    {
+      _preview?.Close();
+      _preview = null;
+    }
 
-          var pdf1 = new PdfDocument();
-          pdfs.Add(pdf1);
-          var page1 = new PdfPage();
-          pdf1.AddPage(page1);
-          using var gr1 = XGraphics.FromPdfPage(page1);
-          voorstelling.Draw(gr1, voorstellingnaambox.Text);
-        }
-        catch (Exception ex)
-        {
-          MessageBox.Show($"Error creating PDF for show on {voorstelling.Datum.ToShortDateString()}: {ex.Message}");
-        }
-      }
-
-      using (var saveFileDialog = new SaveFileDialog())
-      {
-        saveFileDialog.Filter = "pdf (*.pdf)|*.pdf";
-        if (saveFileDialog.ShowDialog() == DialogResult.OK)
-        {
-          try
-          {
-            pdf.Save(saveFileDialog.FileName);
-
-            for (var i = 0; i < pdfs.Count; i++)
-            {
-              pdfs[i].Save(saveFileDialog.FileName.Substring(0, saveFileDialog.FileName.Length - 4) +
-                           " Voorstelling " + (i + 1) + ".pdf");
-            }
-          }
-          catch (Exception ex)
-          {
-            MessageBox.Show($"Error saving PDF files: {ex.Message}");
-          }
-        }
-      }
-
-      foreach (var pdfDoc in pdfs)
-      {
-        pdfDoc.Dispose();
-      }
+    private void ShowNameChanged(object sender, EventArgs e)
+    {
+      ClosePreview();
     }
 
     #region Shows
@@ -124,6 +89,7 @@ namespace Theaterverdeling
           _plan.Shows.Add(addShowForm.show);
         }
         Voorstellingviewerupdate();
+        ClosePreview();
         Updatestoelen();
       }
     }
@@ -132,14 +98,8 @@ namespace Theaterverdeling
       Voorstellingviewer.Items.Clear();
       foreach (var show in _plan.Shows)
       {
-        var text = $"{show.Datum.ToShortDateString()} {show.Time.ToShortTimeString()}";
-        var switchedOff = show.Zaal.SwitchedOffSections;
-        if (switchedOff.Count > 0)
-        {
-          text += $" ({string.Join(", ", switchedOff)} uit)";
-        }
         // The list is narrow, so the full text is also shown as tooltip.
-        Voorstellingviewer.Items.Add(text).ToolTipText = text;
+        Voorstellingviewer.Items.Add(show.Description).ToolTipText = show.Description;
       }
     }
     #endregion
@@ -189,6 +149,7 @@ namespace Theaterverdeling
           _plan.Groups.Add(addGroupForm.Group);
         }
         Groupviewerupdate();
+        ClosePreview();
         Updatestoelen();
       }
     }
@@ -209,9 +170,11 @@ namespace Theaterverdeling
     private void ResetButtonClick(object sender, EventArgs e)
     {
       _plan = new Plan();
+      ClosePreview();
       Groupviewer.Items.Clear();
       Voorstellingviewer.Items.Clear();
       voorstellingnaambox.Clear();
+      Updatestoelen();
     }
 
     private void RemoveshowbuttonClick(object sender, EventArgs e)
@@ -226,6 +189,7 @@ namespace Theaterverdeling
           indexes[j]--;
       }
       Voorstellingviewerupdate();
+      ClosePreview();
       Updatestoelen();
     }
 
@@ -240,6 +204,7 @@ namespace Theaterverdeling
           indexes[j]--;
       }
       Groupviewerupdate();
+      ClosePreview();
       Updatestoelen();
     }
 
@@ -261,6 +226,7 @@ namespace Theaterverdeling
       _plan = plan;
       Voorstellingviewerupdate();
       Groupviewerupdate();
+      ClosePreview();
       Updatestoelen();
     }
 

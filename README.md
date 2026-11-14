@@ -83,8 +83,8 @@ Inside `Theaterverdeling/`:
 
 ### Phase 2: solid base
 
-- [x] Move distribution and seating out of the form into plain classes without UI dependencies. Distribution lives in `Plan`, seating in `Zaal`. PDF export is still in the form.
-- [x] Tests for hall loading, seat filling, sections, drawing, the plan file, distribution and the add, save and load flows of the forms. Not covered: the PDF export and its file dialog.
+- [x] Move distribution and seating out of the form into plain classes without UI dependencies. Distribution lives in `Plan`, seating in `Zaal`, PDF export in `PdfExport`.
+- [x] Tests for hall loading, seat filling, sections, drawing, the plan file, distribution and the add, save and load flows of the forms. The PDF export is covered too. Not covered: the file dialogs themselves.
 - [x] Replace `.wet` with one versioned JSON plan file: show name, showings with hall and switched-off sections, groups with their wishes. Dates do not depend on language settings. Old `.wet` files are not supported.
 - [x] Input validation, shown as a message in the dialog: empty or duplicate group name, group larger than the largest showing, two showings in the same minute. A group without a preferred date is allowed and means "no preference".
 - [x] Edit an existing group or showing with "Wijzig groep" and "Wijzig voorstelling". When a showing moves to another date and no showing is left on the old date, the groups that preferred the old date follow.
@@ -92,7 +92,7 @@ Inside `Theaterverdeling/`:
 
 ### Phase 3: next level
 
-- [ ] On-screen preview of each showing before exporting, using the existing screen drawing context.
+- [x] On-screen preview: "Verdeel groepen" distributes and opens a preview window with the page of each showing, drawn by the same code as the PDF. "Exporteer PDF" in that window writes the files. The preview closes when the plan changes, because it is then out of date.
 - [ ] Preferences per showing (date and time) instead of the morning flag.
 - [ ] Manual corrections: move a group to another showing, pin a group, then re-run seating.
 - [x] Double-click or Enter on a group or showing opens it for editing. The group dialog already listed the dates as short dates.

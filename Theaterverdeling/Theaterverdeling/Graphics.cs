@@ -105,48 +105,67 @@ namespace Theaterverdeling
     }
   }
 
-  // GDI+ Graphics implementation of IDrawingContext
+  // GDI+ Graphics implementation of IDrawingContext, for drawing a page on screen.
+  // The page is measured in points, like the PDF page; scale the Graphics to fit it where it is shown.
   public class GdiDrawingContext : IDrawingContext
   {
     private readonly Graphics _graphics;
-    private readonly Font _font = new Font("Verdana", 10);
+    private readonly SizeF _pageSize;
+    // Sized in the units of the page, so the text scales along with the Graphics.
+    private readonly Font _font = new Font("Verdana", 10, GraphicsUnit.World);
+    private readonly Pen _pen = new Pen(Color.Black, 0.5f);
 
-    public GdiDrawingContext(Graphics graphics)
+    public GdiDrawingContext(Graphics graphics, SizeF pageSize)
     {
       _graphics = graphics;
+      _pageSize = pageSize;
     }
 
-    public float PageWidth => _graphics.VisibleClipBounds.Width;
-    public float PageHeight => _graphics.VisibleClipBounds.Height;
+    public float PageWidth => _pageSize.Width;
+    public float PageHeight => _pageSize.Height;
 
     public void DrawRectangles(IReadOnlyCollection<RectangleF> rects)
     {
-        _graphics.DrawRectangles(Pens.Black, rects.ToArray());
+      _graphics.DrawRectangles(_pen, rects.ToArray());
     }
 
     public void FillRectangle(RectangleF rect, Color color)
     {
-        _graphics.FillRectangle(new SolidBrush(color),rect);
+      using var brush = new SolidBrush(color);
+      _graphics.FillRectangle(brush, rect);
     }
 
     public void DrawString(string text, RectangleF rect)
     {
-      _graphics.DrawString(text, _font, Brushes.Black, rect, new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
+      using var format = Format(StringAlignment.Center);
+      _graphics.DrawString(text, _font, Brushes.Black, rect, format);
     }
 
     public void DrawText(string text, RectangleF rect)
     {
-      _graphics.DrawString(text, _font, Brushes.Black, rect, new StringFormat { Alignment = StringAlignment.Near, LineAlignment = StringAlignment.Center });
+      using var format = Format(StringAlignment.Near);
+      _graphics.DrawString(text, _font, Brushes.Black, rect, format);
     }
 
     public void DrawLine(PointF from, PointF to)
     {
-      _graphics.DrawLine(Pens.Black, from, to);
+      _graphics.DrawLine(_pen, from, to);
     }
 
     public IDrawingContainer BeginContainer(RectangleF destRect, RectangleF srcRect)
     {
       return new GdiContainer(_graphics, destRect, srcRect);
+    }
+
+    // Text keeps to one line and is not cut off when it is a little wider than its box, like in the PDF.
+    private static StringFormat Format(StringAlignment alignment)
+    {
+      return new StringFormat(StringFormat.GenericTypographic)
+      {
+        Alignment = alignment,
+        LineAlignment = StringAlignment.Center,
+        FormatFlags = StringFormatFlags.NoWrap | StringFormatFlags.NoClip
+      };
     }
 
     private class GdiContainer : IDrawingContainer
