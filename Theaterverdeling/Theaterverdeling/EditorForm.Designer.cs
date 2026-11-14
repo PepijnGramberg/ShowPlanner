@@ -257,6 +257,7 @@
             this.Controls.Add(this.Toppanel);
             this.MinimumSize = new System.Drawing.Size(800, 450);
             this.Name = "EditorForm";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Text = "Zalen";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.EditorFormFormClosing);
             this.Toppanel.ResumeLayout(false);

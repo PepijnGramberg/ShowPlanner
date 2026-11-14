@@ -79,7 +79,7 @@ namespace Theaterverdeling
             this.Voorstellingviewer.HideSelection = false;
             this.Voorstellingviewer.ShowItemToolTips = true;
             this.Voorstellingviewer.ItemActivate += new System.EventHandler(this.EditshowClick);
-            this.Voorstellingviewer.Size = new System.Drawing.Size(160, 380);
+            this.Voorstellingviewer.Size = new System.Drawing.Size(160, 260);
             this.Voorstellingviewer.TabIndex = 1;
             this.Voorstellingviewer.TileSize = new System.Drawing.Size(110, 40);
             this.Voorstellingviewer.UseCompatibleStateImageBehavior = false;
@@ -92,7 +92,7 @@ namespace Theaterverdeling
             this.Groupviewer.Name = "Groupviewer";
             this.Groupviewer.Resize += new System.EventHandler(this.GroupviewerResize);
             this.Groupviewer.ItemActivate += new System.EventHandler(this.EditgroupClick);
-            this.Groupviewer.Size = new System.Drawing.Size(320, 380);
+            this.Groupviewer.Size = new System.Drawing.Size(320, 260);
             this.Groupviewer.TabIndex = 5;
             this.Groupviewer.Columns.Add("Naam", 122);
             this.Groupviewer.Columns.Add("Aantal", 48, System.Windows.Forms.HorizontalAlignment.Right);
@@ -115,7 +115,7 @@ namespace Theaterverdeling
             // Dividebutton
             // 
             this.Dividebutton.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
-            this.Dividebutton.Location = new System.Drawing.Point(12, 524);
+            this.Dividebutton.Location = new System.Drawing.Point(12, 404);
             this.Dividebutton.Name = "Dividebutton";
             this.Dividebutton.Size = new System.Drawing.Size(170, 36);
             this.Dividebutton.TabIndex = 10;
@@ -164,7 +164,7 @@ namespace Theaterverdeling
             // ResetButton
             // 
             this.ResetButton.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
-            this.ResetButton.Location = new System.Drawing.Point(698, 580);
+            this.ResetButton.Location = new System.Drawing.Point(698, 460);
             this.ResetButton.Name = "ResetButton";
             this.ResetButton.Size = new System.Drawing.Size(100, 25);
             this.ResetButton.TabIndex = 14;
@@ -196,7 +196,7 @@ namespace Theaterverdeling
             // SaveButton
             // 
             this.SaveButton.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
-            this.SaveButton.Location = new System.Drawing.Point(12, 580);
+            this.SaveButton.Location = new System.Drawing.Point(12, 460);
             this.SaveButton.Name = "SaveButton";
             this.SaveButton.Size = new System.Drawing.Size(100, 25);
             this.SaveButton.TabIndex = 11;
@@ -207,7 +207,7 @@ namespace Theaterverdeling
             // LoadButton
             // 
             this.LoadButton.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
-            this.LoadButton.Location = new System.Drawing.Point(118, 580);
+            this.LoadButton.Location = new System.Drawing.Point(118, 460);
             this.LoadButton.Name = "LoadButton";
             this.LoadButton.Size = new System.Drawing.Size(100, 25);
             this.LoadButton.TabIndex = 12;
@@ -263,7 +263,7 @@ namespace Theaterverdeling
             // 
             this.Hintlabel = new System.Windows.Forms.Label();
             this.Hintlabel.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right));
-            this.Hintlabel.Location = new System.Drawing.Point(12, 478);
+            this.Hintlabel.Location = new System.Drawing.Point(12, 358);
             this.Hintlabel.Name = "Hintlabel";
             this.Hintlabel.Size = new System.Drawing.Size(786, 16);
             this.Hintlabel.TabIndex = 21;
@@ -274,7 +274,7 @@ namespace Theaterverdeling
             this.Steplabel3.AutoSize = true;
             this.Steplabel3.Font = new System.Drawing.Font(System.Windows.Forms.Control.DefaultFont, System.Drawing.FontStyle.Bold);
             this.Steplabel3.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
-            this.Steplabel3.Location = new System.Drawing.Point(12, 504);
+            this.Steplabel3.Location = new System.Drawing.Point(12, 384);
             this.Steplabel3.Name = "Steplabel3";
             this.Steplabel3.Size = new System.Drawing.Size(70, 13);
             this.Steplabel3.TabIndex = 22;
@@ -285,7 +285,7 @@ namespace Theaterverdeling
             this.Stephint = new System.Windows.Forms.Label();
             this.Stephint.AutoSize = true;
             this.Stephint.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
-            this.Stephint.Location = new System.Drawing.Point(190, 536);
+            this.Stephint.Location = new System.Drawing.Point(190, 416);
             this.Stephint.Name = "Stephint";
             this.Stephint.Size = new System.Drawing.Size(300, 13);
             this.Stephint.TabIndex = 23;
@@ -295,7 +295,7 @@ namespace Theaterverdeling
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(810, 617);
+            this.ClientSize = new System.Drawing.Size(810, 497);
             this.Controls.Add(this.Steplabel3);
             this.Controls.Add(this.Stephint);
             this.Controls.Add(this.Hintlabel);
@@ -318,7 +318,7 @@ namespace Theaterverdeling
             this.Controls.Add(this.Voorstellingviewer);
             this.Controls.Add(this.Addgroupbutton);
             this.Controls.Add(this.Addshow);
-            this.MinimumSize = new System.Drawing.Size(826, 656);
+            this.MinimumSize = new System.Drawing.Size(826, 536);
             this.Name = "Theaterverdeling";
             this.Text = "Groepsindeling";
             this.ResumeLayout(false);

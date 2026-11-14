@@ -5,7 +5,7 @@ One show has several showings. School groups are distributed over the showings a
 then seated in the hall. The result is a PDF per showing with a colour-coded seat map
 and the rows and seats of every group.
 
-It is a Windows app (WinForms, .NET 9). The user interface is in Dutch. Every window uses one font, Segoe UI 10, set in `Program.cs`.
+It is a Windows app (WinForms, .NET 9). The user interface is in Dutch. Every window uses one font, Segoe UI 10, set in `Program.cs`. The main window fits a laptop screen of 1366 by 768; the preview and the hall editor open maximised.
 
 ## What it does
 

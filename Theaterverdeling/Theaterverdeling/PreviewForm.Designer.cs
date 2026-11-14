@@ -82,7 +82,7 @@ namespace Theaterverdeling
             this.Showingslist.IntegralHeight = false;
             this.Showingslist.Location = new System.Drawing.Point(8, 26);
             this.Showingslist.Name = "Showingslist";
-            this.Showingslist.Size = new System.Drawing.Size(264, 130);
+            this.Showingslist.Size = new System.Drawing.Size(264, 100);
             this.Showingslist.TabIndex = 1;
             this.Showingslist.SelectedIndexChanged += new System.EventHandler(this.ShowingslistSelectedIndexChanged);
             //
@@ -258,8 +258,9 @@ namespace Theaterverdeling
             this.ClientSize = new System.Drawing.Size(1100, 700);
             this.Controls.Add(this.Mappanel);
             this.Controls.Add(this.Sidepanel);
-            this.MinimumSize = new System.Drawing.Size(700, 620);
+            this.MinimumSize = new System.Drawing.Size(700, 540);
             this.Name = "PreviewForm";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Text = "Indeling";
             this.Sidepanel.ResumeLayout(false);
             this.Actionpanel.ResumeLayout(false);

@@ -177,6 +177,29 @@ namespace Theaterverdeling.Tests
     }
 
     [Fact]
+    public void Windows_fit_on_the_screen_of_a_small_laptop()
+    {
+      OnUiThread(() =>
+      {
+        using var main = new Theaterverdeling();
+        main.Show();
+        AddShowing(main, new DateTime(2026, 3, 14), new DateTime(2026, 3, 14, 10, 30, 0));
+        AddGroup(main, "De Regenboog", 28);
+        Find<Button>(main, "Dividebutton").PerformClick();
+        Find<Button>(main, "Hallsbutton").PerformClick();
+
+        // A laptop screen of 1366 by 768 has about 728 pixels above the taskbar. The app runs with a
+        // font that is a size larger than the one in this test, which makes its windows 17/15 as high.
+        Assert.True(main.Height * 17 / 15 <= 728, $"The main window is {main.Height} pixels high.");
+        Assert.True(main.MinimumSize.Height <= main.Height);
+        // The windows with a seat map take the whole screen, whatever its size.
+        Assert.Equal(FormWindowState.Maximized, Application.OpenForms.OfType<PreviewForm>().Single().WindowState);
+        Assert.Equal(FormWindowState.Maximized, Application.OpenForms.OfType<EditorForm>().Single().WindowState);
+        Assert.True(Application.OpenForms.OfType<PreviewForm>().Single().MinimumSize.Height * 17 / 15 <= 728);
+      });
+    }
+
+    [Fact]
     public void Adding_a_group_without_a_showing_says_what_a_showing_is()
     {
       OnUiThread(() =>
