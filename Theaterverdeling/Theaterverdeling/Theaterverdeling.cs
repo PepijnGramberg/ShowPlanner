@@ -89,6 +89,12 @@ namespace Theaterverdeling
       var unplaced = _plan.Distribute();
       Groupviewerupdate();
       Voorstellingviewerupdate();
+      if (_plan.Unpinned.Count > 0)
+      {
+        // The pins are part of the plan file.
+        _changed = true;
+        Tell(_plan.DescribeUnpinned());
+      }
       if (unplaced.Count > 0)
       {
         Tell(_plan.DescribeUnplaced(unplaced));
@@ -131,11 +137,26 @@ namespace Theaterverdeling
     // Closing the window with changes that are not saved asks first.
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
-      if (e.CloseReason == CloseReason.UserClosing && !MayDiscard("Toch afsluiten?"))
+      if (e.CloseReason == CloseReason.UserClosing && !(MayDiscard("Toch afsluiten?") && CloseHallEditors()))
       {
         e.Cancel = true;
       }
       base.OnFormClosing(e);
+    }
+
+    // Closes the hall editors, which ask first when their hall is not saved. The app ends with this
+    // window, so they would not get to ask otherwise. False when an editor stays open.
+    private static bool CloseHallEditors()
+    {
+      foreach (var editor in Application.OpenForms.OfType<EditorForm>().ToList())
+      {
+        editor.Close();
+        if (!editor.IsDisposed)
+        {
+          return false;
+        }
+      }
+      return true;
     }
 
     #region Shows

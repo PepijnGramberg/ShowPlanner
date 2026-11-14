@@ -128,6 +128,51 @@ namespace Theaterverdeling.Tests
       });
     }
 
+    [Fact]
+    public void Group_that_loses_its_pin_is_named()
+    {
+      var plan = new Plan();
+      plan.Shows.Add(Showing(11, 10));
+      var group = Group("De Regenboog", 5);
+      group.Voorstelling = Showing(10, 10);
+      group.Pinned = true;
+      plan.Groups.Add(group);
+
+      plan.Distribute();
+
+      Assert.Equal(
+        "Niet meer vastgezet, want de voorstelling is weg of heeft geen plaats meer: De Regenboog. Deze groepen zijn opnieuw ingedeeld.",
+        plan.DescribeUnpinned());
+    }
+
+    [Fact]
+    public void Distributing_tells_which_groups_lost_their_pin()
+    {
+      OnUiThread(() =>
+      {
+        using var main = new Theaterverdeling();
+        main.Show();
+        var told = new List<string>();
+        main.Tell = told.Add;
+        main.Confirm = question => true;
+        AddShowing(main, Monday, Monday.AddHours(10));
+        AddGroup(main, "De Regenboog", 28);
+        Find<Button>(main, "Dividebutton").PerformClick();
+        var preview = Application.OpenForms.OfType<PreviewForm>().Single();
+        Find<ListBox>(preview, "Grouplist").SelectedIndex = 0;
+        Find<Button>(preview, "Pinbutton").PerformClick();
+
+        Find<ListView>(main, "Voorstellingviewer").Items[0].Selected = true;
+        Find<Button>(main, "Removeshowbutton").PerformClick();
+        AddShowing(main, Monday, Monday.AddHours(11));
+        Find<Button>(main, "Dividebutton").PerformClick();
+
+        Assert.Equal(
+          new[] { "Niet meer vastgezet, want de voorstelling is weg of heeft geen plaats meer: De Regenboog. Deze groepen zijn opnieuw ingedeeld." },
+          told);
+      });
+    }
+
     private static Voorstelling Showing(int hour, int seats)
     {
       return new Voorstelling(DateTime.Today.AddHours(hour), Hall(Row(1, seats)), Monday);

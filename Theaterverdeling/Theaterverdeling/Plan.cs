@@ -40,6 +40,7 @@ namespace Theaterverdeling
       }
 
       var unplaced = new List<Group>();
+      Unpinned = new List<Group>();
       // A pinned group keeps its showing, as long as that showing is still there and has room.
       foreach (var group in InSeatingOrder(Groups.Where(group => group.Pinned)).ToList())
       {
@@ -50,6 +51,7 @@ namespace Theaterverdeling
         else
         {
           group.Pinned = false;
+          Unpinned.Add(group);
         }
       }
 
@@ -86,6 +88,17 @@ namespace Theaterverdeling
       }
       Shows.Sort((x, y) => x.Start.CompareTo(y.Start));
       return unplaced;
+    }
+
+    // The groups that lost their pin in the last distribution, because their showing is gone or has no room.
+    public List<Group> Unpinned { get; private set; } = new List<Group>();
+
+    // The message about the groups that lost their pin.
+    public string DescribeUnpinned()
+    {
+      return "Niet meer vastgezet, want de voorstelling is weg of heeft geen plaats meer: "
+        + string.Join(", ", Unpinned.Select(group => group.Name))
+        + ". Deze groepen zijn opnieuw ingedeeld.";
     }
 
     // The groups that are in no showing after the last distribution.
