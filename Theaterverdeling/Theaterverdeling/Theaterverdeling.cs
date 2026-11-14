@@ -254,9 +254,15 @@ namespace Theaterverdeling
 
     private void RemoveshowbuttonClick(object sender, EventArgs e)
     {
-
       var indexes = new int[Voorstellingviewer.SelectedIndices.Count];
       Voorstellingviewer.SelectedIndices.CopyTo(indexes, 0);
+      var question = indexes.Length == 1
+        ? $"De voorstelling van {_plan.Describe(_plan.Shows[indexes[0]])} verwijderen?"
+        : $"{indexes.Length} voorstellingen verwijderen?";
+      if (indexes.Length == 0 || !Confirm(question))
+      {
+        return;
+      }
       for (var i = 0; i < indexes.Length; i++)
       {
         _plan.Shows.RemoveAt(indexes[i]);
@@ -272,6 +278,13 @@ namespace Theaterverdeling
     {
       var indexes = new int[Groupviewer.SelectedIndices.Count];
       Groupviewer.SelectedIndices.CopyTo(indexes, 0);
+      var question = indexes.Length == 1
+        ? $"De groep \"{_plan.Groups[indexes[0]].Name}\" verwijderen?"
+        : $"{indexes.Length} groepen verwijderen?";
+      if (indexes.Length == 0 || !Confirm(question))
+      {
+        return;
+      }
       for (var i = 0; i < indexes.Length; i++)
       {
         _plan.Groups.RemoveAt(indexes[i]);

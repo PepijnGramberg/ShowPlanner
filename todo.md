@@ -5,7 +5,7 @@ Outcome of the UX review. Each point is one commit; tick it off in that commit.
 ## 1. Loses work or blocks the user
 
 - [x] Ask before the plan is lost: "Reset", "Laden" and closing the main window with changes that are not saved.
-- [ ] Ask before a group or a showing is removed.
+- [x] Ask before a group or a showing is removed.
 - [ ] A new showing starts at 10:00 and the time has no seconds.
 - [ ] After "Laden", tell the user to press "Verdeel groepen" to see the seating again.
 - [ ] Say why the preview closed when the plan changes in the main window.
