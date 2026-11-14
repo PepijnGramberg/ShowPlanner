@@ -17,7 +17,7 @@ It is a Windows app (WinForms, .NET 9). The user interface is in Dutch.
 - A group has a name, a size, preferred dates, a "Vooraan" wish for the front rows and an "Ochtend" wish for a showing before noon. No preferred date means any date is fine.
 - Groups are added one at a time, or many at once in a grid with "Meerdere groepen". Rows copied from a spreadsheet can be pasted into that grid: name and size, separated by a tab or a semicolon.
 - While a dialog for a showing or for groups is open, the main window waits. Enter accepts a dialog and Esc cancels it.
-- The dialogs check the input and show the problem as a message: empty or duplicate group name, a group larger than the largest showing, two showings at the same moment.
+- The dialogs check the input and show the problem as a message: empty or duplicate group name, a group name of more than 25 characters, a group larger than the largest showing, two showings at the same moment.
 - "Plan opslaan" and "Plan laden" save and load the whole plan as one JSON file.
 - Removing a group or a showing asks first.
 - "Nieuw plan", "Plan laden" and closing the window ask first when the plan has changes that are not saved.

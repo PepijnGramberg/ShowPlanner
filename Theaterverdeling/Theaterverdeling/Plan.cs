@@ -16,6 +16,9 @@ namespace Theaterverdeling
     private const string TimeFormat = "HH:mm:ss";
     private const string MomentFormat = "yyyy-MM-dd HH:mm";
 
+    // A longer name does not fit in its column of the PDF legend.
+    public const int MaxGroupNameLength = 25;
+
     public string ShowName { get; set; } = "";
     public List<Voorstelling> Shows { get; } = new List<Voorstelling>();
     public List<Group> Groups { get; } = new List<Group>();
@@ -175,6 +178,10 @@ namespace Theaterverdeling
       if (trimmed == "")
       {
         return "Vul een groepsnaam in.";
+      }
+      if (trimmed.Length > MaxGroupNameLength)
+      {
+        return $"De groepsnaam is te lang: hoogstens {MaxGroupNameLength} tekens, anders past hij niet in de PDF.";
       }
       if (Groups.Any(group => group != replacing && string.Equals(group.Name.Trim(), trimmed, StringComparison.CurrentCultureIgnoreCase)))
       {

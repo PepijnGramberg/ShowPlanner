@@ -83,7 +83,6 @@
             // Groepnaam
             // 
             this.Groepnaam.Location = new System.Drawing.Point(120, 12);
-            this.Groepnaam.MaxLength = 18;
             this.Groepnaam.Name = "Groepnaam";
             this.Groepnaam.Size = new System.Drawing.Size(180, 20);
             this.Groepnaam.TabIndex = 0;
