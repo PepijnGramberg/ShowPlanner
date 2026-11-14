@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Drawing;
 using PdfSharpCore.Drawing;
 
 namespace Theaterverdeling
@@ -26,10 +27,19 @@ namespace Theaterverdeling
       Zaal.AssignSeats();
     }
 
-    internal void Draw(XGraphics gr)
+    // Draws one page for this showing: show name, date and time, then the hall with its legend.
+    public void Draw(IDrawingContext ctx, string showName)
     {
-      //todo data tijd drawing
-      Zaal.Draw(gr);
+      const float titleTop = 20;
+      const float lineHeight = 16;
+      ctx.DrawString(showName, new RectangleF(0, titleTop, ctx.PageWidth, lineHeight));
+      ctx.DrawString($"{Datum.ToShortDateString()} {Time.ToShortTimeString()}", new RectangleF(0, titleTop + lineHeight, ctx.PageWidth, lineHeight));
+      Zaal.Draw(ctx);
+    }
+
+    public void Draw(XGraphics gr, string showName)
+    {
+      Draw(new XGraphicsDrawingContext(gr), showName);
     }
   }
 }

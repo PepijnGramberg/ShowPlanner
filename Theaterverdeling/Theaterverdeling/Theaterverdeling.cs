@@ -89,21 +89,14 @@ namespace Theaterverdeling
             var page = new PdfPage();
             pdf.AddPage(page);
             using var gr = XGraphics.FromPdfPage(page);
-            var format = new XStringFormat { Alignment = XStringAlignment.Center };
-            gr.DrawString(voorstellingnaambox.Text + "\n" + voorstelling.Datum.ToShortDateString() + " " + voorstelling.Time.ToShortTimeString(),
-                new XFont("Verdana", 12), XBrushes.Black, new XRect(10, 25, 500, 200), format);
-
-            voorstelling.Draw(gr);
+            voorstelling.Draw(gr, voorstellingnaambox.Text);
 
             var pdf1 = new PdfDocument();
             pdfs.Add(pdf1);
             var page1 = new PdfPage();
             pdf1.AddPage(page1);
             using var gr1 = XGraphics.FromPdfPage(page1);
-            gr1.DrawString(voorstellingnaambox.Text + "\n" + voorstelling.Datum.ToShortDateString() + " " + voorstelling.Time.ToShortTimeString(),
-                new XFont("Verdana", 12), XBrushes.Black, new XRect(10, 25, 500, 200), format);
-
-            voorstelling.Draw(gr1);
+            voorstelling.Draw(gr1, voorstellingnaambox.Text);
           }
           catch (Exception ex)
           {

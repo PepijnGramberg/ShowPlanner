@@ -14,7 +14,13 @@ namespace Theaterverdeling
     void DrawRectangles(IReadOnlyCollection<RectangleF> rects);
     void FillRectangle(RectangleF rect, Color color);
 
+    // Centred in the rectangle.
     void DrawString(string text, RectangleF rect);
+
+    // Left aligned and vertically centred in the rectangle.
+    void DrawText(string text, RectangleF rect);
+
+    void DrawLine(PointF from, PointF to);
     IDrawingContainer BeginContainer(RectangleF destRect, RectangleF srcRect);
   }
 
@@ -28,7 +34,7 @@ namespace Theaterverdeling
   public class XGraphicsDrawingContext : IDrawingContext
   {
     private readonly XGraphics _graphics;
-    private readonly XFont _font = new XFont("Verdana", 11);
+    private readonly XFont _font = new XFont("Verdana", 10);
 
     public XGraphicsDrawingContext(XGraphics graphics)
     {
@@ -53,6 +59,18 @@ namespace Theaterverdeling
       _graphics.DrawString(text, _font, XBrushes.Black,
                           new XRect(rect.X, rect.Y, rect.Width, rect.Height),
                           XStringFormats.Center);
+    }
+
+    public void DrawText(string text, RectangleF rect)
+    {
+      _graphics.DrawString(text, _font, XBrushes.Black,
+                          new XRect(rect.X, rect.Y, rect.Width, rect.Height),
+                          XStringFormats.CenterLeft);
+    }
+
+    public void DrawLine(PointF from, PointF to)
+    {
+      _graphics.DrawLine(XPens.Black, from.X, from.Y, to.X, to.Y);
     }
 
     public IDrawingContainer BeginContainer(RectangleF destRect, RectangleF srcRect)
@@ -89,6 +107,7 @@ namespace Theaterverdeling
   public class GdiDrawingContext : IDrawingContext
   {
     private readonly Graphics _graphics;
+    private readonly Font _font = new Font("Verdana", 10);
 
     public GdiDrawingContext(Graphics graphics)
     {
@@ -109,7 +128,17 @@ namespace Theaterverdeling
 
     public void DrawString(string text, RectangleF rect)
     {
-      _graphics.DrawString(text, new Font("Verdana", 11), Brushes.Black, rect, new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
+      _graphics.DrawString(text, _font, Brushes.Black, rect, new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
+    }
+
+    public void DrawText(string text, RectangleF rect)
+    {
+      _graphics.DrawString(text, _font, Brushes.Black, rect, new StringFormat { Alignment = StringAlignment.Near, LineAlignment = StringAlignment.Center });
+    }
+
+    public void DrawLine(PointF from, PointF to)
+    {
+      _graphics.DrawLine(Pens.Black, from, to);
     }
 
     public IDrawingContainer BeginContainer(RectangleF destRect, RectangleF srcRect)

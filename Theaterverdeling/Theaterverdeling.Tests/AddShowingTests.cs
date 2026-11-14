@@ -20,7 +20,7 @@ namespace Theaterverdeling.Tests
 
         AddShowing(main, new DateTime(2026, 3, 14), new DateTime(2026, 3, 14, 10, 30, 0));
 
-        Assert.Equal("0/558 stoelen", Find<Label>(main, "Seatlabel").Text);
+        Assert.Equal("0/550 stoelen", Find<Label>(main, "Seatlabel").Text);
       });
     }
 

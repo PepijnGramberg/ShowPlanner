@@ -22,26 +22,37 @@ namespace Theaterverdeling
 
   public sealed class ChairRow : Row
   {
-    public ChairRow(int seatCount, bool inUse, int rowNr = 0)
+    public ChairRow(int seatCount, bool inUse, int rowNr = 0, IEnumerable<int> unusable = null)
     {
       InUse = inUse;
       RowNr = rowNr;
+      var unusableNumbers = new HashSet<int>(unusable ?? Enumerable.Empty<int>());
       Seats = new Seat[seatCount];
       for (var i = 0; i < Seats.Length; i++)
       {
-        Seats[i] = new Seat();
+        Seats[i] = new Seat(!unusableNumbers.Contains(i + 1));
       }
     }
     public bool InUse { get; }
     public int RowNr { get; }
     public override int TotalSeatCount => Seats.Length;
 
-    public override int AvailableSeatCount => InUse ? TotalSeatCount : 0;
+    public override int AvailableSeatCount => InUse ? Seats.Count(seat => seat.Usable) : 0;
 
     public Seat[] Seats { get; }
   }
 
-  public sealed class Seat { }
+  public sealed class Seat
+  {
+    public Seat(bool usable)
+    {
+      Usable = usable;
+    }
+
+    // False for a chair that exists in the hall but is never given to a group.
+    public bool Usable { get; }
+    public Group Group { get; set; }
+  }
 
   // Custom converter for Row polymorphism
   public class RowConverter : JsonConverter<Row>
@@ -102,8 +113,14 @@ namespace Theaterverdeling
           rowNr = rowNrProp.GetInt32();
         }
         
+        var unusable = new List<int>();
+        if (root.TryGetProperty("Unusable", out var unusableProp))
+        {
+          unusable.AddRange(unusableProp.EnumerateArray().Select(number => number.GetInt32()));
+        }
+
         // Create new ChairRow with constructor
-        return new ChairRow(seatCount, inUse, rowNr);
+        return new ChairRow(seatCount, inUse, rowNr, unusable);
       }
       
       throw new JsonException($"Unknown Row type: {typeName}");
@@ -122,6 +139,17 @@ namespace Theaterverdeling
         writer.WriteNumber("SeatCount", chairRow.TotalSeatCount);
         writer.WriteNumber("RowNr", chairRow.RowNr);
         
+        // Seat numbers, starting at 1, that are never given to a group
+        writer.WriteStartArray("Unusable");
+        for (var i = 0; i < chairRow.Seats.Length; i++)
+        {
+          if (!chairRow.Seats[i].Usable)
+          {
+            writer.WriteNumberValue(i + 1);
+          }
+        }
+        writer.WriteEndArray();
+
         // Handle seats array
         writer.WriteStartArray("Seats");
         foreach (var seat in chairRow.Seats)
@@ -140,7 +168,6 @@ namespace Theaterverdeling
   {
     public int Seats => _rows.Sum(r => r.AvailableSeatCount);
     public List<Group> Groups { get; set; }
-    protected List<int>[] Places;
 
     // Change to protected with JsonInclude attribute to allow serialization
     [JsonInclude]
@@ -149,8 +176,30 @@ namespace Theaterverdeling
 
     public virtual void AssignSeats()
     {
-      CreatePlaces();
-      FillPlaces();
+      foreach (var seat in _rows.OfType<ChairRow>().SelectMany(row => row.Seats))
+      {
+        seat.Group = null;
+      }
+
+      var rows = _rows.OfType<ChairRow>().Where(row => row.InUse).ToList();
+      var left = 0;
+      var right = 0;
+      foreach (var group in Groups)
+      {
+        var remaining = group.Personen;
+        while (remaining > 0 && (left < rows.Count || right < rows.Count))
+        {
+          // The side that is the fewest rows along gets the group. The right side wins a tie.
+          remaining = left < right
+            ? FillSide(rows, ref left, LeftHalf, group, remaining)
+            : FillSide(rows, ref right, RightHalf, group, remaining);
+        }
+        if (remaining > 0)
+        {
+          throw new InvalidOperationException($"Niet genoeg stoelen voor groep \"{group.Name}\": {remaining} personen hebben geen plaats.");
+        }
+        group.Seats = SeatRangesOf(group);
+      }
     }
 
     public void Draw(XGraphics gr) 
@@ -163,69 +212,117 @@ namespace Theaterverdeling
       Draw(new GdiDrawingContext(gr));
     }
 
-    protected virtual void Draw(IDrawingContext ctx)
+    private static readonly Color[] GroupColors =
     {
-      var padding = 20;
-      var maxWidthChairs = Rows.Max(r => r.TotalSeatCount) + 2; // add two for row number to be displayed. and keeep it centered
-      var maxHeightChairs = Rows.Count;
+      Color.FromArgb(119, 170, 221),
+      Color.FromArgb(170, 170, 0),
+      Color.FromArgb(238, 136, 102),
+      Color.FromArgb(238, 221, 136),
+      Color.FromArgb(255, 170, 187),
+      Color.FromArgb(153, 221, 255),
+      Color.FromArgb(68, 187, 153),
+      Color.FromArgb(187, 204, 51),
+      Color.FromArgb(153, 153, 153)
+    };
 
+    // Draws the stage label, the seat map coloured per group and the legend with the seats of each group.
+    // The space above the stage label is left free for a title.
+    public virtual void Draw(IDrawingContext ctx)
+    {
+      const float padding = 20;
+      const float lineHeight = 16;
+      const float stageTop = 56;
+      const float mapTop = stageTop + lineHeight + 4;
+      const float mapHeight = 500;
+
+      var groups = Groups ?? new List<Group>();
+      var maxWidthChairs = Rows.Max(r => r.TotalSeatCount) + 2; // two extra for the row number on both sides
       var mapWidth = ctx.PageWidth - (padding * 2);
-      var mapHeight = 500f;
-      
-      using (var mapContainer = ctx.BeginContainer(
-             new RectangleF(padding, padding, mapWidth, mapHeight),
+      var seatSize = Math.Min(mapWidth / maxWidthChairs, mapHeight / Rows.Count);
+
+      ctx.DrawString("Podium", new RectangleF(0, stageTop, ctx.PageWidth, lineHeight));
+
+      using (ctx.BeginContainer(
+             new RectangleF(padding, mapTop, mapWidth, mapHeight),
              new RectangleF(0, 0, mapWidth, mapHeight)))
       {
-        var seatSize = Math.Min(mapWidth / maxWidthChairs, mapHeight / maxHeightChairs);
-
-#if DEBUG
-        ctx.DrawRectangles([new RectangleF(0,0,mapWidth,mapHeight)]);
-#endif
         for (var i = 0; i < Rows.Count; i++)
         {
           var rowHeight = i * seatSize;
           if (Rows[i] is ChairRow chairRow)
           {
             // Start of the row needs to be offset from the Graphics box so the entire row is centered.
-            var startRow = (mapWidth - ((chairRow.TotalSeatCount + 2) * seatSize))/2;
+            var startRow = (mapWidth - ((chairRow.TotalSeatCount + 2) * seatSize)) / 2;
 
             var chairs = new List<RectangleF>();
-            for (var j = 0; j < chairRow.TotalSeatCount; j++) {
+            for (var j = 0; j < chairRow.TotalSeatCount; j++)
+            {
               // Add 1 to J for so there is space for the row number in front
-              chairs.Add(new RectangleF(startRow + (j+1)*seatSize, rowHeight, seatSize, seatSize));
+              chairs.Add(new RectangleF(startRow + (j + 1) * seatSize, rowHeight, seatSize, seatSize));
             }
 
-            // Draw row number on the left
-            DrawInt(chairRow.RowNr, new RectangleF(startRow, rowHeight, seatSize, seatSize));
-            // Draw row number on the right
-            DrawInt(chairRow.RowNr, new RectangleF(startRow + (chairRow.TotalSeatCount + 1) * seatSize, rowHeight, seatSize, seatSize));
+            // Row number on the left and on the right
+            ctx.DrawString(chairRow.RowNr.ToString(), new RectangleF(startRow, rowHeight, seatSize, seatSize));
+            ctx.DrawString(chairRow.RowNr.ToString(), new RectangleF(startRow + (chairRow.TotalSeatCount + 1) * seatSize, rowHeight, seatSize, seatSize));
 
-            // Draw the chairs.
-            for(var j = 0; j < chairs.Count; j++)
+            for (var j = 0; j < chairs.Count; j++)
             {
-              // Color the chairs according to which group is assigned.
-              // TODO
-              ctx.FillRectangle(chairs[j], Color.FromArgb(Random.Shared.Next(0, 255), Random.Shared.Next(0, 255), Random.Shared.Next(0, 255), Random.Shared.Next(0, 255)));
-              // Draw the numbers. Seats in the real world are not 0 indexed so we increment the number for display purposes.
-              DrawInt(j + 1, chairs[j]);
+              // Colour the chair of the group that sits on it; free chairs stay white.
+              var groupIndex = groups.IndexOf(chairRow.Seats[j].Group);
+              if (groupIndex >= 0)
+              {
+                ctx.FillRectangle(chairs[j], GroupColors[groupIndex % GroupColors.Length]);
+              }
+              // Seats in the real world are not 0 indexed so we increment the number for display purposes.
+              ctx.DrawString((j + 1).ToString(), chairs[j]);
             }
             // Black outline.
             ctx.DrawRectangles(chairs.ToArray());
           }
         }
+      }
 
-        void DrawInt(int number, RectangleF position)
+      DrawLegend(ctx, groups, mapTop + Rows.Count * seatSize + lineHeight, lineHeight);
+    }
+
+    // Lists per group the rows and seats it got, in columns of 25 lines below the seat map.
+    private static void DrawLegend(IDrawingContext ctx, List<Group> groups, float top, float lineHeight)
+    {
+      const int linesPerColumn = 25;
+      const float left = 20;
+      const float columnWidth = 285;
+      const float nameWidth = 150;
+      const float markerSize = 10;
+
+      var line = 0;
+      for (var g = 0; g < groups.Count; g++)
+      {
+        var group = groups[g];
+        var x = left + (line / linesPerColumn) * columnWidth;
+        var y = top + (line % linesPerColumn) * lineHeight;
+
+        if (g > 0)
         {
-          DrawString(number.ToString(), position);
+          ctx.DrawLine(new PointF(x, y), new PointF(x + columnWidth - 10, y));
         }
-        void DrawString(string text, RectangleF position)
+        var marker = new RectangleF(x, y + (lineHeight - markerSize) / 2, markerSize, markerSize);
+        ctx.FillRectangle(marker, GroupColors[g % GroupColors.Length]);
+        ctx.DrawRectangles(new[] { marker });
+        ctx.DrawText(group.Name, new RectangleF(x + markerSize + 4, y, nameWidth - markerSize - 4, lineHeight));
+
+        foreach (var range in group.Seats)
         {
-          ctx.DrawString(text, position);
+          x = left + (line / linesPerColumn) * columnWidth;
+          y = top + (line % linesPerColumn) * lineHeight;
+          ctx.DrawText($"Rij {range.Row} Stoel {range.StartSeat} t/m {range.EndSeat}", new RectangleF(x + nameWidth, y, columnWidth - nameWidth, lineHeight));
+          line++;
+        }
+        if (group.Seats.Count == 0)
+        {
+          line++;
         }
       }
     }
-
-    protected virtual void CreatePlaces() { }
 
     // Serialize the Zaal to JSON
     public string ToJson()
@@ -287,103 +384,62 @@ namespace Theaterverdeling
       return FromJson<T>(json);
     }
 
-    protected void FillPlaces()
+    // Seats a group row by row on one side of the hall, starting at the row that side has reached.
+    // The side stays on the row where the group ends, so the next group can use what is left of it.
+    private static int FillSide(List<ChairRow> rows, ref int row, Func<ChairRow, IEnumerable<Seat>> half, Group group, int remaining)
     {
-      var leftrow =0;
-      var rightrow = 0;
-      var group = 0;
-      var groupnotdone = true;
-      var groupseats = 0;
-      while (group < Groups.Count)
+      for (; row < rows.Count; row++)
       {
-        if (!groupnotdone)
+        foreach (var seat in half(rows[row]))
         {
-          groupnotdone = true;
-          groupseats = 0;
-        }
-        if (leftrow < rightrow)//LEFT SIDE FILLING
-        {
-          for (; leftrow < _rows.Count; leftrow++)
+          if (remaining == 0)
+            break;
+          if (seat.Usable && seat.Group == null)
           {
-            if(!(_rows[leftrow] is ChairRow chairs))
-            {
-              continue;
-            }
-            for (int i = 0; i < chairs.TotalSeatCount / 2; i++)
-            {
-              if (!(i <= 1 && leftrow < 3))
-              {
-                if (Places[leftrow][i] == -1 && groupnotdone)
-                {
-                  Places[leftrow][i] = group;
-                  groupseats++;
-                }
-                if (groupseats == Groups[group].Personen)
-                  groupnotdone = false;
-              }
-            }
-            if (!groupnotdone)
-              break;
+            seat.Group = group;
+            remaining--;
           }
         }
-        else
-        {
-          for (; rightrow < _rows.Count; rightrow++)
-          {
-            for (int i = Places[rightrow].Count - 1; i >= Places[rightrow].Count / 2; i--)
-            {
-              if (!((i > 20 && rightrow < 2) || (rightrow == 2 && i > 21)))
-              {
-                if (Places[rightrow][i] == -1 && groupnotdone)
-                {
-                  Places[rightrow][i] = group;
-                  groupseats++;
-                }
-                if (groupseats == Groups[group].Personen)
-                  groupnotdone = false;
-              }
-            }
-            if (!groupnotdone)
-              break;
-          }
-        }
-        if (!groupnotdone)
-          group++;
+        if (remaining == 0)
+          break;
       }
+      return remaining;
+    }
 
+    // Left half of a row, from the left edge towards the middle.
+    private static IEnumerable<Seat> LeftHalf(ChairRow row)
+    {
+      return row.Seats.Take(row.Seats.Length / 2);
+    }
 
-      //rijen en stoel nummers per groep
-      bool aan = false;
-      var temp = new SeatRange(0, 0, 0);
-      for (int grnr = 0; grnr < Groups.Count; grnr++)
+    // Right half of a row, from the right edge towards the middle. The middle seat of an odd row belongs to the right.
+    private static IEnumerable<Seat> RightHalf(ChairRow row)
+    {
+      return row.Seats.Skip(row.Seats.Length / 2).Reverse();
+    }
+
+    // The seats of a group as runs of adjacent seats per row, with seat numbers starting at 1.
+    private List<SeatRange> SeatRangesOf(Group group)
+    {
+      var ranges = new List<SeatRange>();
+      foreach (var row in _rows.OfType<ChairRow>())
       {
-        Groups[grnr].Seats = new List<SeatRange>();
-        for (int row = 1; row < Places.Length; row++)
+        var start = -1;
+        for (var i = 0; i <= row.Seats.Length; i++)
         {
-
-          for (int seatnr = 0; seatnr < Places[row].Count; seatnr++)
+          var ofGroup = i < row.Seats.Length && row.Seats[i].Group == group;
+          if (ofGroup && start < 0)
           {
-            if (aan)
-            {
-              if (Places[row][seatnr] != grnr)
-              {
-                Groups[grnr].Seats.Add(new SeatRange(temp.Row, temp.StartSeat + 1, seatnr));
-                aan = false;
-              }
-              else if (seatnr == Places[row].Count - 1)
-              {
-                Groups[grnr].Seats.Add(new SeatRange(temp.Row, temp.StartSeat + 1, seatnr + 1));
-                aan = false;
-              }
-            }
-            else if (Places[row][seatnr] == grnr)
-            {
-              temp = new SeatRange(row, seatnr, 0);
-              aan = true;
-            }
+            start = i;
+          }
+          else if (!ofGroup && start >= 0)
+          {
+            ranges.Add(new SeatRange(row.RowNr, start + 1, i));
+            start = -1;
           }
         }
       }
+      return ranges;
     }
   }
 
@@ -405,30 +461,6 @@ namespace Theaterverdeling
     {
       return LoadFromFile<Lampegiet>(Path.Combine(AppContext.BaseDirectory, "Zalen", "Lampegiet.json"));
     }
-    
-    protected override void CreatePlaces()
-    {
-      Places = new List<int>[20];
-      for (int i = 1; i < Places.Length; i++)
-      {
-        Places[i] = new List<int>();
-        if (i <= 11)
-          for (int j = 0; j < 22 + i; j++)
-            Places[i].Add(-1);
-        else if (i % 2 == 1)
-          Places[i].Add(-1);
-        if (i > 11)
-          for (int j = 0; j < 31; j++)
-            Places[i].Add(-1);
-
-      }
-      Places[13].Add(-1);
-      Places[19].Add(-1);
-      Places[19].Add(-1);
-      Places[19].Add(-1);
-    }
-
-    // XBrushes.Red, XBrushes.Fuchsia, XBrushes.Orange, XBrushes.Green, XBrushes.Indigo, XBrushes.SteelBlue, XBrushes.Firebrick, XBrushes.DarkViolet, XBrushes.Turquoise, XBrushes.IndianRed, XBrushes.SeaGreen, XBrushes.CornflowerBlue, XBrushes.BurlyWood };
   }
 
   public struct SeatRange
