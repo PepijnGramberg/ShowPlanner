@@ -345,6 +345,16 @@ namespace Theaterverdeling
       group.HandSeated = group.Seats.Count > 0;
     }
 
+    // Gives the seats of one group to another: a changed group takes the place of the old one.
+    public void HandOver(Group from, Group to)
+    {
+      foreach (var seat in _rows.OfType<ChairRow>().SelectMany(row => row.Seats).Where(seat => seat.Group == from))
+      {
+        seat.Group = to;
+      }
+      to.Seats = SeatRangesOf(to);
+    }
+
     // One side of the hall while it is being filled.
     private sealed class Side
     {

@@ -168,5 +168,66 @@ namespace Theaterverdeling.Tests
       plan.Shows.AddRange(shows);
       return plan;
     }
+
+    // A plan with one showing in which group G chose row 2 by hand.
+    private static (Plan Plan, Voorstelling Show, Group Group) PlanWithHandSeatedGroup()
+    {
+      var show = new Voorstelling(Monday.AddHours(10), Hall(Row(1, 10), Row(2, 10)), Monday);
+      var group = Group("G", 2);
+      var plan = new Plan();
+      plan.Shows.Add(show);
+      plan.Groups.Add(group);
+      plan.Groups.Add(Group("H", 4));
+      plan.Distribute();
+      var front = (ChairRow)show.Zaal.Rows[0];
+      var behind = (ChairRow)show.Zaal.Rows[1];
+      foreach (var row in new[] { front, behind })
+      foreach (var seat in Enumerable.Range(0, 10).Where(seat => row.Seats[seat].Group == group).ToList())
+      {
+        show.Zaal.ChangeSeat(row, seat, group);
+      }
+      show.Zaal.ChangeSeat(behind, 4, group);
+      show.Zaal.ChangeSeat(behind, 5, group);
+      group.Pinned = true;
+      return (plan, show, group);
+    }
+
+    [Fact]
+    public void Seats_chosen_by_hand_stay_when_the_time_of_the_showing_changes()
+    {
+      var (plan, show, group) = PlanWithHandSeatedGroup();
+
+      plan.ReplaceShow(show, new Voorstelling(Monday.AddHours(11), Hall(Row(1, 10), Row(2, 10)), Monday));
+      plan.Distribute();
+
+      Assert.True(group.HandSeated);
+      Assert.Equal("rij 2: 5-6", Describe(group));
+    }
+
+    [Fact]
+    public void Seats_chosen_by_hand_stay_when_the_group_gets_another_name()
+    {
+      var (plan, _, group) = PlanWithHandSeatedGroup();
+      var renamed = Group("G2", 2);
+
+      plan.ReplaceGroup(group, renamed);
+      plan.Distribute();
+
+      Assert.True(renamed.HandSeated);
+      Assert.Equal("rij 2: 5-6", Describe(renamed));
+    }
+
+    [Fact]
+    public void Seats_chosen_by_hand_go_when_the_group_gets_another_size()
+    {
+      var (plan, _, group) = PlanWithHandSeatedGroup();
+      var larger = Group("G", 3);
+
+      plan.ReplaceGroup(group, larger);
+      plan.Distribute();
+
+      Assert.False(larger.HandSeated);
+      Assert.Equal(3, larger.Seats.Sum(range => range.EndSeat - range.StartSeat + 1));
+    }
   }
 }

@@ -255,6 +255,12 @@ namespace Theaterverdeling
       // The changed group stays pinned to its showing.
       replacement.Voorstelling = old.Voorstelling;
       replacement.Pinned = old.Pinned;
+      // Seats that were chosen by hand stay too, as long as the group keeps its size.
+      if (old.HandSeated && old.Voorstelling != null && replacement.Personen == old.Personen)
+      {
+        old.Voorstelling.Zaal.HandOver(old, replacement);
+        replacement.HandSeated = replacement.Seats.Count > 0;
+      }
       Groups[index] = replacement;
     }
 
@@ -269,10 +275,15 @@ namespace Theaterverdeling
         return;
       }
       Shows[index] = replacement;
-      // Groups that are pinned to the showing stay pinned to it.
+      // Groups that are pinned to the showing stay pinned to it, and seats that were chosen by hand
+      // go along, as far as the hall of the changed showing has them.
       foreach (var group in Groups.Where(group => group.Voorstelling == old))
       {
         group.Voorstelling = replacement;
+        if (group.HandSeated)
+        {
+          replacement.Zaal.SeatByHand(group, group.Seats);
+        }
       }
       if (old.Datum == replacement.Datum || Shows.Any(show => show.Datum == old.Datum))
       {
