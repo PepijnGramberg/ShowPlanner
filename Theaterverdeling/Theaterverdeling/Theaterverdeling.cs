@@ -162,17 +162,7 @@ namespace Theaterverdeling
       if (sender is Addshowform addShowForm)
       {
         var show = addShowForm.show;
-        var zaal = Zaal.LoadFromFile<Lampegiet>("D:\\Projects\\ShowPlanner\\Theaterverdeling\\Theaterverdeling\\Zalen\\Lampegiet.json");
         //todo show.Zaal.Frontseatchange(Frontrowsdisable.Checked);
-
-
-        var pdf1 = new PdfDocument();
-        var page1 = new PdfPage();
-        pdf1.AddPage(page1);
-        using var gr1 = XGraphics.FromPdfPage(page1);
-        zaal.Draw(gr1);
-        pdf1.Save(@"D:\Projects\ShowPlanner\Theaterverdeling\Theaterverdeling\Zalen\Test.pdf");
-
         _shows.Add(show);
         Voorstellingviewerupdate();
 
@@ -184,7 +174,7 @@ namespace Theaterverdeling
       Voorstellingviewer.Items.Clear();
       foreach (var show in _shows)
       {
-        // todo Voorstellingviewer.Items.Add($"{show.Datum.ToShortDateString()} {show.Time.ToShortTimeString()} {(show.Zaal.Balconyoff ? "ZB" : "")}");
+        Voorstellingviewer.Items.Add($"{show.Datum.ToShortDateString()} {show.Time.ToShortTimeString()}");
       }
     }
     private int Zaalsort(Voorstelling x, Voorstelling y) => x.Freeseats < y.Freeseats ? 1 : 0;

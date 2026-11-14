@@ -400,6 +400,11 @@ namespace Theaterverdeling
     {
       // Default constructor for serialization
     }
+
+    public static Lampegiet Load()
+    {
+      return LoadFromFile<Lampegiet>(Path.Combine(AppContext.BaseDirectory, "Zalen", "Lampegiet.json"));
+    }
     
     protected override void CreatePlaces()
     {

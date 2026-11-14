@@ -44,15 +44,12 @@ Ideas worth carrying over from the rewrite, as ideas and not as code:
 
 ### Known defects in the app
 
-1. A new showing gets an empty hall, so it has 0 seats and distributing always reports "Te weinig stoelen" (`Addshowform.cs`).
-2. Adding a showing reads and writes hard-coded `D:\Projects\ShowPlanner\...` paths and crashes on any other machine (`Theaterverdeling.cs:165-174`).
-3. The showings list is never filled; the line is commented out (`Theaterverdeling.cs:187`).
-4. Seat filling mixes the new row list with the old hard-coded `Places` grid, including Lampegiet-specific seat index exceptions. It throws on the right-hand side of row 0 (`Zaal.cs:290-387`).
-5. The seat map uses random colours and has no group colours, no "Podium" label and no legend (`Zaal.cs:208`).
-6. "Rij 1 en 2 uit" and "balcony off" do nothing; the calls are commented out.
-7. Loading a `.wet` file does not restore the showings. Dates are written with the machine culture and read with a fixed Dutch format.
-8. The showing comparers return 0/1 instead of negative/zero/positive, so `List.Sort` ordering is not reliable (`Zaalsort`, `Zaaldatesort`).
-9. `EditorForm` is an empty window.
+1. Seat filling mixes the new row list with the old hard-coded `Places` grid, including Lampegiet-specific seat index exceptions. It throws on the right-hand side of row 0 (`Zaal.cs:290-387`).
+2. The seat map uses random colours and has no group colours, no "Podium" label and no legend (`Zaal.cs:208`).
+3. "Rij 1 en 2 uit" and "balcony off" do nothing; the calls are commented out.
+4. Loading a `.wet` file does not restore the showings. Dates are written with the machine culture and read with a fixed Dutch format.
+5. The showing comparers return 0/1 instead of negative/zero/positive, so `List.Sort` ordering is not reliable (`Zaalsort`, `Zaaldatesort`).
+6. `EditorForm` is an empty window.
 
 ## Action points
 
@@ -65,24 +62,24 @@ Removed on 2026-11-14 (abandoned ShowPlanner rewrite):
 - [x] `ShowPlanner.sln`
 - [x] `docs/` (whole folder)
 
-To remove inside `Theaterverdeling/`, on hold until that folder may be changed:
+Inside `Theaterverdeling/`:
 
 - [x] `Theaterverdeling.zip` (5.4 MB: an old `.git` folder and ReSharper cache)
-- [ ] `Theaterverdeling/PdfSharp.dll`, `PdfSharp.Charting.dll`, `Word.dll`, `Theaterverdeling.exe` (unreferenced binaries; PDF comes from the PdfSharpCore NuGet package)
+- [x] `Theaterverdeling/PdfSharp.dll`, `PdfSharp.Charting.dll`, `Word.dll`, `Theaterverdeling.exe` (unreferenced binaries; PDF comes from the PdfSharpCore NuGet package)
 - [x] `Setuptheater/` and `Theaterverdelingsetup/` (WiX v3 installers pointing at `D:\backup\Visual Studio 2012\...`)
-- [ ] `Theaterverdeling/App.config` (.NET Framework 4.8 leftover)
-- [ ] `Theaterverdeling/Zalen/Test.json`, `Zalen/Test.pdf` (debug output)
-- [ ] `Theaterverdeling/Properties/Settings.settings`, `Settings.Designer.cs`, `Resources.resx`, `Resources.Designer.cs` (unused)
-- [ ] `Theaterverdeling/Theaterverdeling.csproj.DotSettings`
-- [ ] ClickOnce publish properties in `Theaterverdeling.csproj` (`PublishUrl` up to `BootstrapperEnabled`)
+- [x] `Theaterverdeling/App.config` (.NET Framework 4.8 leftover)
+- [x] `Theaterverdeling/Zalen/Test.json`, `Zalen/Test.pdf` (debug output)
+- [x] `Theaterverdeling/Properties/Settings.settings`, `Settings.Designer.cs`, `Resources.resx`, `Resources.Designer.cs` (unused)
+- [x] `Theaterverdeling/Theaterverdeling.csproj.DotSettings`
+- [x] ClickOnce publish properties in `Theaterverdeling.csproj` (`PublishUrl` up to `BootstrapperEnabled`)
 - [ ] `Crountch-One-Piece-Jolly-Roger-Ace.ico`, unless it becomes the app icon; `Wet.ico` only if the `.wet` format goes
 - [ ] `ZaalOld.cs`, after phase 1 has ported its logic
-- [ ] Merge `Theaterverdeling/.gitignore` and `.gitattributes` into the repo root
+- [x] Merge `Theaterverdeling/.gitignore` and `.gitattributes` into the repo root
 
 ### Phase 1: back to a working app
 
-- [ ] Load the hall from `Zalen/Lampegiet.json` next to the exe (copy to output, resolve via `AppContext.BaseDirectory`). Remove the hard-coded paths and the test PDF write.
-- [ ] Fill the showings list again.
+- [x] Load the hall from `Zalen/Lampegiet.json` next to the exe (copy to output, resolve via `AppContext.BaseDirectory`). Remove the hard-coded paths and the test PDF write.
+- [x] Fill the showings list again.
 - [ ] Rewrite seat filling on top of `Rows`. Remove `Places` and `CreatePlaces`. Move the Lampegiet seat exceptions into the hall JSON as unusable seats.
 - [ ] Make "front rows off" and "balcony off" data driven: mark rows in the hall JSON and switch them per showing.
 - [ ] Port colours, "Podium" label, title with date and time, and the group legend from `ZaalOld.cs` into the shared drawing code.
@@ -92,7 +89,7 @@ To remove inside `Theaterverdeling/`, on hold until that folder may be changed:
 ### Phase 2: solid base
 
 - [ ] Move distribution and seating out of the form into plain classes without UI dependencies.
-- [ ] Add an xUnit project. Cover: capacity, every group in one showing, groups seated contiguously, preferences honoured when possible, Lampegiet totals 558.
+- [ ] Extend the xUnit project (`Theaterverdeling.Tests`, started in phase 1). Cover: capacity, every group in one showing, groups seated contiguously, preferences honoured when possible, Lampegiet totals 558.
 - [ ] Replace `.wet` with one versioned JSON plan file (show name, showings, groups, hall, options). Culture-invariant dates. Decide whether old `.wet` files still need to be importable.
 - [ ] Input validation: empty or duplicate group names, group larger than the hall, no preferred date ticked.
 - [ ] Edit an existing group or showing; today only add and remove exist.
@@ -112,6 +109,10 @@ To remove inside `Theaterverdeling/`, on hold until that folder may be changed:
 
 ```bash
 dotnet build Theaterverdeling/Theaterverdeling.sln
+```
+
+```bash
+dotnet test Theaterverdeling/Theaterverdeling.sln
 ```
 
 ```bash
