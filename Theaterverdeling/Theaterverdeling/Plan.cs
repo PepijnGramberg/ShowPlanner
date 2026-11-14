@@ -19,6 +19,57 @@ namespace Theaterverdeling
     public List<Voorstelling> Shows { get; } = new List<Voorstelling>();
     public List<Group> Groups { get; } = new List<Group>();
 
+    // Divides the groups over the showings and gives them their seats.
+    // Returns the groups that fit in no showing.
+    public List<Group> Distribute()
+    {
+      foreach (var show in Shows)
+      {
+        show.Groups = new List<Group>();
+      }
+
+      var unplaced = new List<Group>();
+      // Front-row groups choose first, then morning groups, then the larger groups.
+      var inOrder = Groups
+        .OrderByDescending(group => group.Firstrows)
+        .ThenByDescending(group => group.Morning)
+        .ThenByDescending(group => group.Personen);
+      foreach (var group in inOrder)
+      {
+        // The showing with the most free seats comes first. The earlier showing wins a tie.
+        var possible = Shows
+          .Where(show => Fits(group, show))
+          .OrderByDescending(show => show.Freeseats)
+          .ThenBy(show => show.Start)
+          .ToList();
+        var chosen = possible.FirstOrDefault(show => group.Datum.Contains(show.Datum)) ?? possible.FirstOrDefault();
+
+        group.Voorstelling = chosen;
+        if (chosen == null)
+        {
+          group.Seats = new List<SeatRange>();
+          unplaced.Add(group);
+        }
+        else
+        {
+          chosen.Groups.Add(group);
+        }
+      }
+
+      foreach (var show in Shows)
+      {
+        show.Assignseats();
+      }
+      Shows.Sort((x, y) => x.Start.CompareTo(y.Start));
+      return unplaced;
+    }
+
+    private static bool Fits(Group group, Voorstelling show)
+    {
+      var timeSuits = !group.Morning || show.Time.Hour < 12;
+      return timeSuits && show.Freeseats >= group.Personen;
+    }
+
     public void Save(string path)
     {
       var file = new PlanFile

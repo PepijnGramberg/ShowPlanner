@@ -11,6 +11,8 @@ namespace Theaterverdeling
     public DateTime Time { get; set; }
     public Zaal Zaal { get; set; }
     public DateTime Datum { get; set; }
+    // The moment the showing starts: its date with its time of day.
+    public DateTime Start => Datum.Date + Time.TimeOfDay;
     public int Freeseats => Zaal.Seats - Groups.Sum(group => group.Personen);
     public List<Group> Groups { get; set; } = new List<Group>();
 

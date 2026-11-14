@@ -25,7 +25,7 @@ Dropped from the old plan: WPF, layered "clean architecture", dependency injecti
 
 | Part | State | Verdict |
 | --- | --- | --- |
-| `Theaterverdeling/` WinForms app, .NET 9 | Builds. Halfway through a refactor from hard-coded hall to JSON hall, so it does not run a full plan today. | **Keep, this is the base.** |
+| `Theaterverdeling/` WinForms app, .NET 9 | Builds and its tests pass. A full plan works again: add showings and groups, distribute, export the PDF, save and load. | **Keep, this is the base.** |
 | `src/`, `tests/`, `ShowPlanner.sln` | Did not build. Persistence project compiles zero files (wrong include path), test project references a non-existing path and ran zero tests. Content was DTOs, a one-way mapper with placeholder data, a migration that only bumps a version string and an empty PDF stub. No seating logic, no UI. | **Removed 2026-11-14.** Still in git history up to commit `62074fb`. |
 | `docs/superpowers/plans/2026-03-14-workspace-persistence.md` | Plan for the dropped persistence layer. | **Removed 2026-11-14.** |
 
@@ -40,12 +40,11 @@ Ideas worth carrying over from the rewrite, as ideas and not as code:
 - `Graphics.cs`: one drawing interface with a PDF and a screen implementation. This makes an on-screen preview cheap.
 - `Zaal.cs` row model (`ChairRow`, `WalkWay`) with JSON load/save, and `Zalen/Lampegiet.json` (558 chairs, 550 usable: the two outer seats on both sides of rows 1 and 2 are never assigned, as in the old app).
 - `Group`, `Voorstelling`, `SeatRange` and the three forms.
-- The distribution rules in `Divideshows`: front-row groups first, then morning groups, then largest first, preferred date first with a fallback to any showing.
+- The distribution rules, now in `Plan.Distribute`: front-row groups first, then morning groups, then largest first. A group goes to the showing with the most free seats on a date it prefers, and to any other showing when that fails.
 
 ### Known defects in the app
 
-1. The showing comparers return 0/1 instead of negative/zero/positive, so `List.Sort` ordering is not reliable (`Zaalsort`, `Zaaldatesort`).
-2. `EditorForm` is an empty window.
+1. `EditorForm` is an empty window.
 
 ## Action points
 
@@ -80,16 +79,16 @@ Inside `Theaterverdeling/`:
 - [x] Rewrite seat filling on top of `Rows`. Remove `Places` and `CreatePlaces`. Move the Lampegiet seat exceptions into the hall JSON as unusable seats (`"Unusable"` per row, seat numbers from 1).
 - [x] Make "front rows off" and "balcony off" data driven: rows in the hall JSON carry a `"Section"` name, and the add-showing dialog offers the sections of the hall to switch off for that showing. The plan-wide "Rij 1 en 2 uit" checkbox is gone.
 - [x] Port colours, "Podium" label, title with date and time, and the group legend from `ZaalOld.cs` into the shared drawing code. The legend uses a colour marker with a black name instead of a coloured name.
-- [ ] Replace the comparers and the hand-written merge sort with `OrderBy` chains.
+- [x] Replace the comparers and the hand-written merge sort with `OrderBy` chains.
 
 ### Phase 2: solid base
 
-- [ ] Move distribution and seating out of the form into plain classes without UI dependencies.
-- [ ] Extend the xUnit project (`Theaterverdeling.Tests`). Still to cover: distribution of groups over showings and preferences honoured when possible.
+- [x] Move distribution and seating out of the form into plain classes without UI dependencies. Distribution lives in `Plan`, seating in `Zaal`. PDF export is still in the form.
+- [x] Tests for hall loading, seat filling, sections, drawing, the plan file, distribution and the add, save and load flows of the forms. Not covered: the PDF export and its file dialog.
 - [x] Replace `.wet` with one versioned JSON plan file: show name, showings with hall and switched-off sections, groups with their wishes. Dates do not depend on language settings. Old `.wet` files are not supported.
 - [ ] Input validation: empty or duplicate group names, group larger than the hall, no preferred date ticked.
 - [ ] Edit an existing group or showing; today only add and remove exist.
-- [ ] Report all unplaced groups in one summary instead of one message box per group.
+- [x] Report all unplaced groups in one summary instead of one message box per group.
 
 ### Phase 3: next level
 
