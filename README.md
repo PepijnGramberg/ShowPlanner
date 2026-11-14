@@ -1,148 +1,121 @@
-# AI Prompt: Create a Theater Show Planning and Seating Management Application
+# Theaterverdeling
 
-## Application Overview
+Desktop tool for the coordinator of educational theater for elementary schools.
+One show has several showings. School groups are distributed over the showings and
+then seated in the hall. The result is a PDF per showing with a colour-coded seat map
+and a "row / first seat / last seat" list per group.
 
-Design and implement a comprehensive application for educative theater for elementary schools coordination. The coordinator needs to plan shows, manage seating layouts, and optimize group assignments to seats. The application should help enter valid data and generate optimal seating arrangements. They will work on 1 show at the time, but a show will have multiple showings.
+**Direction (decided 2026-11-14):** the from-scratch "ShowPlanner" rewrite is abandoned.
+We continue with the existing WinForms app in [Theaterverdeling/](Theaterverdeling/) and
+bring that to the next level, step by step, keeping it working after every step.
 
-## Core Requirements
+## Requirements that still stand
 
-### Architecture
+- One show at a time, with multiple showings (date + time), each in a hall.
+- Groups have a name, a size, preferred showings and a "front rows" wish.
+- Every group goes to exactly one showing and sits together.
+- Halls are data (JSON), not code. Rows, walkways and unusable seats are described in the hall file.
+- Save and load the whole plan as one local JSON file.
+- PDF output per showing: seat map coloured per group plus the seat ranges per group.
 
-- Implement a clean architecture pattern with clear separation of concerns:
-  - Application layer: Models, Business logic and services
-  - Infrastructure layer: Data access, serialization and deserialization
-  - Presentation layer: User interface simple async. no MVVM pattern
-- Use local files for data persistence
-- Use dependency injection for loose coupling
+Dropped from the old plan: WPF, layered "clean architecture", dependency injection, CLI.
 
-### User Interface
+## Current state
 
-- Build a modern WPF desktop application
-- Create a main navigation interface with sections for:
-  - Shows management
-  - Groups management
-  - Spaces/venues management
-  - Planning tools
-- Implement data validation throughout the UI
-- Include loading indicators for asynchronous operations
-- Provide clear feedback for user actions
+| Part | State | Verdict |
+| --- | --- | --- |
+| `Theaterverdeling/` WinForms app, .NET 9 | Builds. Halfway through a refactor from hard-coded hall to JSON hall, so it does not run a full plan today. | **Keep, this is the base.** |
+| `src/`, `tests/`, `ShowPlanner.sln` | Did not build. Persistence project compiles zero files (wrong include path), test project references a non-existing path and ran zero tests. Content was DTOs, a one-way mapper with placeholder data, a migration that only bumps a version string and an empty PDF stub. No seating logic, no UI. | **Removed 2026-11-14.** Still in git history up to commit `62074fb`. |
+| `docs/superpowers/plans/2026-03-14-workspace-persistence.md` | Plan for the dropped persistence layer. | **Removed 2026-11-14.** |
 
-## Feature Specifications
+Ideas worth carrying over from the rewrite, as ideas and not as code:
 
-### 1. Space Management
+- One versioned JSON workspace file instead of the line-based `.wet` format.
+- Preferences per showing (date and time) instead of "dates plus a morning flag".
+- An xUnit test project, aimed at the distribution and seating logic.
 
-Design a system for modeling and visualizing theater seating layouts:
+### Worth keeping inside Theaterverdeling
 
-- Spaces/Venues:
-  - Properties: Name, Description
-  - Contains multiple Sections
-  - Visual editor for layout management
+- `Graphics.cs`: one drawing interface with a PDF and a screen implementation. This makes an on-screen preview cheap.
+- `Zaal.cs` row model (`ChairRow`, `WalkWay`) with JSON load/save, and `Zalen/Lampegiet.json` (558 seats, matches the old hard-coded capacity).
+- `Group`, `Voorstelling`, `SeatRange` and the three forms.
+- The distribution rules in `Divideshows`: front-row groups first, then morning groups, then largest first, preferred date first with a fallback to any showing.
+- `ZaalOld.cs` as reference only. It holds the last working seat filling, colour palette and PDF legend. Delete it once those are ported.
 
-- Sections (e.g., Main Hall, Balcony):
-  - Properties: Name, Priority (for preferred seating), IsBalcony flag
-  - Contains multiple Rows
-  - Sorting/ordering by priority
+### Known defects in the app
 
-- Rows:
-  - Properties: Name, RowNumber, StartSeatNumber, EndSeatNumber
-  - Accessibility flags (HasAccessFromLeft, HasAccessFromRight)
-  - Calculate SeatCount from start/end seat numbers
+1. A new showing gets an empty hall, so it has 0 seats and distributing always reports "Te weinig stoelen" (`Addshowform.cs`).
+2. Adding a showing reads and writes hard-coded `D:\Projects\ShowPlanner\...` paths and crashes on any other machine (`Theaterverdeling.cs:165-174`).
+3. The showings list is never filled; the line is commented out (`Theaterverdeling.cs:187`).
+4. Seat filling mixes the new row list with the old hard-coded `Places` grid, including Lampegiet-specific seat index exceptions. It throws on the right-hand side of row 0 (`Zaal.cs:290-387`).
+5. The seat map uses random colours and has no group colours, no "Podium" label and no legend (`Zaal.cs:208`).
+6. "Rij 1 en 2 uit" and "balcony off" do nothing; the calls are commented out.
+7. Loading a `.wet` file does not restore the showings. Dates are written with the machine culture and read with a fixed Dutch format.
+8. The showing comparers return 0/1 instead of negative/zero/positive, so `List.Sort` ordering is not reliable (`Zaalsort`, `Zaaldatesort`).
+9. `EditorForm` is an empty window.
 
-- Seats:
-  - Properties: SeatNumber, IsOccupied
-  - Track assignments and availability
-  - Generate dynamically based on row configuration
+## Action points
 
-- Space Editor:
-  - Visual editor to manage sections and rows
-  - Interactive controls for adding/editing/removing components
-  - Support for zooming and panning the layout
+### Phase 0: cleanup
 
-### 2. Show Management
+Removed on 2026-11-14 (abandoned ShowPlanner rewrite):
 
-Implement tools for managing theater performances:
+- [x] `src/` (whole folder)
+- [x] `tests/` (whole folder)
+- [x] `ShowPlanner.sln`
+- [x] `docs/` (whole folder)
 
-- Shows:
-  - Properties: Name, List of ShowInstances
-  - CRUD operations for shows
+To remove inside `Theaterverdeling/`, on hold until that folder may be changed:
 
-- Show Instances:
-  - Properties: Date, Time, assigned Space
-  - Track group assignments for each instance
-  - Link to specific venue space for seating
+- [x] `Theaterverdeling.zip` (5.4 MB: an old `.git` folder and ReSharper cache)
+- [ ] `Theaterverdeling/PdfSharp.dll`, `PdfSharp.Charting.dll`, `Word.dll`, `Theaterverdeling.exe` (unreferenced binaries; PDF comes from the PdfSharpCore NuGet package)
+- [x] `Setuptheater/` and `Theaterverdelingsetup/` (WiX v3 installers pointing at `D:\backup\Visual Studio 2012\...`)
+- [ ] `Theaterverdeling/App.config` (.NET Framework 4.8 leftover)
+- [ ] `Theaterverdeling/Zalen/Test.json`, `Zalen/Test.pdf` (debug output)
+- [ ] `Theaterverdeling/Properties/Settings.settings`, `Settings.Designer.cs`, `Resources.resx`, `Resources.Designer.cs` (unused)
+- [ ] `Theaterverdeling/Theaterverdeling.csproj.DotSettings`
+- [ ] ClickOnce publish properties in `Theaterverdeling.csproj` (`PublishUrl` up to `BootstrapperEnabled`)
+- [ ] `Crountch-One-Piece-Jolly-Roger-Ace.ico`, unless it becomes the app icon; `Wet.ico` only if the `.wet` format goes
+- [ ] `ZaalOld.cs`, after phase 1 has ported its logic
+- [ ] Merge `Theaterverdeling/.gitignore` and `.gitattributes` into the repo root
 
-- Interfaces:
-  - List view of all shows with filtering options
-  - Detail view for show instances
+### Phase 1: back to a working app
 
-### 3. Group Management
+- [ ] Load the hall from `Zalen/Lampegiet.json` next to the exe (copy to output, resolve via `AppContext.BaseDirectory`). Remove the hard-coded paths and the test PDF write.
+- [ ] Fill the showings list again.
+- [ ] Rewrite seat filling on top of `Rows`. Remove `Places` and `CreatePlaces`. Move the Lampegiet seat exceptions into the hall JSON as unusable seats.
+- [ ] Make "front rows off" and "balcony off" data driven: mark rows in the hall JSON and switch them per showing.
+- [ ] Port colours, "Podium" label, title with date and time, and the group legend from `ZaalOld.cs` into the shared drawing code.
+- [ ] Replace the comparers and the hand-written merge sort with `OrderBy` chains.
+- [ ] Manual check: plan a real past show and compare the PDF with the 2013 output.
 
-Create functionality for managing attendee groups:
+### Phase 2: solid base
 
-- Groups:
-  - Properties: Name, Size, Preferences
-  - Track assignments to show instances
+- [ ] Move distribution and seating out of the form into plain classes without UI dependencies.
+- [ ] Add an xUnit project. Cover: capacity, every group in one showing, groups seated contiguously, preferences honoured when possible, Lampegiet totals 558.
+- [ ] Replace `.wet` with one versioned JSON plan file (show name, showings, groups, hall, options). Culture-invariant dates. Decide whether old `.wet` files still need to be importable.
+- [ ] Input validation: empty or duplicate group names, group larger than the hall, no preferred date ticked.
+- [ ] Edit an existing group or showing; today only add and remove exist.
+- [ ] Report all unplaced groups in one summary instead of one message box per group.
 
-- Group Preferences:
-  - PreferFrontRow flag
-  - List of preferred show days/times
-  - UI for adding/removing preferred shows
+### Phase 3: next level
 
-- Assignments:
-  - Link groups to specific show instances
-  - Track assigned seats for each group
-  - Maintain group cohesion in seating
+- [ ] On-screen preview of each showing before exporting, using the existing screen drawing context.
+- [ ] Preferences per showing (date and time) instead of the morning flag.
+- [ ] Manual corrections: move a group to another showing, pin a group, then re-run seating.
+- [ ] Smarter seating: balance showings, avoid splitting a group across the walkway, keep a group in adjacent rows.
+- [ ] Hall editor in `EditorForm`, so a second venue needs no code.
+- [ ] Import groups from CSV or Excel.
+- [ ] Distribution: single-file self-contained publish instead of an MSI.
 
-### 4. Planning & Optimization
+## Build and run
 
-Develop algorithms for optimal seating assignment:
+```bash
+dotnet build Theaterverdeling/Theaterverdeling.sln
+```
 
-- Find suitable seats for a group:
-  - Consider group size and preferences
-  - Ensure group members sit together
-  - Respect accessibility requirements
+```bash
+dotnet run --project Theaterverdeling/Theaterverdeling/Theaterverdeling.csproj
+```
 
-- Generate optimal distribution:
-  - Assign multiple groups across show instances
-  - Maximize preference satisfaction
-  - Ensure efficient space utilization
-  - Ensure groups only go to one show instance
-
-- Seat assignment validation:
-  - Verify group can access their seats
-  - Check for seat availability
-  - Maintain group integrity
-
-### 5. Data Persistence
-
-Implement data storage and retrieval:
-
-- Workspace save/load functionality for projects
-- based on JSON files
-- Import/export capabilities
-
-### 6. output
-
-- PDF with a visual map of each show instance, color coded per group, and seat assignment in text summarized by row, start/end seat
-
-## Technical Requirements
-
-- Target .NET 9.0 framework
-- Local files for data access (JSON)
-- Async programming for responsive UI
-- Error handling and logging
-
-## Optional Enhancements
-
-- Reporting functionality for bookings and occupancy
-- Drag-and-drop interface for manual seat assignments
-- Advanced filtering and search capabilities
-
-## Deliverables
-
-1. Complete source code with clean architecture
-2. User documentation
-3. Installation guide
-4. Example workspace with sample data
-
-The final application should provide the coordinator with an intuitive, powerful tool to design venue spaces, manage shows, and optimize group seating arrangements while respecting preferences and constraints. 
+Windows only (`net9.0-windows`, WinForms). The UI is in Dutch.
