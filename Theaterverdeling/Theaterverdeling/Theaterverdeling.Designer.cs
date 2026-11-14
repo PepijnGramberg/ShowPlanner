@@ -45,6 +45,8 @@ namespace Theaterverdeling
             this.Removeshowbutton = new System.Windows.Forms.Button();
             this.SaveButton = new System.Windows.Forms.Button();
             this.LoadButton = new System.Windows.Forms.Button();
+            this.Editshowbutton = new System.Windows.Forms.Button();
+            this.Editgroupbutton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // Addshow
@@ -99,9 +101,9 @@ namespace Theaterverdeling
             // 
             // Dividebutton
             // 
-            this.Dividebutton.Location = new System.Drawing.Point(524, 484);
+            this.Dividebutton.Location = new System.Drawing.Point(489, 484);
             this.Dividebutton.Name = "Dividebutton";
-            this.Dividebutton.Size = new System.Drawing.Size(75, 23);
+            this.Dividebutton.Size = new System.Drawing.Size(110, 23);
             this.Dividebutton.TabIndex = 6;
             this.Dividebutton.Text = "Verdeel groepen";
             this.Dividebutton.UseVisualStyleBackColor = true;
@@ -191,11 +193,33 @@ namespace Theaterverdeling
             this.LoadButton.UseVisualStyleBackColor = true;
             this.LoadButton.Click += new System.EventHandler(this.LoadButton_Click);
             // 
+            // Editshowbutton
+            // 
+            this.Editshowbutton.Location = new System.Drawing.Point(165, 172);
+            this.Editshowbutton.Name = "Editshowbutton";
+            this.Editshowbutton.Size = new System.Drawing.Size(145, 23);
+            this.Editshowbutton.TabIndex = 16;
+            this.Editshowbutton.Text = "Wijzig voorstelling";
+            this.Editshowbutton.UseVisualStyleBackColor = true;
+            this.Editshowbutton.Click += new System.EventHandler(this.EditshowClick);
+            // 
+            // Editgroupbutton
+            // 
+            this.Editgroupbutton.Location = new System.Drawing.Point(568, 172);
+            this.Editgroupbutton.Name = "Editgroupbutton";
+            this.Editgroupbutton.Size = new System.Drawing.Size(113, 23);
+            this.Editgroupbutton.TabIndex = 17;
+            this.Editgroupbutton.Text = "Wijzig groep";
+            this.Editgroupbutton.UseVisualStyleBackColor = true;
+            this.Editgroupbutton.Click += new System.EventHandler(this.EditgroupClick);
+            // 
             // Theaterverdeling
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(700, 520);
+            this.Controls.Add(this.Editgroupbutton);
+            this.Controls.Add(this.Editshowbutton);
             this.Controls.Add(this.LoadButton);
             this.Controls.Add(this.SaveButton);
             this.Controls.Add(this.Removeshowbutton);
@@ -236,6 +260,8 @@ namespace Theaterverdeling
         private System.Windows.Forms.Button Removeshowbutton;
         private System.Windows.Forms.Button SaveButton;
         private System.Windows.Forms.Button LoadButton;
+        private System.Windows.Forms.Button Editshowbutton;
+        private System.Windows.Forms.Button Editgroupbutton;
     }
 }
 

@@ -1,18 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.Linq;
 using System.Windows.Forms;
 
 namespace Theaterverdeling
 {
+  // Dialog to add a group to the plan, or to change a group that is already in it.
   public partial class Addgroupform : Form
   {
-    public Addgroupform(IEnumerable<DateTime> data)
+    private readonly Plan _plan;
+
+    public Addgroupform(Plan plan, Group editing = null)
     {
       InitializeComponent();
-      foreach (var datum in data)
-        if (!Datumvoorkeurenbox.Items.Contains(datum))
-          Datumvoorkeurenbox.Items.Add(datum);
+      _plan = plan;
+      Editing = editing;
+      foreach (var datum in plan.Shows.Select(show => show.Datum).Distinct().OrderBy(datum => datum))
+      {
+        Datumvoorkeurenbox.Items.Add(datum);
+      }
+
+      if (editing != null)
+      {
+        Text = "Groep wijzigen";
+        Addgroupbutton.Text = "Groep wijzigen";
+        Groepnaam.Text = editing.Name;
+        Groepsgrootte.Value = Math.Min(Math.Max(editing.Personen, Groepsgrootte.Minimum), Groepsgrootte.Maximum);
+        Firstrowcheck.Checked = editing.Firstrows;
+        Morningcheck.Checked = editing.Morning;
+        for (var i = 0; i < Datumvoorkeurenbox.Items.Count; i++)
+        {
+          Datumvoorkeurenbox.SetItemChecked(i, editing.Datum.Contains((DateTime)Datumvoorkeurenbox.Items[i]));
+        }
+      }
     }
 
     private void CancelbuttonClick(object sender, EventArgs e)
@@ -22,22 +41,26 @@ namespace Theaterverdeling
 
     private void AddgroupbuttonClick(object sender, EventArgs e)
     {
-      if (Groepnaam.Text == "")
+      var data = Datumvoorkeurenbox.CheckedItems.Cast<DateTime>().ToList();
+      var error = _plan.CheckGroup(Groepnaam.Text, (int)Groepsgrootte.Value, data, Editing);
+      if (error != null)
       {
-        MessageBox.Show(@"Vul een groepsnaam in.");
+        Errorlabel.Text = error;
+        return;
       }
-      else
-      {
-        var data = Datumvoorkeurenbox.CheckedItems.Cast<DateTime>().ToList();
-        var time = Morningcheck.Checked;
-        Group = new Group(Groepnaam.Text, (int)Groepsgrootte.Value, Firstrowcheck.Checked, time, data);
-        Addinggroup(this, new EventArgs());
-        Close();
-      }
+
+      Group = new Group(Groepnaam.Text.Trim(), (int)Groepsgrootte.Value, Firstrowcheck.Checked, Morningcheck.Checked, data);
+      Addinggroup?.Invoke(this, EventArgs.Empty);
+      Close();
     }
+
     public delegate void AddinggroupEventHandler(object sender, EventArgs e);
     public event AddinggroupEventHandler Addinggroup;
-    public Group Group;
-  }
 
+    // The group made in this dialog, set when it is accepted.
+    public Group Group;
+
+    // The group this dialog changes, or null when it adds a new one.
+    public Group Editing { get; }
+  }
 }

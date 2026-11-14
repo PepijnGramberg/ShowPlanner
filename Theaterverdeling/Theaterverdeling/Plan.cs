@@ -70,6 +70,84 @@ namespace Theaterverdeling
       return timeSuits && show.Freeseats >= group.Personen;
     }
 
+    // Says why a group with these details cannot be in the plan, or null when it can.
+    // Pass the group that is being edited as replacing, so it is not compared with itself.
+    public string CheckGroup(string name, int people, IReadOnlyCollection<DateTime> preferredDates, Group replacing = null)
+    {
+      var trimmed = (name ?? "").Trim();
+      if (trimmed == "")
+      {
+        return "Vul een groepsnaam in.";
+      }
+      if (Groups.Any(group => group != replacing && string.Equals(group.Name.Trim(), trimmed, StringComparison.CurrentCultureIgnoreCase)))
+      {
+        return $"Er is al een groep met de naam \"{trimmed}\".";
+      }
+      var largest = Shows.Count == 0 ? 0 : Shows.Max(show => show.Zaal.Seats);
+      if (people > largest)
+      {
+        return $"De groep past in geen enkele voorstelling. De grootste heeft {largest} stoelen.";
+      }
+      if (preferredDates.Count == 0)
+      {
+        return "Kies minstens één datum.";
+      }
+      return null;
+    }
+
+    // Says why a showing at this date and time cannot be in the plan, or null when it can.
+    // Pass the showing that is being edited as replacing, so it is not compared with itself.
+    public string CheckShowing(DateTime date, DateTime time, Voorstelling replacing = null)
+    {
+      var start = ToMinute(date.Date + time.TimeOfDay);
+      if (Shows.Any(show => show != replacing && ToMinute(show.Start) == start))
+      {
+        return "Er is al een voorstelling op dat moment.";
+      }
+      return null;
+    }
+
+    public void ReplaceGroup(Group old, Group replacement)
+    {
+      // The dialogs stay open next to the main window, so the old group can be removed meanwhile.
+      var index = Groups.IndexOf(old);
+      if (index < 0)
+      {
+        Groups.Add(replacement);
+        return;
+      }
+      Groups[index] = replacement;
+    }
+
+    // Puts a changed showing in the place of the old one. When the showing moves to another date
+    // and no showing is left on the old date, the groups that preferred the old date follow.
+    public void ReplaceShow(Voorstelling old, Voorstelling replacement)
+    {
+      var index = Shows.IndexOf(old);
+      if (index < 0)
+      {
+        Shows.Add(replacement);
+        return;
+      }
+      Shows[index] = replacement;
+      if (old.Datum == replacement.Datum || Shows.Any(show => show.Datum == old.Datum))
+      {
+        return;
+      }
+      foreach (var group in Groups)
+      {
+        if (group.Datum.Remove(old.Datum) && !group.Datum.Contains(replacement.Datum))
+        {
+          group.Datum.Add(replacement.Datum);
+        }
+      }
+    }
+
+    private static DateTime ToMinute(DateTime moment)
+    {
+      return moment.AddTicks(-(moment.Ticks % TimeSpan.TicksPerMinute));
+    }
+
     public void Save(string path)
     {
       var file = new PlanFile

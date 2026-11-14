@@ -92,19 +92,38 @@ namespace Theaterverdeling
     #region Shows
     private void AddshowClick(object sender, EventArgs e)
     {
-      var addshowform = new Addshowform();
-      addshowform.Show();
+      OpenShowDialog(null);
+    }
+
+    private void EditshowClick(object sender, EventArgs e)
+    {
+      if (Voorstellingviewer.SelectedIndices.Count > 0)
+      {
+        OpenShowDialog(_plan.Shows[Voorstellingviewer.SelectedIndices[0]]);
+      }
+    }
+
+    // Opens the showing dialog, to add a showing or to change the given one.
+    private void OpenShowDialog(Voorstelling editing)
+    {
+      var addshowform = new Addshowform(_plan, editing);
       addshowform.Addingshow += AddshowformAddingshow;
+      addshowform.Show();
     }
 
     void AddshowformAddingshow(object sender, EventArgs e)
     {
       if (sender is Addshowform addShowForm)
       {
-        var show = addShowForm.show;
-        _plan.Shows.Add(show);
+        if (addShowForm.Editing != null)
+        {
+          _plan.ReplaceShow(addShowForm.Editing, addShowForm.show);
+        }
+        else
+        {
+          _plan.Shows.Add(addShowForm.show);
+        }
         Voorstellingviewerupdate();
-
         Updatestoelen();
       }
     }
@@ -137,19 +156,38 @@ namespace Theaterverdeling
         MessageBox.Show("Voeg eerst de voorstelling toe");
       else
       {
-        var data = _plan.Shows.Select(voorstelling => voorstelling.Datum).ToList();
-        var addgroupform = new Addgroupform(data);
-        addgroupform.Show();
-        addgroupform.Addinggroup += AddgroupformAddinggroup;
+        OpenGroupDialog(null);
       }
+    }
+
+    private void EditgroupClick(object sender, EventArgs e)
+    {
+      if (Groupviewer.SelectedIndices.Count > 0)
+      {
+        OpenGroupDialog(_plan.Groups[Groupviewer.SelectedIndices[0]]);
+      }
+    }
+
+    // Opens the group dialog, to add a group or to change the given one.
+    private void OpenGroupDialog(Group editing)
+    {
+      var addgroupform = new Addgroupform(_plan, editing);
+      addgroupform.Addinggroup += AddgroupformAddinggroup;
+      addgroupform.Show();
     }
 
     void AddgroupformAddinggroup(object sender, EventArgs e)
     {
       if (sender is Addgroupform addGroupForm)
       {
-        var group = addGroupForm.Group;
-        _plan.Groups.Add(group);
+        if (addGroupForm.Editing != null)
+        {
+          _plan.ReplaceGroup(addGroupForm.Editing, addGroupForm.Group);
+        }
+        else
+        {
+          _plan.Groups.Add(addGroupForm.Group);
+        }
         Groupviewerupdate();
         Updatestoelen();
       }

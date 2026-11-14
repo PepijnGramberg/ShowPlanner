@@ -39,6 +39,7 @@
             this.Firstrowcheck = new System.Windows.Forms.CheckBox();
             this.Morningcheck = new System.Windows.Forms.CheckBox();
             this.label4 = new System.Windows.Forms.Label();
+            this.Errorlabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.Groepsgrootte)).BeginInit();
             this.SuspendLayout();
             // 
@@ -156,11 +157,21 @@
             this.label4.TabIndex = 10;
             this.label4.Text = "Eisen";
             // 
+            // Errorlabel
+            // 
+            this.Errorlabel.AutoSize = true;
+            this.Errorlabel.ForeColor = System.Drawing.Color.Firebrick;
+            this.Errorlabel.Location = new System.Drawing.Point(25, 222);
+            this.Errorlabel.Name = "Errorlabel";
+            this.Errorlabel.Size = new System.Drawing.Size(0, 13);
+            this.Errorlabel.TabIndex = 20;
+            // 
             // Addgroupform
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(512, 282);
+            this.Controls.Add(this.Errorlabel);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.Morningcheck);
             this.Controls.Add(this.Firstrowcheck);
@@ -193,5 +204,6 @@
         private System.Windows.Forms.CheckBox Firstrowcheck;
         private System.Windows.Forms.CheckBox Morningcheck;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label Errorlabel;
     }
 }

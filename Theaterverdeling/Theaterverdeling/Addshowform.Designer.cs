@@ -36,6 +36,7 @@
             this.Time = new System.Windows.Forms.DateTimePicker();
             this.Sectionsoff = new System.Windows.Forms.CheckedListBox();
             this.Sectionslabel = new System.Windows.Forms.Label();
+            this.Errorlabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // Datumkeuze
@@ -47,7 +48,7 @@
             // 
             // Addshow
             // 
-            this.Addshow.Location = new System.Drawing.Point(148, 133);
+            this.Addshow.Location = new System.Drawing.Point(148, 152);
             this.Addshow.Name = "Addshow";
             this.Addshow.Size = new System.Drawing.Size(75, 23);
             this.Addshow.TabIndex = 5;
@@ -57,7 +58,7 @@
             // 
             // Cancelbutton
             // 
-            this.Cancelbutton.Location = new System.Drawing.Point(229, 133);
+            this.Cancelbutton.Location = new System.Drawing.Point(229, 152);
             this.Cancelbutton.Name = "Cancelbutton";
             this.Cancelbutton.Size = new System.Drawing.Size(75, 23);
             this.Cancelbutton.TabIndex = 6;
@@ -110,11 +111,21 @@
             this.Sectionsoff.Size = new System.Drawing.Size(189, 49);
             this.Sectionsoff.TabIndex = 11;
             // 
+            // Errorlabel
+            // 
+            this.Errorlabel.AutoSize = true;
+            this.Errorlabel.ForeColor = System.Drawing.Color.Firebrick;
+            this.Errorlabel.Location = new System.Drawing.Point(12, 130);
+            this.Errorlabel.Name = "Errorlabel";
+            this.Errorlabel.Size = new System.Drawing.Size(0, 13);
+            this.Errorlabel.TabIndex = 20;
+            // 
             // Addshowform
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(340, 168);
+            this.ClientSize = new System.Drawing.Size(340, 187);
+            this.Controls.Add(this.Errorlabel);
             this.Controls.Add(this.Sectionslabel);
             this.Controls.Add(this.Sectionsoff);
             this.Controls.Add(this.Time);
@@ -141,5 +152,6 @@
         public Voorstelling show;
         private System.Windows.Forms.CheckedListBox Sectionsoff;
         private System.Windows.Forms.Label Sectionslabel;
+        private System.Windows.Forms.Label Errorlabel;
     }
 }
