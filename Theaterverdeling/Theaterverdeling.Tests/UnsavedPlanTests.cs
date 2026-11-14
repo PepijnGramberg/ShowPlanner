@@ -137,6 +137,48 @@ namespace Theaterverdeling.Tests
       AddGroup(main, "De Regenboog", 28);
       return main;
     }
+    [Fact]
+    public void Closing_the_window_asks_first_when_a_hall_in_the_editor_is_not_saved()
+    {
+      OnUiThread(() =>
+      {
+        using var main = new Theaterverdeling();
+        main.Show();
+        var editor = new EditorForm();
+        editor.Show();
+        var questions = new List<string>();
+        editor.Confirm = question =>
+        {
+          questions.Add(question);
+          return false;
+        };
+        Find<TextBox>(editor, "Hallname").Text = "Nieuwe zaal";
+
+        main.Close();
+
+        Assert.Equal(new[] { "De wijzigingen in deze zaal zijn niet opgeslagen. Toch sluiten?" }, questions);
+        Assert.True(main.Visible);
+        Assert.True(editor.Visible);
+      });
+    }
+
+    [Fact]
+    public void Closing_the_window_closes_a_hall_editor_without_changes()
+    {
+      OnUiThread(() =>
+      {
+        using var main = new Theaterverdeling();
+        main.Show();
+        var editor = new EditorForm();
+        editor.Show();
+
+        main.Close();
+
+        Assert.False(main.Visible);
+        Assert.True(editor.IsDisposed);
+      });
+    }
+
 
     // Answers every question of the window and returns the list the questions are added to.
     private static List<string> Answer(Theaterverdeling main, bool answer)
