@@ -68,6 +68,22 @@ namespace Theaterverdeling.Tests
     }
 
     [Fact]
+    public void Help_text_of_the_preview_fits_in_its_label()
+    {
+      OnUiThread(() =>
+      {
+        using var main = PlanOnScreen();
+
+        Find<Button>(main, "Dividebutton").PerformClick();
+
+        var help = Find<Label>(Application.OpenForms.OfType<PreviewForm>().Single(), "Seatslabel");
+        Assert.StartsWith("Kies een groep", help.Text);
+        var needed = TextRenderer.MeasureText(help.Text, help.Font, new Size(help.Width, 0), TextFormatFlags.WordBreak);
+        Assert.True(needed.Height <= help.Height, $"The text needs {needed.Height} pixels and the label has {help.Height}.");
+      });
+    }
+
+    [Fact]
     public void Distributing_again_replaces_the_preview()
     {
       OnUiThread(() =>

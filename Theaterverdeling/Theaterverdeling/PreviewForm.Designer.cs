@@ -102,7 +102,7 @@ namespace Theaterverdeling
             this.Grouplist.IntegralHeight = false;
             this.Grouplist.Location = new System.Drawing.Point(8, 180);
             this.Grouplist.Name = "Grouplist";
-            this.Grouplist.Size = new System.Drawing.Size(264, 262);
+            this.Grouplist.Size = new System.Drawing.Size(264, 234);
             this.Grouplist.TabIndex = 3;
             this.Grouplist.SelectedIndexChanged += new System.EventHandler(this.GrouplistSelectedIndexChanged);
             //
@@ -117,22 +117,23 @@ namespace Theaterverdeling
             this.Actionpanel.Controls.Add(this.Messagelabel);
             this.Actionpanel.Controls.Add(this.Exportbutton);
             this.Actionpanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.Actionpanel.Location = new System.Drawing.Point(8, 442);
+            this.Actionpanel.Location = new System.Drawing.Point(8, 414);
             this.Actionpanel.Name = "Actionpanel";
-            this.Actionpanel.Size = new System.Drawing.Size(264, 250);
+            this.Actionpanel.Size = new System.Drawing.Size(264, 278);
             this.Actionpanel.TabIndex = 4;
             //
             // Seatslabel
             //
+            this.Seatslabel.AutoEllipsis = true;
             this.Seatslabel.Location = new System.Drawing.Point(0, 6);
             this.Seatslabel.Name = "Seatslabel";
-            this.Seatslabel.Size = new System.Drawing.Size(264, 44);
+            this.Seatslabel.Size = new System.Drawing.Size(264, 72);
             this.Seatslabel.TabIndex = 0;
             //
             // Movelabel
             //
             this.Movelabel.AutoSize = true;
-            this.Movelabel.Location = new System.Drawing.Point(0, 56);
+            this.Movelabel.Location = new System.Drawing.Point(0, 84);
             this.Movelabel.Name = "Movelabel";
             this.Movelabel.Size = new System.Drawing.Size(80, 13);
             this.Movelabel.TabIndex = 1;
@@ -142,14 +143,14 @@ namespace Theaterverdeling
             //
             this.Movechoice.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.Movechoice.FormattingEnabled = true;
-            this.Movechoice.Location = new System.Drawing.Point(0, 73);
+            this.Movechoice.Location = new System.Drawing.Point(0, 101);
             this.Movechoice.Name = "Movechoice";
             this.Movechoice.Size = new System.Drawing.Size(264, 21);
             this.Movechoice.TabIndex = 2;
             //
             // Movebutton
             //
-            this.Movebutton.Location = new System.Drawing.Point(0, 100);
+            this.Movebutton.Location = new System.Drawing.Point(0, 128);
             this.Movebutton.Name = "Movebutton";
             this.Movebutton.Size = new System.Drawing.Size(128, 25);
             this.Movebutton.TabIndex = 3;
@@ -159,7 +160,7 @@ namespace Theaterverdeling
             //
             // Pinbutton
             //
-            this.Pinbutton.Location = new System.Drawing.Point(136, 100);
+            this.Pinbutton.Location = new System.Drawing.Point(136, 128);
             this.Pinbutton.Name = "Pinbutton";
             this.Pinbutton.Size = new System.Drawing.Size(128, 25);
             this.Pinbutton.TabIndex = 4;
@@ -169,7 +170,7 @@ namespace Theaterverdeling
             //
             // Autoseatbutton
             // 
-            this.Autoseatbutton.Location = new System.Drawing.Point(0, 131);
+            this.Autoseatbutton.Location = new System.Drawing.Point(0, 159);
             this.Autoseatbutton.Name = "Autoseatbutton";
             this.Autoseatbutton.Size = new System.Drawing.Size(264, 25);
             this.Autoseatbutton.TabIndex = 7;
@@ -179,14 +180,14 @@ namespace Theaterverdeling
             // 
             // Messagelabel
             //
-            this.Messagelabel.Location = new System.Drawing.Point(0, 162);
+            this.Messagelabel.Location = new System.Drawing.Point(0, 190);
             this.Messagelabel.Name = "Messagelabel";
             this.Messagelabel.Size = new System.Drawing.Size(264, 46);
             this.Messagelabel.TabIndex = 5;
             //
             // Exportbutton
             //
-            this.Exportbutton.Location = new System.Drawing.Point(0, 216);
+            this.Exportbutton.Location = new System.Drawing.Point(0, 244);
             this.Exportbutton.Name = "Exportbutton";
             this.Exportbutton.Size = new System.Drawing.Size(264, 30);
             this.Exportbutton.TabIndex = 6;

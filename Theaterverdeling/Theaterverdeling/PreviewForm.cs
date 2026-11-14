@@ -18,6 +18,9 @@ namespace Theaterverdeling
     // The showings in the "Verplaats naar" list, in the order of that list.
     private List<Voorstelling> _targets = new List<Voorstelling>();
 
+    // Shows the whole text of a label that has no room for it.
+    private readonly ToolTip _tips;
+
     // True while the lists are filled by the form itself, so that is not taken for a choice.
     private bool _filling;
 
@@ -33,7 +36,8 @@ namespace Theaterverdeling
         Text = $"Indeling - {plan.ShowName}";
       }
       // What the buttons do is not in their short names.
-      var tips = new ToolTip();
+      _tips = new ToolTip();
+      var tips = _tips;
       tips.SetToolTip(Pinbutton, "Een vastgezette groep blijft in deze voorstelling als de groepen opnieuw worden verdeeld.");
       tips.SetToolTip(Movebutton, "Zet de gekozen groep in de voorstelling hierboven en zet hem daar vast.");
       tips.SetToolTip(Autoseatbutton, "Laat de zelf gekozen stoelen los: de groep krijgt weer stoelen volgens de regels.");
@@ -117,6 +121,7 @@ namespace Theaterverdeling
         : string.Join(", ", group.Seats.Select(range => range.StartSeat == range.EndSeat
             ? $"rij {range.Row}: {range.StartSeat}"
             : $"rij {range.Row}: {range.StartSeat}-{range.EndSeat}"));
+      _tips.SetToolTip(Seatslabel, group == null ? "" : Seatslabel.Text);
 
       _targets = group == null
         ? new List<Voorstelling>()
