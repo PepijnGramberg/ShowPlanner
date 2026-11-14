@@ -48,7 +48,7 @@
             this.Addgroupbutton.Location = new System.Drawing.Point(285, 185);
             this.Addgroupbutton.Name = "Addgroupbutton";
             this.Addgroupbutton.Size = new System.Drawing.Size(131, 23);
-            this.Addgroupbutton.TabIndex = 0;
+            this.Addgroupbutton.TabIndex = 5;
             this.Addgroupbutton.Text = "Groep toevoegen";
             this.Addgroupbutton.UseVisualStyleBackColor = true;
             this.Addgroupbutton.Click += new System.EventHandler(this.AddgroupbuttonClick);
@@ -58,7 +58,7 @@
             this.Cancelbutton.Location = new System.Drawing.Point(422, 185);
             this.Cancelbutton.Name = "Cancelbutton";
             this.Cancelbutton.Size = new System.Drawing.Size(75, 23);
-            this.Cancelbutton.TabIndex = 1;
+            this.Cancelbutton.TabIndex = 6;
             this.Cancelbutton.Text = "Annuleren";
             this.Cancelbutton.UseVisualStyleBackColor = true;
             this.Cancelbutton.Click += new System.EventHandler(this.CancelbuttonClick);
@@ -69,7 +69,7 @@
             this.Datumvoorkeurenbox.Location = new System.Drawing.Point(320, 34);
             this.Datumvoorkeurenbox.Name = "Datumvoorkeurenbox";
             this.Datumvoorkeurenbox.Size = new System.Drawing.Size(175, 94);
-            this.Datumvoorkeurenbox.TabIndex = 2;
+            this.Datumvoorkeurenbox.TabIndex = 4;
             // 
             // label1
             // 
@@ -86,7 +86,7 @@
             this.Groepnaam.MaxLength = 18;
             this.Groepnaam.Name = "Groepnaam";
             this.Groepnaam.Size = new System.Drawing.Size(180, 20);
-            this.Groepnaam.TabIndex = 4;
+            this.Groepnaam.TabIndex = 0;
             // 
             // Groepsgrootte
             // 
@@ -103,7 +103,7 @@
             0});
             this.Groepsgrootte.Name = "Groepsgrootte";
             this.Groepsgrootte.Size = new System.Drawing.Size(70, 20);
-            this.Groepsgrootte.TabIndex = 5;
+            this.Groepsgrootte.TabIndex = 1;
             this.Groepsgrootte.Value = new decimal(new int[] {
             1,
             0,
@@ -134,7 +134,7 @@
             this.Firstrowcheck.Location = new System.Drawing.Point(18, 92);
             this.Firstrowcheck.Name = "Firstrowcheck";
             this.Firstrowcheck.Size = new System.Drawing.Size(66, 17);
-            this.Firstrowcheck.TabIndex = 8;
+            this.Firstrowcheck.TabIndex = 2;
             this.Firstrowcheck.Text = "Wil vooraan zitten";
             this.Firstrowcheck.UseVisualStyleBackColor = true;
             // 
@@ -144,7 +144,7 @@
             this.Morningcheck.Location = new System.Drawing.Point(18, 116);
             this.Morningcheck.Name = "Morningcheck";
             this.Morningcheck.Size = new System.Drawing.Size(123, 17);
-            this.Morningcheck.TabIndex = 9;
+            this.Morningcheck.TabIndex = 3;
             this.Morningcheck.Text = "Alleen een ochtendvoorstelling (voor 12:00)";
             this.Morningcheck.UseVisualStyleBackColor = true;
             // 
@@ -194,6 +194,12 @@
             this.Controls.Add(this.Datumvoorkeurenbox);
             this.Controls.Add(this.Cancelbutton);
             this.Controls.Add(this.Addgroupbutton);
+            this.AcceptButton = this.Addgroupbutton;
+            this.CancelButton = this.Cancelbutton;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.ShowInTaskbar = false;
             this.Name = "Addgroupform";
             this.Text = "Groep toevoegen";
             ((System.ComponentModel.ISupportInitialize)(this.Groepsgrootte)).EndInit();

@@ -44,14 +44,14 @@
             this.Datumkeuze.Location = new System.Drawing.Point(4, 25);
             this.Datumkeuze.Name = "Datumkeuze";
             this.Datumkeuze.Size = new System.Drawing.Size(200, 20);
-            this.Datumkeuze.TabIndex = 4;
+            this.Datumkeuze.TabIndex = 0;
             // 
             // Addshow
             // 
             this.Addshow.Location = new System.Drawing.Point(148, 152);
             this.Addshow.Name = "Addshow";
             this.Addshow.Size = new System.Drawing.Size(75, 23);
-            this.Addshow.TabIndex = 5;
+            this.Addshow.TabIndex = 4;
             this.Addshow.Text = "Toevoegen";
             this.Addshow.UseVisualStyleBackColor = true;
             this.Addshow.Click += new System.EventHandler(this.AddshowClick);
@@ -61,7 +61,7 @@
             this.Cancelbutton.Location = new System.Drawing.Point(229, 152);
             this.Cancelbutton.Name = "Cancelbutton";
             this.Cancelbutton.Size = new System.Drawing.Size(75, 23);
-            this.Cancelbutton.TabIndex = 6;
+            this.Cancelbutton.TabIndex = 5;
             this.Cancelbutton.Text = "Annuleren";
             this.Cancelbutton.UseVisualStyleBackColor = true;
             this.Cancelbutton.Click += new System.EventHandler(this.CancelButtonClick);
@@ -92,7 +92,7 @@
             this.Time.Name = "Time";
             this.Time.ShowUpDown = true;
             this.Time.Size = new System.Drawing.Size(87, 20);
-            this.Time.TabIndex = 10;
+            this.Time.TabIndex = 1;
             // 
             // Sectionslabel
             // 
@@ -110,7 +110,7 @@
             this.Sectionsoff.Location = new System.Drawing.Point(15, 72);
             this.Sectionsoff.Name = "Sectionsoff";
             this.Sectionsoff.Size = new System.Drawing.Size(189, 49);
-            this.Sectionsoff.TabIndex = 11;
+            this.Sectionsoff.TabIndex = 3;
             // 
             // Halllabel
             // 
@@ -130,7 +130,7 @@
             this.Hallchoice.Location = new System.Drawing.Point(229, 72);
             this.Hallchoice.Name = "Hallchoice";
             this.Hallchoice.Size = new System.Drawing.Size(100, 21);
-            this.Hallchoice.TabIndex = 14;
+            this.Hallchoice.TabIndex = 2;
             this.Hallchoice.SelectedIndexChanged += new System.EventHandler(this.HallchoiceSelectedIndexChanged);
             // 
             // Errorlabel
@@ -158,6 +158,12 @@
             this.Controls.Add(this.Cancelbutton);
             this.Controls.Add(this.Addshow);
             this.Controls.Add(this.Datumkeuze);
+            this.AcceptButton = this.Addshow;
+            this.CancelButton = this.Cancelbutton;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.ShowInTaskbar = false;
             this.Name = "Addshowform";
             this.Text = "Voorstelling toevoegen";
             this.ResumeLayout(false);

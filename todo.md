@@ -25,7 +25,7 @@ Outcome of the UX review. Each point is one commit; tick it off in that commit.
 
 ## 3. Friction
 
-- [ ] Enter and Esc work in the dialogs, and the group dialog starts in the name.
+- [x] Enter and Esc work in the dialogs, and the group dialog starts in the name.
 - [ ] One limit for the length of a group name in the dialog and in the grid.
 - [ ] The lists of the main window grow with the window.
 - [ ] "Meerdere groepen": make pasting from Excel easy to find and say that the date columns are preferences.

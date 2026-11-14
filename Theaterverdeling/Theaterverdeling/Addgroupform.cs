@@ -14,6 +14,9 @@ namespace Theaterverdeling
       InitializeComponent();
       _plan = plan;
       Editing = editing;
+      // Typing starts in the name, and the size is replaced by what is typed.
+      ActiveControl = Groepnaam;
+      Groepsgrootte.Enter += (sender, e) => Groepsgrootte.Select(0, Groepsgrootte.Text.Length);
       foreach (var datum in plan.Shows.Select(show => show.Datum).Distinct().OrderBy(datum => datum))
       {
         Datumvoorkeurenbox.Items.Add(datum);

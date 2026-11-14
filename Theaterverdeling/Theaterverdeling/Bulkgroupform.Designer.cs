@@ -110,6 +110,7 @@ namespace Theaterverdeling
             this.Controls.Add(this.Groupgrid);
             this.Controls.Add(this.Bottompanel);
             this.MinimumSize = new System.Drawing.Size(600, 250);
+            this.CancelButton = this.Closebutton;
             this.Name = "Bulkgroupform";
             this.Text = "Meerdere groepen toevoegen";
             ((System.ComponentModel.ISupportInitialize)(this.Groupgrid)).EndInit();

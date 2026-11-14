@@ -314,6 +314,43 @@ namespace Theaterverdeling.Tests
     }
 
     [Fact]
+    public void Enter_adds_and_Esc_cancels_in_the_group_dialog_and_typing_starts_in_the_name()
+    {
+      OnUiThread(() =>
+      {
+        using var main = new Theaterverdeling();
+        main.Show();
+        AddShowing(main, Day, HalfPastTen);
+
+        Find<Button>(main, "Addgroupbutton").PerformClick();
+
+        var dialog = Application.OpenForms.OfType<Addgroupform>().Single();
+        Assert.Same(Find<Button>(dialog, "Addgroupbutton"), dialog.AcceptButton);
+        Assert.Same(Find<Button>(dialog, "Cancelbutton"), dialog.CancelButton);
+        Assert.Same(Find<TextBox>(dialog, "Groepnaam"), dialog.ActiveControl);
+        Assert.True(Find<TextBox>(dialog, "Groepnaam").TabIndex < Find<NumericUpDown>(dialog, "Groepsgrootte").TabIndex);
+        Assert.True(Find<NumericUpDown>(dialog, "Groepsgrootte").TabIndex < Find<Button>(dialog, "Addgroupbutton").TabIndex);
+      });
+    }
+
+    [Fact]
+    public void Enter_adds_and_Esc_cancels_in_the_showing_dialog()
+    {
+      OnUiThread(() =>
+      {
+        using var main = new Theaterverdeling();
+        main.Show();
+
+        Find<Button>(main, "Addshow").PerformClick();
+
+        var dialog = Application.OpenForms.OfType<Addshowform>().Single();
+        Assert.Same(Find<Button>(dialog, "Addshow"), dialog.AcceptButton);
+        Assert.Same(Find<Button>(dialog, "Cancelbutton"), dialog.CancelButton);
+        Assert.True(Find<DateTimePicker>(dialog, "Datumkeuze").TabIndex < Find<Button>(dialog, "Addshow").TabIndex);
+      });
+    }
+
+    [Fact]
     public void Edit_buttons_do_nothing_without_a_selection()
     {
       OnUiThread(() =>
