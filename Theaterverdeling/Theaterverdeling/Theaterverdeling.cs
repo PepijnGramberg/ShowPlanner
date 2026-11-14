@@ -231,6 +231,13 @@ namespace Theaterverdeling
       Updatestoelen();
     }
 
+    // Opens the window to make or change a hall. A changed hall counts for showings that are
+    // added afterwards and for plans that are loaded afterwards.
+    private void HallsbuttonClick(object sender, EventArgs e)
+    {
+      new EditorForm().Show();
+    }
+
     private const string PlanFileFilter = "Theaterverdeling plan (*.json)|*.json";
 
     // Writes the plan that is on screen to a file.

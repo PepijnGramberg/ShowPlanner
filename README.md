@@ -44,7 +44,7 @@ Ideas worth carrying over from the rewrite, as ideas and not as code:
 
 ### Known defects in the app
 
-1. `EditorForm` is an empty window.
+None known.
 
 ## Action points
 
@@ -108,7 +108,13 @@ Inside `Theaterverdeling/`:
 
 Open, in this order (decided 2026-11-14):
 
-1. [ ] Hall editor in `EditorForm`, so a second venue needs no code.
+1. [x] Hall editor: "Zalen" in the main window opens a window to make a hall or change one, so a second venue needs no code.
+   - The rows are in a grid: row number, number of seats, section and the seats that are not used, such as `1-2, 22-23`. Rows and walkways can be added, removed and moved.
+   - Next to the grid is the seat map. A click on a seat switches it between used and not used; a click next to the seats chooses the row.
+   - Every line is checked while typing: row number, duplicate row number, number of seats, seats that do not exist. A hall with a problem is not saved.
+   - "Opslaan" writes the hall to `Zalen/<name>.json` next to the exe. Saving under the name of another hall asks first.
+   - A changed hall counts for showings that are added afterwards and for plans that are loaded afterwards.
+   - The seat map is its own control (`SeatMapControl`, with `SeatMapLayout` for the positions). It is drawn by the PDF drawing code and reports the row, seat and group of a click, so the manual corrections can use it too.
 2. [ ] Choose the hall per showing in the add-showing dialog. Halls already load by name and the plan file stores the hall per showing.
 3. [ ] Manual corrections: move a group to another showing, pin a group, then re-run seating.
 4. [ ] Smarter seating: balance showings, avoid splitting a group across the walkway, keep a group in adjacent rows, avoid a single leftover seat at the far edge of the next row.

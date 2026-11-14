@@ -227,11 +227,23 @@ namespace Theaterverdeling
             this.Bulkgroupbutton.UseVisualStyleBackColor = true;
             this.Bulkgroupbutton.Click += new System.EventHandler(this.BulkgroupClick);
             // 
+            // Hallsbutton
+            // 
+            this.Hallsbutton = new System.Windows.Forms.Button();
+            this.Hallsbutton.Location = new System.Drawing.Point(199, 484);
+            this.Hallsbutton.Name = "Hallsbutton";
+            this.Hallsbutton.Size = new System.Drawing.Size(75, 23);
+            this.Hallsbutton.TabIndex = 20;
+            this.Hallsbutton.Text = "Zalen";
+            this.Hallsbutton.UseVisualStyleBackColor = true;
+            this.Hallsbutton.Click += new System.EventHandler(this.HallsbuttonClick);
+            // 
             // Theaterverdeling
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(700, 520);
+            this.Controls.Add(this.Hallsbutton);
             this.Controls.Add(this.Bulkgroupbutton);
             this.Controls.Add(this.Editgroupbutton);
             this.Controls.Add(this.Editshowbutton);
@@ -278,6 +290,7 @@ namespace Theaterverdeling
         private System.Windows.Forms.Button Editshowbutton;
         private System.Windows.Forms.Button Editgroupbutton;
         private System.Windows.Forms.Button Bulkgroupbutton;
+        private System.Windows.Forms.Button Hallsbutton;
     }
 }
 

@@ -104,7 +104,8 @@ namespace Theaterverdeling
         var root = jsonDoc2.RootElement;
         
         int seatCount = 0;
-        bool inUse = false;
+        // A row is in use unless the file says otherwise.
+        bool inUse = true;
         int rowNr = 0;
         
         if (root.TryGetProperty("SeatCount", out var seatCountProp))
@@ -150,7 +151,10 @@ namespace Theaterverdeling
       
       if (value is ChairRow chairRow)
       {
-        writer.WriteBoolean("InUse", chairRow.InUse);
+        if (!chairRow.InUse)
+        {
+          writer.WriteBoolean("InUse", false);
+        }
         writer.WriteNumber("SeatCount", chairRow.TotalSeatCount);
         writer.WriteNumber("RowNr", chairRow.RowNr);
         
@@ -160,24 +164,19 @@ namespace Theaterverdeling
         }
 
         // Seat numbers, starting at 1, that are never given to a group
-        writer.WriteStartArray("Unusable");
-        for (var i = 0; i < chairRow.Seats.Length; i++)
+        if (chairRow.Seats.Any(seat => !seat.Usable))
         {
-          if (!chairRow.Seats[i].Usable)
+          writer.WriteStartArray("Unusable");
+          for (var i = 0; i < chairRow.Seats.Length; i++)
           {
-            writer.WriteNumberValue(i + 1);
+            if (!chairRow.Seats[i].Usable)
+            {
+              writer.WriteNumberValue(i + 1);
+            }
           }
+          writer.WriteEndArray();
         }
-        writer.WriteEndArray();
 
-        // Handle seats array
-        writer.WriteStartArray("Seats");
-        foreach (var seat in chairRow.Seats)
-        {
-          writer.WriteStartObject();
-          writer.WriteEndObject(); // Empty seat object (can add properties later)
-        }
-        writer.WriteEndArray();
       }
       
       writer.WriteEndObject();
@@ -189,14 +188,55 @@ namespace Theaterverdeling
     // Name of the hall file this hall was loaded from, without extension.
     public string Name { get; private set; }
 
+    // The folder next to the app that holds one JSON file per hall.
+    public static string HallsFolder => Path.Combine(AppContext.BaseDirectory, "Zalen");
+
+    // The names of the halls that can be loaded, in alphabetical order.
+    public static List<string> HallNames()
+    {
+      if (!Directory.Exists(HallsFolder))
+      {
+        return new List<string>();
+      }
+      return Directory.GetFiles(HallsFolder, "*.json")
+        .Select(Path.GetFileNameWithoutExtension)
+        .OrderBy(name => name, StringComparer.CurrentCultureIgnoreCase)
+        .ToList();
+    }
+
+    public static bool Exists(string name)
+    {
+      return File.Exists(HallFile(name));
+    }
+
     // Loads a hall from the halls folder next to the app.
     public static Zaal Load(string name)
     {
-      // Only the file name counts, so a name from a plan file cannot point outside the halls folder.
-      var fileName = Path.GetFileName(name);
-      var hall = LoadFromFile<Zaal>(Path.Combine(AppContext.BaseDirectory, "Zalen", fileName + ".json"));
-      hall.Name = fileName;
+      var hall = LoadFromFile<Zaal>(HallFile(name));
+      hall.Name = Path.GetFileName(name);
       return hall;
+    }
+
+    // Writes the hall to the halls folder under the given name, over a hall that already has that name.
+    public void Save(string name)
+    {
+      Directory.CreateDirectory(HallsFolder);
+      SaveToFile(HallFile(name));
+      Name = Path.GetFileName(name);
+    }
+
+    // A hall with the given rows, from the stage to the back.
+    public static Zaal FromRows(IEnumerable<Row> rows)
+    {
+      var hall = new Zaal();
+      hall._rows.AddRange(rows);
+      return hall;
+    }
+
+    private static string HallFile(string name)
+    {
+      // Only the file name counts, so a name from a plan file cannot point outside the halls folder.
+      return Path.Combine(HallsFolder, Path.GetFileName(name) + ".json");
     }
 
     public int Seats => _rows.Sum(r => r.AvailableSeatCount);
@@ -331,35 +371,37 @@ namespace Theaterverdeling
       const float mapTop = stageTop + lineHeight + 4;
       const float mapHeight = 500;
 
-      var groups = Groups ?? new List<Group>();
-      var maxWidthChairs = Rows.Max(r => r.TotalSeatCount) + 2; // two extra for the row number on both sides
       var mapWidth = ctx.PageWidth - (padding * 2);
-      var seatSize = Math.Min(mapWidth / maxWidthChairs, mapHeight / Rows.Count);
 
       ctx.DrawString("Podium", new RectangleF(0, stageTop, ctx.PageWidth, lineHeight));
 
-      using (ctx.BeginContainer(
-             new RectangleF(padding, mapTop, mapWidth, mapHeight),
-             new RectangleF(0, 0, mapWidth, mapHeight)))
+      var layout = DrawMap(ctx, new RectangleF(padding, mapTop, mapWidth, mapHeight));
+
+      DrawLegend(ctx, Groups ?? new List<Group>(), mapTop + layout.Height + lineHeight, lineHeight);
+    }
+
+    // Draws the seat map alone, coloured per group, in the given rectangle. Returns where the rows
+    // and seats ended up, measured from the top left corner of that rectangle.
+    public SeatMapLayout DrawMap(IDrawingContext ctx, RectangleF bounds)
+    {
+      var groups = Groups ?? new List<Group>();
+      var layout = new SeatMapLayout(Rows, bounds.Width, bounds.Height);
+
+      using (ctx.BeginContainer(bounds, new RectangleF(0, 0, bounds.Width, bounds.Height)))
       {
         for (var i = 0; i < Rows.Count; i++)
         {
-          var rowHeight = i * seatSize;
           if (Rows[i] is ChairRow chairRow)
           {
-            // Start of the row needs to be offset from the Graphics box so the entire row is centered.
-            var startRow = (mapWidth - ((chairRow.TotalSeatCount + 2) * seatSize)) / 2;
-
             var chairs = new List<RectangleF>();
             for (var j = 0; j < chairRow.TotalSeatCount; j++)
             {
-              // Add 1 to J for so there is space for the row number in front
-              chairs.Add(new RectangleF(startRow + (j + 1) * seatSize, rowHeight, seatSize, seatSize));
+              chairs.Add(layout.SeatBounds(i, j));
             }
 
             // Row number on the left and on the right
-            ctx.DrawString(chairRow.RowNr.ToString(), new RectangleF(startRow, rowHeight, seatSize, seatSize));
-            ctx.DrawString(chairRow.RowNr.ToString(), new RectangleF(startRow + (chairRow.TotalSeatCount + 1) * seatSize, rowHeight, seatSize, seatSize));
+            ctx.DrawString(chairRow.RowNr.ToString(), layout.RowNumberBounds(i, false));
+            ctx.DrawString(chairRow.RowNr.ToString(), layout.RowNumberBounds(i, true));
 
             for (var j = 0; j < chairs.Count; j++)
             {
@@ -378,12 +420,16 @@ namespace Theaterverdeling
               ctx.DrawString((j + 1).ToString(), chairs[j]);
             }
             // Black outline.
-            ctx.DrawRectangles(chairs.ToArray());
+            // A row that is still being typed in the hall editor can be without chairs.
+            if (chairs.Count > 0)
+            {
+              ctx.DrawRectangles(chairs.ToArray());
+            }
           }
         }
       }
 
-      DrawLegend(ctx, groups, mapTop + Rows.Count * seatSize + lineHeight, lineHeight);
+      return layout;
     }
 
     // Lists the groups below the seat map: marker, name, then the rows and seats of the group,
