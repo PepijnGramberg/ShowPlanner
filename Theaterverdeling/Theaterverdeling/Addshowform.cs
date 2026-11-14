@@ -68,7 +68,7 @@ namespace Theaterverdeling
     {
       if (Hallchoice.SelectedItem == null)
       {
-        Errorlabel.Text = "Er is geen zaal. Maak eerst een zaal met \"Zalen\".";
+        Errorlabel.Text = "Er is geen zaal. Maak eerst een zaal met \"Zalen beheren\".";
         return;
       }
       var error = _plan.CheckShowing(Datumkeuze.Value.Date, Time.Value, Editing);

@@ -63,7 +63,7 @@ The first twelve groups of a showing each get their own light colour. Later grou
 
 A hall is a JSON file in the folder `Zalen` next to the exe. The app ships with `Lampegiet.json` (558 chairs, 550 in use).
 
-"Zalen" in the main window opens the hall editor, so a new venue needs no code:
+"Zalen beheren" in the top corner of the main window opens the hall editor, so a new venue needs no code:
 
 - The rows are in a grid: row number, number of seats, section, and the seats that are not used, such as `1-2, 22-23`. Rows and walkways can be added, removed and moved.
 - Next to the grid is the seat map. A click on a seat switches it between used and not used.

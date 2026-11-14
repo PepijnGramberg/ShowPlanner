@@ -29,5 +29,5 @@ Outcome of the UX review. Each point is one commit; tick it off in that commit.
 - [x] One limit for the length of a group name in the dialog and in the grid.
 - [x] The lists of the main window grow with the window.
 - [x] "Meerdere groepen": make pasting from Excel easy to find and say that the date columns are preferences.
-- [ ] Move "Zalen" away from "Opslaan" and "Laden".
+- [x] Move "Zalen" away from "Opslaan" and "Laden".
 - [ ] An app icon, and the same readable font in every window.

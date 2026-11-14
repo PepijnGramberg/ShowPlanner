@@ -250,12 +250,12 @@ namespace Theaterverdeling
             // Hallsbutton
             // 
             this.Hallsbutton = new System.Windows.Forms.Button();
-            this.Hallsbutton.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
-            this.Hallsbutton.Location = new System.Drawing.Point(224, 580);
+            this.Hallsbutton.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right));
+            this.Hallsbutton.Location = new System.Drawing.Point(648, 28);
             this.Hallsbutton.Name = "Hallsbutton";
-            this.Hallsbutton.Size = new System.Drawing.Size(100, 25);
+            this.Hallsbutton.Size = new System.Drawing.Size(120, 25);
             this.Hallsbutton.TabIndex = 13;
-            this.Hallsbutton.Text = "Zalen";
+            this.Hallsbutton.Text = "Zalen beheren";
             this.Hallsbutton.UseVisualStyleBackColor = true;
             this.Hallsbutton.Click += new System.EventHandler(this.HallsbuttonClick);
             // 

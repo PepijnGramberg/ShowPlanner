@@ -124,6 +124,22 @@ namespace Theaterverdeling.Tests
     }
 
     [Fact]
+    public void Halls_button_is_in_the_top_corner_away_from_the_plan_buttons()
+    {
+      OnUiThread(() =>
+      {
+        using var main = new Theaterverdeling();
+        main.Show();
+        var halls = Find<Button>(main, "Hallsbutton");
+
+        Assert.Equal("Zalen beheren", halls.Text);
+        Assert.True(halls.Bottom < Find<ListView>(main, "Groupviewer").Top);
+        Assert.True(halls.Left > Find<TextBox>(main, "voorstellingnaambox").Right);
+        Assert.True(halls.Bottom < Find<Button>(main, "SaveButton").Top);
+      });
+    }
+
+    [Fact]
     public void Adding_a_group_without_a_showing_says_what_a_showing_is()
     {
       OnUiThread(() =>
