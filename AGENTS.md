@@ -31,6 +31,7 @@ The app is Windows only (`net9.0-windows`, WinForms). The test run takes a few s
 - **One seat layout.** `SeatMapLayout` decides where rows and seats are. The drawing code and the hit test of `SeatMapControl` both use it. Never compute seat positions anywhere else.
 - **`SeatMapControl` is reusable.** It draws a hall and raises `SeatMapClick` with the row, the seat and the group that sits there. What a click means is decided by the window: the hall editor switches seats on and off, the preview chooses groups and changes seats.
 - **Text first, then checked.** What the user types in a grid is kept as text (`GroupEntry`, `RowDraft`) and checked afterwards. A check returns a Dutch message, or null when all is well. Follow this for new input.
+- **Dialogs of the main window are opened with `OpenDialog`.** It keeps the main window from being used while the dialog is open, like `ShowDialog`, but returns at once, so a test can fill the dialog in.
 - **Designer files are written by hand.** There are no `.resx` files. Edit `*.Designer.cs` directly and keep the control names stable: the tests find controls by name.
 - **Public properties on a control or form** need `[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]`, or the build fails with WFO1000.
 

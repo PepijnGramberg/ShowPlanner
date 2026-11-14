@@ -37,6 +37,27 @@ namespace Theaterverdeling
       return !_changed || Confirm("Het plan is gewijzigd en nog niet opgeslagen. " + question);
     }
 
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    private static extern bool EnableWindow(IntPtr window, bool enable);
+
+    // Shows a dialog in the middle of this window, and keeps this window from being used until the
+    // dialog is closed. That is what ShowDialog does, but ShowDialog only returns when the dialog
+    // closes, so a test could not fill the dialog in.
+    private void OpenDialog(Form dialog)
+    {
+      dialog.StartPosition = FormStartPosition.Manual;
+      dialog.Location = new System.Drawing.Point(
+        Left + (Width - dialog.Width) / 2,
+        Top + (Height - dialog.Height) / 2);
+      dialog.FormClosed += (sender, e) =>
+      {
+        EnableWindow(Handle, true);
+        Activate();
+      };
+      EnableWindow(Handle, false);
+      dialog.Show(this);
+    }
+
     // The preview of the last distribution, while it is open.
     private PreviewForm _preview;
 
@@ -123,7 +144,7 @@ namespace Theaterverdeling
     {
       var addshowform = new Addshowform(_plan, editing);
       addshowform.Addingshow += AddshowformAddingshow;
-      addshowform.Show();
+      OpenDialog(addshowform);
     }
 
     void AddshowformAddingshow(object sender, EventArgs e)
@@ -179,7 +200,7 @@ namespace Theaterverdeling
       }
       var bulkgroupform = new Bulkgroupform(_plan);
       bulkgroupform.Addinggroups += BulkgroupformAddinggroups;
-      bulkgroupform.Show();
+      OpenDialog(bulkgroupform);
     }
 
     void BulkgroupformAddinggroups(object sender, EventArgs e)
@@ -206,7 +227,7 @@ namespace Theaterverdeling
     {
       var addgroupform = new Addgroupform(_plan, editing);
       addgroupform.Addinggroup += AddgroupformAddinggroup;
-      addgroupform.Show();
+      OpenDialog(addgroupform);
     }
 
     void AddgroupformAddinggroup(object sender, EventArgs e)

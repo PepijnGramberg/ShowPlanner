@@ -238,6 +238,47 @@ namespace Theaterverdeling.Tests
     }
 
     [Fact]
+    public void Main_window_waits_while_a_dialog_is_open()
+    {
+      OnUiThread(() =>
+      {
+        using var main = new Theaterverdeling();
+        main.Show();
+
+        Find<Button>(main, "Addshow").PerformClick();
+
+        var dialog = Application.OpenForms.OfType<Addshowform>().Single();
+        Assert.False(IsWindowEnabled(main.Handle));
+        Assert.Same(main, dialog.Owner);
+
+        Find<Button>(dialog, "Cancelbutton").PerformClick();
+
+        Assert.True(IsWindowEnabled(main.Handle));
+      });
+    }
+
+    [Fact]
+    public void Main_window_waits_while_the_group_dialogs_are_open()
+    {
+      OnUiThread(() =>
+      {
+        using var main = new Theaterverdeling();
+        main.Show();
+        AddShowing(main, Day, HalfPastTen);
+
+        Find<Button>(main, "Addgroupbutton").PerformClick();
+        Assert.False(IsWindowEnabled(main.Handle));
+        Application.OpenForms.OfType<Addgroupform>().Single().Close();
+        Assert.True(IsWindowEnabled(main.Handle));
+
+        Find<Button>(main, "Bulkgroupbutton").PerformClick();
+        Assert.False(IsWindowEnabled(main.Handle));
+        Application.OpenForms.OfType<Bulkgroupform>().Single().Close();
+        Assert.True(IsWindowEnabled(main.Handle));
+      });
+    }
+
+    [Fact]
     public void Edit_buttons_do_nothing_without_a_selection()
     {
       OnUiThread(() =>
@@ -254,6 +295,9 @@ namespace Theaterverdeling.Tests
         Assert.Empty(Application.OpenForms.OfType<Addshowform>());
       });
     }
+
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    private static extern bool IsWindowEnabled(IntPtr window);
 
     // What the list does on a double-click or on Enter.
     private static void Activate(Control main, string listName)
