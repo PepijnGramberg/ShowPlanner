@@ -20,8 +20,25 @@ namespace Theaterverdeling.Tests
         main.Show();
 
         Assert.Equal("Titel van de voorstelling", Find<Label>(main, "label1").Text);
-        Assert.Equal("Voorstellingen (datum en tijd)", Find<Label>(main, "label2").Text);
+        Assert.Equal("1. Voorstellingen (datum en tijd)", Find<Label>(main, "label2").Text);
         Assert.Equal("Voorstelling toevoegen", Find<Button>(main, "Addshow").Text);
+      });
+    }
+
+    [Fact]
+    public void Steps_are_numbered_and_the_last_one_stands_out_and_names_the_pdf()
+    {
+      OnUiThread(() =>
+      {
+        using var main = new Theaterverdeling();
+        main.Show();
+
+        Assert.StartsWith("1. ", Find<Label>(main, "label2").Text);
+        Assert.Equal("2. Groepen", Find<Label>(main, "label3").Text);
+        Assert.Equal("3. Indeling", Find<Label>(main, "Steplabel3").Text);
+        Assert.True(Find<Button>(main, "Dividebutton").Font.Bold);
+        Assert.False(Find<Button>(main, "ResetButton").Font.Bold);
+        Assert.Contains("PDF", Find<Label>(main, "Stephint").Text);
       });
     }
 
