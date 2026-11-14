@@ -34,7 +34,8 @@
             this.Timelabel = new System.Windows.Forms.Label();
             this.Datumlabel = new System.Windows.Forms.Label();
             this.Time = new System.Windows.Forms.DateTimePicker();
-            this.Balconyoff = new System.Windows.Forms.CheckBox();
+            this.Sectionsoff = new System.Windows.Forms.CheckedListBox();
+            this.Sectionslabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // Datumkeuze
@@ -46,7 +47,7 @@
             // 
             // Addshow
             // 
-            this.Addshow.Location = new System.Drawing.Point(148, 101);
+            this.Addshow.Location = new System.Drawing.Point(148, 133);
             this.Addshow.Name = "Addshow";
             this.Addshow.Size = new System.Drawing.Size(75, 23);
             this.Addshow.TabIndex = 5;
@@ -56,7 +57,7 @@
             // 
             // Cancelbutton
             // 
-            this.Cancelbutton.Location = new System.Drawing.Point(229, 101);
+            this.Cancelbutton.Location = new System.Drawing.Point(229, 133);
             this.Cancelbutton.Name = "Cancelbutton";
             this.Cancelbutton.Size = new System.Drawing.Size(75, 23);
             this.Cancelbutton.TabIndex = 6;
@@ -91,22 +92,31 @@
             this.Time.Size = new System.Drawing.Size(87, 20);
             this.Time.TabIndex = 10;
             // 
-            // Balconyoff
+            // Sectionslabel
             // 
-            this.Balconyoff.AutoSize = true;
-            this.Balconyoff.Location = new System.Drawing.Point(15, 62);
-            this.Balconyoff.Name = "Balconyoff";
-            this.Balconyoff.Size = new System.Drawing.Size(104, 17);
-            this.Balconyoff.TabIndex = 11;
-            this.Balconyoff.Text = "Balkon Uitzetten";
-            this.Balconyoff.UseVisualStyleBackColor = true;
+            this.Sectionslabel.AutoSize = true;
+            this.Sectionslabel.Location = new System.Drawing.Point(12, 56);
+            this.Sectionslabel.Name = "Sectionslabel";
+            this.Sectionslabel.Size = new System.Drawing.Size(52, 13);
+            this.Sectionslabel.TabIndex = 12;
+            this.Sectionslabel.Text = "Uitzetten";
+            // 
+            // Sectionsoff
+            // 
+            this.Sectionsoff.CheckOnClick = true;
+            this.Sectionsoff.FormattingEnabled = true;
+            this.Sectionsoff.Location = new System.Drawing.Point(15, 72);
+            this.Sectionsoff.Name = "Sectionsoff";
+            this.Sectionsoff.Size = new System.Drawing.Size(189, 49);
+            this.Sectionsoff.TabIndex = 11;
             // 
             // Addshowform
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(340, 136);
-            this.Controls.Add(this.Balconyoff);
+            this.ClientSize = new System.Drawing.Size(340, 168);
+            this.Controls.Add(this.Sectionslabel);
+            this.Controls.Add(this.Sectionsoff);
             this.Controls.Add(this.Time);
             this.Controls.Add(this.Datumlabel);
             this.Controls.Add(this.Timelabel);
@@ -129,6 +139,7 @@
         private System.Windows.Forms.Label Datumlabel;
         private System.Windows.Forms.DateTimePicker Time;
         public Voorstelling show;
-        private System.Windows.Forms.CheckBox Balconyoff;
+        private System.Windows.Forms.CheckedListBox Sectionsoff;
+        private System.Windows.Forms.Label Sectionslabel;
     }
 }

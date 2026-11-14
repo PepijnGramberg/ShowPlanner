@@ -19,6 +19,11 @@ namespace Theaterverdeling.Tests
       return $"{{\"Type\":\"ChairRow\",\"RowNr\":{number},\"InUse\":{(inUse ? "true" : "false")},\"SeatCount\":{seats},\"Unusable\":[{string.Join(",", unusable)}]}}";
     }
 
+    public static string SectionRow(int number, int seats, string section)
+    {
+      return $"{{\"Type\":\"ChairRow\",\"RowNr\":{number},\"InUse\":true,\"SeatCount\":{seats},\"Section\":\"{section}\"}}";
+    }
+
     public static Group Group(string name, int people)
     {
       return new Group(name, people, false, false, new List<DateTime>());

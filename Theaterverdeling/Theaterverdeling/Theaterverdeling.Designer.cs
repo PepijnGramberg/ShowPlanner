@@ -41,7 +41,6 @@ namespace Theaterverdeling
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.ResetButton = new System.Windows.Forms.Button();
-            this.Frontrowsdisable = new System.Windows.Forms.CheckBox();
             this.RemoveGroupbut = new System.Windows.Forms.Button();
             this.Removeshowbutton = new System.Windows.Forms.Button();
             this.SaveButton = new System.Windows.Forms.Button();
@@ -72,6 +71,7 @@ namespace Theaterverdeling
             // 
             this.Voorstellingviewer.Location = new System.Drawing.Point(12, 112);
             this.Voorstellingviewer.Name = "Voorstellingviewer";
+            this.Voorstellingviewer.ShowItemToolTips = true;
             this.Voorstellingviewer.Size = new System.Drawing.Size(146, 351);
             this.Voorstellingviewer.TabIndex = 3;
             this.Voorstellingviewer.TileSize = new System.Drawing.Size(110, 40);
@@ -151,17 +151,6 @@ namespace Theaterverdeling
             this.ResetButton.UseVisualStyleBackColor = true;
             this.ResetButton.Click += new System.EventHandler(this.ResetButtonClick);
             // 
-            // Frontrowsdisable
-            // 
-            this.Frontrowsdisable.AutoSize = true;
-            this.Frontrowsdisable.Location = new System.Drawing.Point(139, 63);
-            this.Frontrowsdisable.Name = "Frontrowsdisable";
-            this.Frontrowsdisable.Size = new System.Drawing.Size(85, 17);
-            this.Frontrowsdisable.TabIndex = 12;
-            this.Frontrowsdisable.Text = "Rij 1 en 2 uit";
-            this.Frontrowsdisable.UseVisualStyleBackColor = true;
-            this.Frontrowsdisable.CheckedChanged += new System.EventHandler(this.FrontrowsdisableCheckedChanged);
-            // 
             // RemoveGroupbut
             // 
             this.RemoveGroupbut.Location = new System.Drawing.Point(568, 142);
@@ -211,7 +200,6 @@ namespace Theaterverdeling
             this.Controls.Add(this.SaveButton);
             this.Controls.Add(this.Removeshowbutton);
             this.Controls.Add(this.RemoveGroupbut);
-            this.Controls.Add(this.Frontrowsdisable);
             this.Controls.Add(this.ResetButton);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
@@ -244,7 +232,6 @@ namespace Theaterverdeling
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button ResetButton;
-        private System.Windows.Forms.CheckBox Frontrowsdisable;
         private System.Windows.Forms.Button RemoveGroupbut;
         private System.Windows.Forms.Button Removeshowbutton;
         private System.Windows.Forms.Button SaveButton;

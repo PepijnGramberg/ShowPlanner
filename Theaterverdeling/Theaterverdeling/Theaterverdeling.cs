@@ -155,7 +155,6 @@ namespace Theaterverdeling
       if (sender is Addshowform addShowForm)
       {
         var show = addShowForm.show;
-        //todo show.Zaal.Frontseatchange(Frontrowsdisable.Checked);
         _shows.Add(show);
         Voorstellingviewerupdate();
 
@@ -167,7 +166,14 @@ namespace Theaterverdeling
       Voorstellingviewer.Items.Clear();
       foreach (var show in _shows)
       {
-        Voorstellingviewer.Items.Add($"{show.Datum.ToShortDateString()} {show.Time.ToShortTimeString()}");
+        var text = $"{show.Datum.ToShortDateString()} {show.Time.ToShortTimeString()}";
+        var switchedOff = show.Zaal.SwitchedOffSections;
+        if (switchedOff.Count > 0)
+        {
+          text += $" ({string.Join(", ", switchedOff)} uit)";
+        }
+        // The list is narrow, so the full text is also shown as tooltip.
+        Voorstellingviewer.Items.Add(text).ToolTipText = text;
       }
     }
     private int Zaalsort(Voorstelling x, Voorstelling y) => x.Freeseats < y.Freeseats ? 1 : 0;
@@ -262,16 +268,6 @@ namespace Theaterverdeling
       Groupviewer.Items.Clear();
       Voorstellingviewer.Items.Clear();
       voorstellingnaambox.Clear();
-      Frontrowsdisable.Checked = false;
-    }
-
-    private void FrontrowsdisableCheckedChanged(object sender, EventArgs e)
-    {
-      foreach (var voorstelling in _shows)
-      {
-       // todo voorstelling.Zaal.Frontseatchange(Frontrowsdisable.Checked);
-      }
-      Updatestoelen();
     }
 
     private void RemoveshowbuttonClick(object sender, EventArgs e)
@@ -320,7 +316,6 @@ namespace Theaterverdeling
             using var writer = new StreamWriter(saveFileDialog.FileName);
             writer.WriteLine("#THEATERVERDEELFILE#");
             writer.WriteLine(voorstellingnaambox.Text);
-            writer.WriteLine(Frontrowsdisable.Checked);
             writer.WriteLine("#VOORSTELLING#");
             foreach (var voorstelling in _shows)
             {
@@ -371,7 +366,6 @@ namespace Theaterverdeling
             else
             {
               voorstellingnaambox.Text = reader.ReadLine();
-              Frontrowsdisable.Checked = bool.Parse(reader.ReadLine());
               reader.ReadLine();
               line = reader.ReadLine();
               _shows.Clear();
@@ -390,7 +384,7 @@ namespace Theaterverdeling
                 line = reader.ReadLine();
                 var time = DateTime.ParseExact(line, "d-M-yyyy H:mm:ss", CultureInfo.InvariantCulture,
                                                DateTimeStyles.AllowLeadingWhite);
-               // todo _shows.Add(new Voorstelling(time, new Lampegiet(Frontrowsdisable.Checked, balcony), date));
+               // todo _shows.Add(new Voorstelling(time, hall, date));
                 line = reader.ReadLine();
               }
               line = reader.ReadLine();

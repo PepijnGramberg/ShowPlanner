@@ -22,10 +22,11 @@ namespace Theaterverdeling
 
   public sealed class ChairRow : Row
   {
-    public ChairRow(int seatCount, bool inUse, int rowNr = 0, IEnumerable<int> unusable = null)
+    public ChairRow(int seatCount, bool inUse, int rowNr = 0, IEnumerable<int> unusable = null, string section = null)
     {
       InUse = inUse;
       RowNr = rowNr;
+      Section = section;
       var unusableNumbers = new HashSet<int>(unusable ?? Enumerable.Empty<int>());
       Seats = new Seat[seatCount];
       for (var i = 0; i < Seats.Length; i++)
@@ -35,9 +36,17 @@ namespace Theaterverdeling
     }
     public bool InUse { get; }
     public int RowNr { get; }
+
+    // Name of the part of the hall this row belongs to, such as the balcony. Null when the row cannot be switched off.
+    public string Section { get; }
+
+    // True when the section of this row is switched off for the showing.
+    public bool SwitchedOff { get; set; }
+
+    public bool Available => InUse && !SwitchedOff;
     public override int TotalSeatCount => Seats.Length;
 
-    public override int AvailableSeatCount => InUse ? Seats.Count(seat => seat.Usable) : 0;
+    public override int AvailableSeatCount => Available ? Seats.Count(seat => seat.Usable) : 0;
 
     public Seat[] Seats { get; }
   }
@@ -120,7 +129,13 @@ namespace Theaterverdeling
         }
 
         // Create new ChairRow with constructor
-        return new ChairRow(seatCount, inUse, rowNr, unusable);
+        string section = null;
+        if (root.TryGetProperty("Section", out var sectionProp))
+        {
+          section = sectionProp.GetString();
+        }
+
+        return new ChairRow(seatCount, inUse, rowNr, unusable, section);
       }
       
       throw new JsonException($"Unknown Row type: {typeName}");
@@ -139,6 +154,11 @@ namespace Theaterverdeling
         writer.WriteNumber("SeatCount", chairRow.TotalSeatCount);
         writer.WriteNumber("RowNr", chairRow.RowNr);
         
+        if (chairRow.Section != null)
+        {
+          writer.WriteString("Section", chairRow.Section);
+        }
+
         // Seat numbers, starting at 1, that are never given to a group
         writer.WriteStartArray("Unusable");
         for (var i = 0; i < chairRow.Seats.Length; i++)
@@ -174,6 +194,19 @@ namespace Theaterverdeling
     protected List<Row> _rows = new List<Row>();
     public IReadOnlyList<Row> Rows => _rows;
 
+    // Named parts of the hall that can be switched off for a showing, such as the balcony.
+    public IReadOnlyList<string> Sections => _rows.OfType<ChairRow>().Select(row => row.Section).Where(section => section != null).Distinct().ToList();
+
+    public IReadOnlyList<string> SwitchedOffSections => _rows.OfType<ChairRow>().Where(row => row.SwitchedOff).Select(row => row.Section).Distinct().ToList();
+
+    public void SwitchOff(string section)
+    {
+      foreach (var row in _rows.OfType<ChairRow>().Where(row => row.Section == section))
+      {
+        row.SwitchedOff = true;
+      }
+    }
+
     public virtual void AssignSeats()
     {
       foreach (var seat in _rows.OfType<ChairRow>().SelectMany(row => row.Seats))
@@ -181,7 +214,7 @@ namespace Theaterverdeling
         seat.Group = null;
       }
 
-      var rows = _rows.OfType<ChairRow>().Where(row => row.InUse).ToList();
+      var rows = _rows.OfType<ChairRow>().Where(row => row.Available).ToList();
       var left = 0;
       var right = 0;
       foreach (var group in Groups)
