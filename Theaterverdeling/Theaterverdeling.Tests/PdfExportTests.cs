@@ -43,6 +43,31 @@ namespace Theaterverdeling.Tests
       Assert.All(written, file => Assert.True(File.Exists(file)));
     }
 
+    [Fact]
+    public void Export_leaves_no_file_of_a_showing_that_is_gone_since_the_last_export()
+    {
+      var path = NewPdfPath();
+      var plan = DistributedPlan();
+      PdfExport.Write(plan, path);
+      plan.Shows.RemoveAt(1);
+
+      var written = PdfExport.Write(plan, path);
+
+      var folder = Path.GetDirectoryName(path);
+      Assert.Equal(written.OrderBy(file => file), Directory.GetFiles(folder).OrderBy(file => file));
+    }
+
+    [Fact]
+    public void Earlier_export_is_found_by_its_files_per_showing()
+    {
+      var path = NewPdfPath();
+      Assert.Empty(PdfExport.EarlierFiles(path));
+
+      PdfExport.Write(DistributedPlan(), path);
+
+      Assert.Equal(2, PdfExport.EarlierFiles(path).Count);
+    }
+
     private static Plan DistributedPlan()
     {
       var monday = new DateTime(2026, 3, 16);
