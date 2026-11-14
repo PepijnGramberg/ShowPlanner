@@ -68,7 +68,7 @@ Inside `Theaterverdeling/`:
 - [x] `Theaterverdeling/Theaterverdeling.csproj.DotSettings`
 - [x] ClickOnce publish properties in `Theaterverdeling.csproj` (`PublishUrl` up to `BootstrapperEnabled`)
 - [x] `Wet.ico` (went with the `.wet` format)
-- [ ] `Crountch-One-Piece-Jolly-Roger-Ace.ico`, unless it becomes the app icon
+- [x] `Crountch-One-Piece-Jolly-Roger-Ace.ico` (decided 2026-11-14: it does not become the app icon)
 - [x] `ZaalOld.cs` (everything it documented is ported)
 - [x] Merge `Theaterverdeling/.gitignore` and `.gitattributes` into the repo root
 
@@ -94,14 +94,10 @@ Inside `Theaterverdeling/`:
 
 - [x] On-screen preview: "Verdeel groepen" distributes and opens a preview window with the page of each showing, drawn by the same code as the PDF. "Exporteer PDF" in that window writes the files. The preview closes when the plan changes, because it is then out of date.
 - [x] Decided 2026-11-14: preferences stay as preferred dates plus the "Ochtend" flag. Preferences per showing are not built.
-- [ ] Manual corrections: move a group to another showing, pin a group, then re-run seating.
 - [x] Double-click or Enter on a group or showing opens it for editing. The group dialog already listed the dates as short dates.
-- [ ] Smarter seating: balance showings, avoid splitting a group across the walkway, keep a group in adjacent rows, avoid a single leftover seat at the far edge of the next row.
 - [x] Group colours for any number of groups: twelve clearly different light colours, and from the thirteenth group on the same colours with one or two dark stripes on each seat. That tells 36 groups in one showing apart.
 - [x] PDF legend that always fits: one row per group with its rows and seats, four per line, and the lines are squeezed together for a full hall.
 - [x] Show switched-off rows and seats that are never used in grey on the seat map.
-- [ ] Choose the hall per showing in the add-showing dialog, once there is more than one hall file. Halls already load by name and the plan file stores the hall per showing.
-- [ ] Hall editor in `EditorForm`, so a second venue needs no code.
 - [x] Bulk input of groups: "Meerdere groepen" opens a grid to add many groups at once. This replaces the planned CSV or Excel import, because rows copied from Excel can be pasted into the grid with Ctrl+V or "Plakken".
   - Columns: name, size, "Vooraan", "Ochtend", one tick column per showing date, and a message column.
   - Each row is checked with the same rules as the group dialog, plus duplicate names within the grid. "Toevoegen" adds the valid rows; a row with a problem stays in the grid with its message.
@@ -109,7 +105,14 @@ Inside `Theaterverdeling/`:
   - Decided: a first pasted row whose size is not a number is treated as a header and skipped. A number inside a name, such as "groep 5", stays part of the name.
   - Decided: it is a separate dialog. The group list in the main window stays as it is.
   - Decided: no file import.
-- [ ] Distribution: single-file self-contained publish instead of an MSI.
+
+Open, in this order (decided 2026-11-14):
+
+1. [ ] Hall editor in `EditorForm`, so a second venue needs no code.
+2. [ ] Choose the hall per showing in the add-showing dialog. Halls already load by name and the plan file stores the hall per showing.
+3. [ ] Manual corrections: move a group to another showing, pin a group, then re-run seating.
+4. [ ] Smarter seating: balance showings, avoid splitting a group across the walkway, keep a group in adjacent rows, avoid a single leftover seat at the far edge of the next row.
+5. [ ] Distribution: single-file self-contained publish instead of an MSI.
 
 ## Build and run
 
