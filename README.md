@@ -44,9 +44,8 @@ Ideas worth carrying over from the rewrite, as ideas and not as code:
 
 ### Known defects in the app
 
-1. Save and load still use the old line-based `.wet` format, and loading does not restore the showings. This gets replaced by the JSON plan file, not repaired.
-2. The showing comparers return 0/1 instead of negative/zero/positive, so `List.Sort` ordering is not reliable (`Zaalsort`, `Zaaldatesort`).
-3. `EditorForm` is an empty window.
+1. The showing comparers return 0/1 instead of negative/zero/positive, so `List.Sort` ordering is not reliable (`Zaalsort`, `Zaaldatesort`).
+2. `EditorForm` is an empty window.
 
 ## Action points
 
@@ -69,7 +68,8 @@ Inside `Theaterverdeling/`:
 - [x] `Theaterverdeling/Properties/Settings.settings`, `Settings.Designer.cs`, `Resources.resx`, `Resources.Designer.cs` (unused)
 - [x] `Theaterverdeling/Theaterverdeling.csproj.DotSettings`
 - [x] ClickOnce publish properties in `Theaterverdeling.csproj` (`PublishUrl` up to `BootstrapperEnabled`)
-- [ ] `Crountch-One-Piece-Jolly-Roger-Ace.ico`, unless it becomes the app icon; `Wet.ico` together with the `.wet` format
+- [x] `Wet.ico` (went with the `.wet` format)
+- [ ] `Crountch-One-Piece-Jolly-Roger-Ace.ico`, unless it becomes the app icon
 - [x] `ZaalOld.cs` (everything it documented is ported)
 - [x] Merge `Theaterverdeling/.gitignore` and `.gitattributes` into the repo root
 
@@ -85,8 +85,8 @@ Inside `Theaterverdeling/`:
 ### Phase 2: solid base
 
 - [ ] Move distribution and seating out of the form into plain classes without UI dependencies.
-- [ ] Extend the xUnit project (`Theaterverdeling.Tests`, started in phase 1). Cover: capacity, every group in one showing, groups seated contiguously, preferences honoured when possible.
-- [ ] Replace `.wet` with one versioned JSON plan file (show name, showings, groups, hall, options). Culture-invariant dates. Old `.wet` files are not supported.
+- [ ] Extend the xUnit project (`Theaterverdeling.Tests`). Still to cover: distribution of groups over showings and preferences honoured when possible.
+- [x] Replace `.wet` with one versioned JSON plan file: show name, showings with hall and switched-off sections, groups with their wishes. Dates do not depend on language settings. Old `.wet` files are not supported.
 - [ ] Input validation: empty or duplicate group names, group larger than the hall, no preferred date ticked.
 - [ ] Edit an existing group or showing; today only add and remove exist.
 - [ ] Report all unplaced groups in one summary instead of one message box per group.
@@ -99,7 +99,7 @@ Inside `Theaterverdeling/`:
 - [ ] Smarter seating: balance showings, avoid splitting a group across the walkway, keep a group in adjacent rows, avoid a single leftover seat at the far edge of the next row.
 - [ ] PDF legend: colours repeat after nine groups and the legend holds 50 lines in two columns. Extend both.
 - [ ] Show switched-off rows as closed in the seat map.
-- [ ] Choose the hall per showing in the add-showing dialog, once there is more than one hall file.
+- [ ] Choose the hall per showing in the add-showing dialog, once there is more than one hall file. Halls already load by name and the plan file stores the hall per showing.
 - [ ] Hall editor in `EditorForm`, so a second venue needs no code.
 - [ ] Import groups from CSV or Excel.
 - [ ] Distribution: single-file self-contained publish instead of an MSI.

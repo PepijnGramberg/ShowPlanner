@@ -101,7 +101,7 @@ namespace Theaterverdeling.Tests
     {
       var hall = Hall(Row(1, 10, true, 9, 10));
 
-      var reloaded = Zaal.FromJson<Lampegiet>(hall.ToJson());
+      var reloaded = Zaal.FromJson<Zaal>(hall.ToJson());
 
       Assert.Equal(8, reloaded.Seats);
     }
@@ -130,7 +130,7 @@ namespace Theaterverdeling.Tests
     [Fact]
     public void Full_Lampegiet_gives_every_person_a_seat()
     {
-      var hall = Lampegiet.Load();
+      var hall = Zaal.Load("Lampegiet");
       var groups = Enumerable.Range(1, 10).Select(number => Group("G" + number, 55)).ToArray();
 
       Seat(hall, groups);

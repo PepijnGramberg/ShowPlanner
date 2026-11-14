@@ -51,7 +51,7 @@ namespace Theaterverdeling.Tests
     {
       var hall = Hall(SectionRow(1, 4, "Voor"), Row(2, 4));
 
-      var reloaded = Zaal.FromJson<Lampegiet>(hall.ToJson());
+      var reloaded = Zaal.FromJson<Zaal>(hall.ToJson());
 
       Assert.Equal(new[] { "Voor" }, reloaded.Sections);
     }
@@ -59,7 +59,7 @@ namespace Theaterverdeling.Tests
     [Fact]
     public void Lampegiet_can_switch_off_the_front_rows_and_the_balcony()
     {
-      var hall = Lampegiet.Load();
+      var hall = Zaal.Load("Lampegiet");
 
       Assert.Equal(new[] { "Rij 1 en 2", "Balkon" }, hall.Sections);
     }
@@ -67,7 +67,7 @@ namespace Theaterverdeling.Tests
     [Fact]
     public void Lampegiet_without_front_rows_and_balcony_has_324_seats()
     {
-      var hall = Lampegiet.Load();
+      var hall = Zaal.Load("Lampegiet");
 
       hall.SwitchOff("Rij 1 en 2");
       hall.SwitchOff("Balkon");

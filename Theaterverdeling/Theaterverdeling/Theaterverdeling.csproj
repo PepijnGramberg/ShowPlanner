@@ -22,7 +22,6 @@
 
   <ItemGroup>
     <Content Include="Crountch-One-Piece-Jolly-Roger-Ace.ico" />
-    <Content Include="Wet.ico" />
     <Content Include="Zalen\*.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 using PdfSharpCore.Pdf;
@@ -299,128 +298,63 @@ namespace Theaterverdeling
       Updatestoelen();
     }
 
-    /// <summary>
-    /// Saves the current state of shows and groups to a file.
-    /// Ensures proper disposal of file resources.
-    /// </summary>
-    /// <param name="sender">The event sender.</param>
-    /// <param name="e">Event arguments.</param>
+    private const string PlanFileFilter = "Theaterverdeling plan (*.json)|*.json";
+
+    // Writes the plan that is on screen to a file.
+    public void SavePlan(string path)
+    {
+      var plan = new Plan { ShowName = voorstellingnaambox.Text };
+      plan.Shows.AddRange(_shows);
+      plan.Groups.AddRange(_groups);
+      plan.Save(path);
+    }
+
+    // Replaces the plan on screen with the plan in a file.
+    // When the file cannot be read, the plan on screen stays as it was.
+    public void LoadPlan(string path)
+    {
+      var plan = Plan.Load(path);
+      voorstellingnaambox.Text = plan.ShowName;
+      _shows = plan.Shows;
+      _groups = plan.Groups;
+      Voorstellingviewerupdate();
+      Groupviewerupdate();
+      Updatestoelen();
+    }
+
     private void SaveButton_Click(object sender, EventArgs e)
     {
-      using (var saveFileDialog = new SaveFileDialog { Filter = "WETbestand (*.wet)|*.wet" })
+      using var dialog = new SaveFileDialog { Filter = PlanFileFilter };
+      if (dialog.ShowDialog() != DialogResult.OK)
       {
-        if (saveFileDialog.ShowDialog() == DialogResult.OK)
-        {
-          try
-          {
-            using var writer = new StreamWriter(saveFileDialog.FileName);
-            writer.WriteLine("#THEATERVERDEELFILE#");
-            writer.WriteLine(voorstellingnaambox.Text);
-            writer.WriteLine("#VOORSTELLING#");
-            foreach (var voorstelling in _shows)
-            {
-             //todo  writer.WriteLine(voorstelling.Zaal.Balconyoff);
-              writer.WriteLine(voorstelling.Datum.ToString());
-              writer.WriteLine(voorstelling.Time.ToString());
-            }
-            writer.WriteLine("#GROEPEN#");
-            foreach (var group in _groups)
-            {
-              writer.WriteLine(group.Name);
-              writer.WriteLine(group.Personen);
-              writer.WriteLine(group.Firstrows);
-              writer.WriteLine(group.Morning);
-              foreach (var data in group.Datum)
-              {
-                writer.WriteLine(data.Date);
-              }
-            }
-            writer.WriteLine("#END#");
-          }
-          catch (Exception ex)
-          {
-            MessageBox.Show($"Error saving file: {ex.Message}");
-          }
-        }
+        return;
+      }
+      try
+      {
+        SavePlan(dialog.FileName);
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show($"Opslaan is niet gelukt: {ex.Message}");
       }
     }
 
-    /// <summary>
-    /// Loads shows and groups from a file.
-    /// Ensures proper disposal of file resources.
-    /// </summary>
-    /// <param name="sender">The event sender.</param>
-    /// <param name="e">Event arguments.</param>
     private void LoadButton_Click(object sender, EventArgs e)
     {
-      using (var openFileDialog = new OpenFileDialog { Filter = "WETbestand (*.wet)|*.wet" })
+      using var dialog = new OpenFileDialog { Filter = PlanFileFilter };
+      if (dialog.ShowDialog() != DialogResult.OK)
       {
-        if (openFileDialog.ShowDialog() == DialogResult.OK)
-        {
-          try
-          {
-            using var reader = new StreamReader(openFileDialog.FileName);
-            var line = reader.ReadLine();
-            if (line != "#THEATERVERDEELFILE#")
-              MessageBox.Show("Corrupted File");
-            else
-            {
-              voorstellingnaambox.Text = reader.ReadLine();
-              reader.ReadLine();
-              line = reader.ReadLine();
-              _shows.Clear();
-              while (line != "#GROEPEN#")
-              {
-                bool balcony = false;
-                if (line == "True")
-                {
-                  balcony = true;
-                  line = reader.ReadLine();
-                }
-                if (line == "False")
-                  line = reader.ReadLine();
-                var date = DateTime.ParseExact(line, "d-M-yyyy H:mm:ss", CultureInfo.InvariantCulture,
-                                               DateTimeStyles.AllowLeadingWhite);
-                line = reader.ReadLine();
-                var time = DateTime.ParseExact(line, "d-M-yyyy H:mm:ss", CultureInfo.InvariantCulture,
-                                               DateTimeStyles.AllowLeadingWhite);
-               // todo _shows.Add(new Voorstelling(time, hall, date));
-                line = reader.ReadLine();
-              }
-              line = reader.ReadLine();
-              while (line != "#END#")
-              {
-                var name = line;
-                var pers = int.Parse(reader.ReadLine());
-                var first = bool.Parse(reader.ReadLine());
-                var morn = bool.Parse(reader.ReadLine());
-                var temp = new List<DateTime>();
-                DateTime dt;
-                line = reader.ReadLine();
-                while (DateTime.TryParseExact(line, "d-M-yyyy H:mm:ss", CultureInfo.InvariantCulture,
-                                              DateTimeStyles.AllowLeadingWhite, out dt))
-                {
-                  temp.Add(dt);
-                  line = reader.ReadLine();
-                }
-                _groups.Add(new Group(name, pers, first, morn, temp));
-                // line = reader.ReadLine();
-              }
-
-              Voorstellingviewerupdate();
-              Groupviewerupdate();
-              Updatestoelen();
-            }
-          }
-          catch (Exception ex)
-          {
-            MessageBox.Show($"Error loading file: {ex.Message}");
-          }
-        }
+        return;
+      }
+      try
+      {
+        LoadPlan(dialog.FileName);
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show($"Laden is niet gelukt: {ex.Message}");
       }
     }
-
+    #endregion
   }
-  #endregion
 }
-

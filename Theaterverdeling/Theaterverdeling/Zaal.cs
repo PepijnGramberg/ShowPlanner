@@ -184,8 +184,21 @@ namespace Theaterverdeling
     }
   }
 
-  public abstract class Zaal
+  public class Zaal
   {
+    // Name of the hall file this hall was loaded from, without extension.
+    public string Name { get; private set; }
+
+    // Loads a hall from the halls folder next to the app.
+    public static Zaal Load(string name)
+    {
+      // Only the file name counts, so a name from a plan file cannot point outside the halls folder.
+      var fileName = Path.GetFileName(name);
+      var hall = LoadFromFile<Zaal>(Path.Combine(AppContext.BaseDirectory, "Zalen", fileName + ".json"));
+      hall.Name = fileName;
+      return hall;
+    }
+
     public int Seats => _rows.Sum(r => r.AvailableSeatCount);
     public List<Group> Groups { get; set; }
 
@@ -481,19 +494,6 @@ namespace Theaterverdeling
   {
     public string ZaalType { get; set; }
     public List<Row> Rows { get; set; }
-  }
-
-  public class Lampegiet : Zaal
-  {
-    public Lampegiet()
-    {
-      // Default constructor for serialization
-    }
-
-    public static Lampegiet Load()
-    {
-      return LoadFromFile<Lampegiet>(Path.Combine(AppContext.BaseDirectory, "Zalen", "Lampegiet.json"));
-    }
   }
 
   public struct SeatRange

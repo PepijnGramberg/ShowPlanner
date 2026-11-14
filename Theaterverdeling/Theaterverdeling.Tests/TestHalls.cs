@@ -11,7 +11,7 @@ namespace Theaterverdeling.Tests
 
     public static Zaal Hall(params string[] rows)
     {
-      return Zaal.FromJson<Lampegiet>("{\"ZaalType\":\"Test\",\"Rows\":[" + string.Join(",", rows) + "]}");
+      return Zaal.FromJson<Zaal>("{\"ZaalType\":\"Test\",\"Rows\":[" + string.Join(",", rows) + "]}");
     }
 
     public static string Row(int number, int seats, bool inUse = true, params int[] unusable)

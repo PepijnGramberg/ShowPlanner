@@ -5,11 +5,14 @@ namespace Theaterverdeling
 {
   public partial class Addshowform : Form
   {
+    // The only hall for now. Becomes a choice in this dialog once there are more hall files.
+    private const string HallName = "Lampegiet";
+
     public delegate void AddingshowEventHandler(object sender, EventArgs e);
     public Addshowform()
     {
       InitializeComponent();
-      foreach (var section in Lampegiet.Load().Sections)
+      foreach (var section in Zaal.Load(HallName).Sections)
       {
         Sectionsoff.Items.Add(section);
       }
@@ -18,7 +21,7 @@ namespace Theaterverdeling
     private void AddshowClick(object sender, EventArgs e)
     {
       var time = Time.Value;
-      var zaal = Lampegiet.Load();
+      var zaal = Zaal.Load(HallName);
       foreach (string section in Sectionsoff.CheckedItems)
       {
         zaal.SwitchOff(section);
