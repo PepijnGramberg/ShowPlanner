@@ -130,7 +130,7 @@ Open, in this order (decided 2026-11-14):
    - Walkway: a group that would sit on both sides of the walkway starts behind it, when it fits there.
    - Seats that these rules leave open go to a later group that fits in them completely.
    - A showing that is too full for these rules is seated the plain way, row by row with every seat used, so no group loses its place because of them.
-5. [ ] Distribution: single-file self-contained publish instead of an MSI.
+5. [x] Distribution: one self-contained exe instead of an MSI, made with the publish command below. It needs no installed .NET. The folder to hand out is `publish/`: `Theaterverdeling.exe` (about 50 MB) with the halls folder `Zalen` next to it. Halls made in the hall editor are saved in that `Zalen` folder, so keep the folder when the exe is replaced by a newer one.
 
 ## Build and run
 
@@ -144,6 +144,10 @@ dotnet test Theaterverdeling/Theaterverdeling.sln
 
 ```bash
 dotnet run --project Theaterverdeling/Theaterverdeling/Theaterverdeling.csproj
+```
+
+```bash
+dotnet publish Theaterverdeling/Theaterverdeling/Theaterverdeling.csproj -p:PublishProfile=Portable
 ```
 
 Windows only (`net9.0-windows`, WinForms). The UI is in Dutch.
