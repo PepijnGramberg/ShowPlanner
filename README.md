@@ -49,7 +49,7 @@ The preview shows the seat map of the chosen showing, with its groups in a list.
 
 - "Verplaats naar" moves the chosen group to another showing with enough free seats, also against its wishes. Both showings are seated again and the group is pinned to its new showing.
 - "Vastzetten" pins a group to its showing and "Losmaken" lets it go. "Verdeel groepen" leaves pinned groups where they are and distributes the rest around them.
-- Single seats: with a group chosen, a click on one of its seats makes that seat free, and a click on a free seat gives it to the group. The group then keeps exactly those seats, is pinned to its showing, and is marked "eigen stoelen". The other groups are seated around it.
+- Single seats: with a group chosen and "Stoelen van deze groep aanpassen" ticked, a click on one of its seats makes that seat free, and a click on a free seat gives it to the group. Without the tick a click on a seat changes nothing, so a stray click costs no seat. The group then keeps exactly those seats, is pinned to its showing, and is marked "eigen stoelen". The other groups are seated around it.
 - "Automatisch plaatsen" lets go of the hand-chosen seats and seats the group by the rules again.
 - Pins and hand-chosen seats are saved in the plan file.
 

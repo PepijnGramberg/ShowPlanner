@@ -117,7 +117,7 @@ namespace Theaterverdeling
       var group = CurrentGroup;
       Seatmap.HighlightedGroup = group;
       Seatslabel.Text = group == null
-        ? "Kies een groep in de lijst of op de plattegrond. Daarna maakt een klik op een stoel van de groep die stoel vrij, en geeft een klik op een vrije stoel die aan de groep. De groep houdt die stoelen."
+        ? "Kies een groep in de lijst of op de plattegrond. Daarna kan de groep worden verplaatst of vastgezet, en kunnen zijn stoelen worden aangepast."
         : string.Join(", ", group.Seats.Select(range => range.StartSeat == range.EndSeat
             ? $"rij {range.Row}: {range.StartSeat}"
             : $"rij {range.Row}: {range.StartSeat}-{range.EndSeat}"));
@@ -141,6 +141,12 @@ namespace Theaterverdeling
       Pinbutton.Enabled = group != null && CurrentShow != null;
       Pinbutton.Text = group != null && group.Pinned ? "Losmaken" : "Vastzetten";
       Autoseatbutton.Enabled = group != null && group.HandSeated;
+      // Seats are only changed for a group that sits in the showing on screen.
+      Seatmodecheck.Enabled = group != null && CurrentShow != null;
+      if (!Seatmodecheck.Enabled)
+      {
+        Seatmodecheck.Checked = false;
+      }
     }
 
     private void ShowingslistSelectedIndexChanged(object sender, EventArgs e)
@@ -184,9 +190,9 @@ namespace Theaterverdeling
       e.DrawFocusRectangle();
     }
 
-    // A click on a seat of another group chooses that group. With a group chosen, a click on one of
-    // its seats makes that seat free and a click on a free seat gives it to the group, so single
-    // seats can be changed by hand. A click next to the seats chooses no group.
+    // A click on a seat of another group chooses that group. While "Stoelen van deze groep aanpassen"
+    // is ticked, a click on a seat of the chosen group makes that seat free and a click on a free seat
+    // gives it to the group, so single seats can be changed by hand. A click next to the seats chooses no group.
     private void SeatmapSeatMapClick(object sender, SeatMapClickEventArgs e)
     {
       var chosen = CurrentGroup;
@@ -198,6 +204,13 @@ namespace Theaterverdeling
       }
       if (chosen == null || CurrentShow == null)
       {
+        return;
+      }
+      // A stray click must not cost a group a seat, so seats only change while that is switched on.
+      if (!Seatmodecheck.Checked)
+      {
+        Messagelabel.ForeColor = SystemColors.ControlText;
+        Messagelabel.Text = $"Vink \"{Seatmodecheck.Text}\" aan om stoelen te wijzigen.";
         return;
       }
 
@@ -222,6 +235,15 @@ namespace Theaterverdeling
       Messagelabel.Text = missing > 0
         ? $"Kies nog {missing} {(missing == 1 ? "stoel" : "stoelen")} voor {chosen.Name}."
         : $"{chosen.Name} heeft weer {chosen.Personen} stoelen.";
+    }
+
+    // Says what a click on a seat does while seats are being changed.
+    private void SeatmodecheckCheckedChanged(object sender, EventArgs e)
+    {
+      Messagelabel.ForeColor = SystemColors.ControlText;
+      Messagelabel.Text = Seatmodecheck.Checked
+        ? "Klik op een stoel van de groep om hem vrij te maken, en op een vrije stoel om hem aan de groep te geven."
+        : "";
     }
 
     // How a group is named in the list: its size, whether it is pinned, and how many of its people

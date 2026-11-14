@@ -245,6 +245,7 @@ namespace Theaterverdeling.Tests
         var groups = Find<ListBox>(preview, "Grouplist");
         // Het Kompas sits on seats 12-21 of row 1.
         groups.SelectedIndex = 0;
+        Find<CheckBox>(preview, "Seatmodecheck").Checked = true;
         var kompas = map.HighlightedGroup;
 
         map.ClickAt(Centre(map.SeatBounds(0, 11)));
@@ -266,6 +267,51 @@ namespace Theaterverdeling.Tests
     }
 
     [Fact]
+    public void Click_on_a_seat_changes_nothing_while_changing_seats_is_switched_off()
+    {
+      OnUiThread(() =>
+      {
+        var preview = Preview(out _);
+        var map = Find<SeatMapControl>(preview, "Seatmap");
+        var groups = Find<ListBox>(preview, "Grouplist");
+        groups.SelectedIndex = 0;
+
+        map.ClickAt(Centre(map.SeatBounds(0, 11)));
+        map.ClickAt(Centre(map.SeatBounds(19, 33)));
+
+        Assert.StartsWith("rij 1: 12-21", Find<Label>(preview, "Seatslabel").Text);
+        Assert.Equal(0, groups.SelectedIndex);
+        Assert.DoesNotContain("eigen stoelen", (string)groups.Items[0]);
+        Assert.Equal(
+          "Vink \"Stoelen van deze groep aanpassen\" aan om stoelen te wijzigen.",
+          Find<Label>(preview, "Messagelabel").Text);
+      });
+    }
+
+    [Fact]
+    public void Changing_seats_needs_a_group_and_is_switched_off_with_another_showing()
+    {
+      OnUiThread(() =>
+      {
+        var preview = Preview(out _);
+        var mode = Find<CheckBox>(preview, "Seatmodecheck");
+        Assert.False(mode.Enabled);
+
+        Find<ListBox>(preview, "Grouplist").SelectedIndex = 0;
+        Assert.True(mode.Enabled);
+        mode.Checked = true;
+        Assert.Equal(
+          "Klik op een stoel van de groep om hem vrij te maken, en op een vrije stoel om hem aan de groep te geven.",
+          Find<Label>(preview, "Messagelabel").Text);
+
+        Find<ListBox>(preview, "Showingslist").SelectedIndex = 1;
+
+        Assert.False(mode.Checked);
+        Assert.False(mode.Enabled);
+      });
+    }
+
+    [Fact]
     public void Group_with_all_its_seats_gets_no_extra_seat()
     {
       OnUiThread(() =>
@@ -273,6 +319,7 @@ namespace Theaterverdeling.Tests
         var preview = Preview(out _);
         var map = Find<SeatMapControl>(preview, "Seatmap");
         Find<ListBox>(preview, "Grouplist").SelectedIndex = 0;
+        Find<CheckBox>(preview, "Seatmodecheck").Checked = true;
 
         map.ClickAt(Centre(map.SeatBounds(19, 33)));
 
@@ -478,6 +525,7 @@ namespace Theaterverdeling.Tests
         var map = Find<SeatMapControl>(preview, "Seatmap");
         var groups = Find<ListBox>(preview, "Grouplist");
         groups.SelectedIndex = 0;
+        Find<CheckBox>(preview, "Seatmodecheck").Checked = true;
         Assert.False(Find<Button>(preview, "Autoseatbutton").Enabled);
         map.ClickAt(Centre(map.SeatBounds(0, 11)));
         map.ClickAt(Centre(map.SeatBounds(19, 33)));
@@ -498,6 +546,7 @@ namespace Theaterverdeling.Tests
         var preview = Preview(out var main);
         var map = Find<SeatMapControl>(preview, "Seatmap");
         Find<ListBox>(preview, "Grouplist").SelectedIndex = 0;
+        Find<CheckBox>(preview, "Seatmodecheck").Checked = true;
         map.ClickAt(Centre(map.SeatBounds(0, 11)));
         map.ClickAt(Centre(map.SeatBounds(19, 33)));
 
@@ -519,6 +568,7 @@ namespace Theaterverdeling.Tests
         var map = Find<SeatMapControl>(preview, "Seatmap");
         var groups = Find<ListBox>(preview, "Grouplist");
         groups.SelectedIndex = 0;
+        Find<CheckBox>(preview, "Seatmodecheck").Checked = true;
         map.ClickAt(Centre(map.SeatBounds(0, 11)));
         map.ClickAt(Centre(map.SeatBounds(19, 33)));
 

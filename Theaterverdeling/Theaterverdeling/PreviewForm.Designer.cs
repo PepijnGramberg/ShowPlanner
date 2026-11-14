@@ -40,6 +40,7 @@ namespace Theaterverdeling
             this.Movebutton = new System.Windows.Forms.Button();
             this.Pinbutton = new System.Windows.Forms.Button();
             this.Autoseatbutton = new System.Windows.Forms.Button();
+            this.Seatmodecheck = new System.Windows.Forms.CheckBox();
             this.Messagelabel = new System.Windows.Forms.Label();
             this.Exportbutton = new System.Windows.Forms.Button();
             this.Mappanel = new System.Windows.Forms.Panel();
@@ -102,7 +103,7 @@ namespace Theaterverdeling
             this.Grouplist.IntegralHeight = false;
             this.Grouplist.Location = new System.Drawing.Point(8, 180);
             this.Grouplist.Name = "Grouplist";
-            this.Grouplist.Size = new System.Drawing.Size(264, 234);
+            this.Grouplist.Size = new System.Drawing.Size(264, 211);
             this.Grouplist.TabIndex = 3;
             this.Grouplist.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
             this.Grouplist.ItemHeight = 19;
@@ -116,13 +117,14 @@ namespace Theaterverdeling
             this.Actionpanel.Controls.Add(this.Movechoice);
             this.Actionpanel.Controls.Add(this.Movebutton);
             this.Actionpanel.Controls.Add(this.Pinbutton);
+            this.Actionpanel.Controls.Add(this.Seatmodecheck);
             this.Actionpanel.Controls.Add(this.Autoseatbutton);
             this.Actionpanel.Controls.Add(this.Messagelabel);
             this.Actionpanel.Controls.Add(this.Exportbutton);
             this.Actionpanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.Actionpanel.Location = new System.Drawing.Point(8, 414);
+            this.Actionpanel.Location = new System.Drawing.Point(8, 391);
             this.Actionpanel.Name = "Actionpanel";
-            this.Actionpanel.Size = new System.Drawing.Size(264, 278);
+            this.Actionpanel.Size = new System.Drawing.Size(264, 301);
             this.Actionpanel.TabIndex = 4;
             //
             // Seatslabel
@@ -171,9 +173,19 @@ namespace Theaterverdeling
             this.Pinbutton.UseVisualStyleBackColor = true;
             this.Pinbutton.Click += new System.EventHandler(this.PinbuttonClick);
             //
+            // Seatmodecheck
+            //
+            this.Seatmodecheck.Location = new System.Drawing.Point(2, 159);
+            this.Seatmodecheck.Name = "Seatmodecheck";
+            this.Seatmodecheck.Size = new System.Drawing.Size(262, 19);
+            this.Seatmodecheck.TabIndex = 8;
+            this.Seatmodecheck.Text = "Stoelen van deze groep aanpassen";
+            this.Seatmodecheck.UseVisualStyleBackColor = true;
+            this.Seatmodecheck.CheckedChanged += new System.EventHandler(this.SeatmodecheckCheckedChanged);
+            //
             // Autoseatbutton
             // 
-            this.Autoseatbutton.Location = new System.Drawing.Point(0, 159);
+            this.Autoseatbutton.Location = new System.Drawing.Point(0, 182);
             this.Autoseatbutton.Name = "Autoseatbutton";
             this.Autoseatbutton.Size = new System.Drawing.Size(264, 25);
             this.Autoseatbutton.TabIndex = 7;
@@ -183,14 +195,14 @@ namespace Theaterverdeling
             // 
             // Messagelabel
             //
-            this.Messagelabel.Location = new System.Drawing.Point(0, 190);
+            this.Messagelabel.Location = new System.Drawing.Point(0, 213);
             this.Messagelabel.Name = "Messagelabel";
             this.Messagelabel.Size = new System.Drawing.Size(264, 46);
             this.Messagelabel.TabIndex = 5;
             //
             // Exportbutton
             //
-            this.Exportbutton.Location = new System.Drawing.Point(0, 244);
+            this.Exportbutton.Location = new System.Drawing.Point(0, 267);
             this.Exportbutton.Name = "Exportbutton";
             this.Exportbutton.Size = new System.Drawing.Size(264, 30);
             this.Exportbutton.TabIndex = 6;
@@ -246,7 +258,7 @@ namespace Theaterverdeling
             this.ClientSize = new System.Drawing.Size(1100, 700);
             this.Controls.Add(this.Mappanel);
             this.Controls.Add(this.Sidepanel);
-            this.MinimumSize = new System.Drawing.Size(700, 520);
+            this.MinimumSize = new System.Drawing.Size(700, 620);
             this.Name = "PreviewForm";
             this.Text = "Indeling";
             this.Sidepanel.ResumeLayout(false);
@@ -272,6 +284,7 @@ namespace Theaterverdeling
         private System.Windows.Forms.Button Pinbutton;
         private System.Windows.Forms.Label Messagelabel;
         private System.Windows.Forms.Button Autoseatbutton;
+        private System.Windows.Forms.CheckBox Seatmodecheck;
         private System.Windows.Forms.Button Exportbutton;
         private System.Windows.Forms.Panel Mappanel;
         private SeatMapControl Seatmap;
