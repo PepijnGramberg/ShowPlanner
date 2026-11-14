@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -15,6 +16,27 @@ namespace Theaterverdeling
 
     private Plan _plan = new Plan();
 
+    // True when the plan on screen has changes that are not in a file.
+    private bool _changed;
+
+    // True while a plan is put on screen by the form itself, so that is not taken for a change.
+    private bool _filling;
+
+    // Asks a yes or no question. Replaced in tests, where nobody can answer a message box.
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public Func<string, bool> Confirm { get; set; } =
+      question => MessageBox.Show(question, "Groepsindeling", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
+
+    // Tells the user something. Replaced in tests, where nobody can close a message box.
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public Action<string> Tell { get; set; } = text => MessageBox.Show(text, "Groepsindeling");
+
+    // True when the plan on screen may be thrown away: it is saved, or the user says so.
+    private bool MayDiscard(string question)
+    {
+      return !_changed || Confirm("Het plan is gewijzigd en nog niet opgeslagen. " + question);
+    }
+
     // The preview of the last distribution, while it is open.
     private PreviewForm _preview;
 
@@ -24,7 +46,7 @@ namespace Theaterverdeling
     {
       if (_plan.Groups.Sum(group => group.Personen) > _plan.Shows.Sum(show => show.Zaal.Seats))
       {
-        MessageBox.Show("Te weinig stoelen");
+        Tell("Te weinig stoelen");
         return;
       }
 
@@ -34,11 +56,13 @@ namespace Theaterverdeling
       Voorstellingviewerupdate();
       if (unplaced.Count > 0)
       {
-        MessageBox.Show("Niet ingedeeld:" + Environment.NewLine + string.Join(Environment.NewLine, unplaced.Select(group => group.Name)));
+        Tell("Niet ingedeeld:" + Environment.NewLine + string.Join(Environment.NewLine, unplaced.Select(group => group.Name)));
       }
 
       ClosePreview();
       _preview = new PreviewForm(_plan);
+      // Pins and hand-chosen seats are part of the plan file.
+      _preview.Corrected += (sender, e) => _changed = true;
       _preview.Show();
     }
 
@@ -49,9 +73,30 @@ namespace Theaterverdeling
       _preview = null;
     }
 
+    // The plan on screen was changed by the user: it is no longer what is in the file,
+    // and the preview is out of date.
+    private void PlanChanged()
+    {
+      _changed = true;
+      ClosePreview();
+    }
+
     private void ShowNameChanged(object sender, EventArgs e)
     {
-      ClosePreview();
+      if (!_filling)
+      {
+        PlanChanged();
+      }
+    }
+
+    // Closing the window with changes that are not saved asks first.
+    protected override void OnFormClosing(FormClosingEventArgs e)
+    {
+      if (e.CloseReason == CloseReason.UserClosing && !MayDiscard("Toch afsluiten?"))
+      {
+        e.Cancel = true;
+      }
+      base.OnFormClosing(e);
     }
 
     #region Shows
@@ -89,7 +134,7 @@ namespace Theaterverdeling
           _plan.Shows.Add(addShowForm.show);
         }
         Voorstellingviewerupdate();
-        ClosePreview();
+        PlanChanged();
         Updatestoelen();
       }
     }
@@ -113,7 +158,7 @@ namespace Theaterverdeling
     private void AddgroupClick(object sender, EventArgs e)
     {
       if (_plan.Shows.Count == 0)
-        MessageBox.Show("Voeg eerst de voorstelling toe");
+        Tell("Voeg eerst de voorstelling toe");
       else
       {
         OpenGroupDialog(null);
@@ -124,7 +169,7 @@ namespace Theaterverdeling
     {
       if (_plan.Shows.Count == 0)
       {
-        MessageBox.Show("Voeg eerst de voorstelling toe");
+        Tell("Voeg eerst de voorstelling toe");
         return;
       }
       var bulkgroupform = new Bulkgroupform(_plan);
@@ -138,7 +183,7 @@ namespace Theaterverdeling
       {
         _plan.Groups.AddRange(bulkGroupForm.Groups);
         Groupviewerupdate();
-        ClosePreview();
+        PlanChanged();
         Updatestoelen();
       }
     }
@@ -172,7 +217,7 @@ namespace Theaterverdeling
           _plan.Groups.Add(addGroupForm.Group);
         }
         Groupviewerupdate();
-        ClosePreview();
+        PlanChanged();
         Updatestoelen();
       }
     }
@@ -192,11 +237,18 @@ namespace Theaterverdeling
     #region ButtonClicks
     private void ResetButtonClick(object sender, EventArgs e)
     {
+      if (!MayDiscard("Toch alles wissen?"))
+      {
+        return;
+      }
       _plan = new Plan();
       ClosePreview();
       Groupviewer.Items.Clear();
       Voorstellingviewer.Items.Clear();
+      _filling = true;
       voorstellingnaambox.Clear();
+      _filling = false;
+      _changed = false;
       Updatestoelen();
     }
 
@@ -212,7 +264,7 @@ namespace Theaterverdeling
           indexes[j]--;
       }
       Voorstellingviewerupdate();
-      ClosePreview();
+      PlanChanged();
       Updatestoelen();
     }
 
@@ -227,7 +279,7 @@ namespace Theaterverdeling
           indexes[j]--;
       }
       Groupviewerupdate();
-      ClosePreview();
+      PlanChanged();
       Updatestoelen();
     }
 
@@ -245,6 +297,7 @@ namespace Theaterverdeling
     {
       _plan.ShowName = voorstellingnaambox.Text;
       _plan.Save(path);
+      _changed = false;
     }
 
     // Replaces the plan on screen with the plan in a file.
@@ -252,8 +305,11 @@ namespace Theaterverdeling
     public void LoadPlan(string path)
     {
       var plan = Plan.Load(path);
+      _filling = true;
       voorstellingnaambox.Text = plan.ShowName;
+      _filling = false;
       _plan = plan;
+      _changed = false;
       Voorstellingviewerupdate();
       Groupviewerupdate();
       ClosePreview();
@@ -273,12 +329,16 @@ namespace Theaterverdeling
       }
       catch (Exception ex)
       {
-        MessageBox.Show($"Opslaan is niet gelukt: {ex.Message}");
+        Tell($"Opslaan is niet gelukt: {ex.Message}");
       }
     }
 
     private void LoadButton_Click(object sender, EventArgs e)
     {
+      if (!MayDiscard("Toch een ander plan laden?"))
+      {
+        return;
+      }
       using var dialog = new OpenFileDialog { Filter = PlanFileFilter };
       if (dialog.ShowDialog() != DialogResult.OK)
       {
@@ -290,7 +350,7 @@ namespace Theaterverdeling
       }
       catch (Exception ex)
       {
-        MessageBox.Show($"Laden is niet gelukt: {ex.Message}");
+        Tell($"Laden is niet gelukt: {ex.Message}");
       }
     }
     #endregion

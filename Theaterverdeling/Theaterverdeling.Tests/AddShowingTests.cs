@@ -97,6 +97,7 @@ namespace Theaterverdeling.Tests
         main.Show();
         AddShowing(main, new DateTime(2026, 3, 14), new DateTime(2026, 3, 14, 10, 30, 0));
 
+        main.Confirm = question => true;
         Find<Button>(main, "ResetButton").PerformClick();
 
         Assert.Equal("0/0 stoelen", Find<Label>(main, "Seatlabel").Text);

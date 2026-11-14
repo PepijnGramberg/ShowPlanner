@@ -21,6 +21,9 @@ namespace Theaterverdeling
     // True while the lists are filled by the form itself, so that is not taken for a choice.
     private bool _filling;
 
+    // Raised when a group is moved, pinned or let go, or gets other seats: what the plan file keeps of a distribution.
+    public event EventHandler Corrected;
+
     public PreviewForm(Plan plan)
     {
       InitializeComponent();
@@ -164,6 +167,7 @@ namespace Theaterverdeling
       }
       // Seats that are chosen by hand only count in this showing, so the group stays in it.
       chosen.Pinned = true;
+      Corrected?.Invoke(this, EventArgs.Empty);
       _filling = true;
       Grouplist.Items[Grouplist.SelectedIndex] = GroupText(chosen);
       _filling = false;
@@ -202,6 +206,7 @@ namespace Theaterverdeling
         Messagelabel.Text = problem;
         return;
       }
+      Corrected?.Invoke(this, EventArgs.Empty);
       ShowPlan(group);
       Messagelabel.ForeColor = SystemColors.ControlText;
       Messagelabel.Text = $"{group.Name} is verplaatst en staat vast in deze voorstelling.";
@@ -216,6 +221,7 @@ namespace Theaterverdeling
         return;
       }
       group.Pinned = !group.Pinned;
+      Corrected?.Invoke(this, EventArgs.Empty);
       if (!group.Pinned && group.HandSeated)
       {
         // Seats that were chosen by hand belong to this showing, so they go when the group is let go.
@@ -237,6 +243,7 @@ namespace Theaterverdeling
       {
         return;
       }
+      Corrected?.Invoke(this, EventArgs.Empty);
       group.HandSeated = false;
       CurrentShow.Assignseats();
       ShowShowing(group);
