@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 namespace Theaterverdeling
 {
@@ -48,8 +49,9 @@ namespace Theaterverdeling
         {
           continue;
         }
-        // A first row with something else than a number as size is a header, such as "Naam / Aantal".
-        var isHeader = entries.Count == 0 && entry.People != "" && !entry.TryGetPeople(out _);
+        // A first row with a word as size is a header, such as "Naam / Aantal". A size with a digit
+        // in it, such as "0" or "ca. 28", is a group with a wrong size, which the grid then says.
+        var isHeader = entries.Count == 0 && entry.People != "" && !entry.People.Any(char.IsDigit);
         if (!isHeader)
         {
           entries.Add(entry);

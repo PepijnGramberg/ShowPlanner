@@ -46,6 +46,16 @@ namespace Theaterverdeling.Tests
       Assert.Equal(new[] { "De Regenboog" }, entries.Select(entry => entry.Name));
     }
 
+    [Theory]
+    [InlineData("ca. 28")]
+    [InlineData("0")]
+    public void First_row_with_a_wrong_size_is_kept_so_the_grid_can_say_so(string size)
+    {
+      var entries = GroupEntry.FromPastedText("De Regenboog\t" + size + "\nHet Kompas\t31");
+
+      Assert.Equal(new[] { "De Regenboog", "Het Kompas" }, entries.Select(entry => entry.Name));
+    }
+
     [Fact]
     public void Names_without_a_size_are_all_kept_and_a_number_in_a_name_stays_in_the_name()
     {
