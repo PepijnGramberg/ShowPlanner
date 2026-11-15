@@ -28,6 +28,7 @@ It is a Windows app (WinForms, .NET 9). The user interface is in Dutch. Every wi
 
 - Front-row groups choose first, then morning groups, then the larger groups.
 - A group goes to the showing on a date it prefers that stays the least full for its size with the group in it. When no preferred date has room, it goes to any other showing. The earlier showing wins a tie.
+- How full a showing is, is measured against the whole hall, with switched-off sections counted in. Two showings of the same hall so get as many people, also when one of them has the balcony switched off: the balcony fills up only once the showing without it is full.
 - A morning group only goes to a showing before noon.
 - Groups that fit in no showing are reported in one message that says why, and listed under "Niet ingedeeld" in the preview.
 - When the groups have more people than the showings have seats, nothing is distributed and a message gives both numbers.

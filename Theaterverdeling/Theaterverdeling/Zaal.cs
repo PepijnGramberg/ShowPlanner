@@ -247,6 +247,9 @@ namespace Theaterverdeling
     }
 
     public int Seats => _rows.Sum(r => r.AvailableSeatCount);
+
+    // The seats of the whole hall, with the sections that are switched off counted in.
+    public int SeatsWithAllSections => _rows.OfType<ChairRow>().Where(row => row.InUse).Sum(row => row.Seats.Count(seat => seat.Usable));
     public List<Group> Groups { get; set; }
 
     // Change to protected with JsonInclude attribute to allow serialization

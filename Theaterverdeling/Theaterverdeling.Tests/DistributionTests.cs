@@ -105,6 +105,34 @@ namespace Theaterverdeling.Tests
     }
 
     [Fact]
+    public void Showings_of_one_hall_get_as_many_people_when_one_has_a_section_switched_off()
+    {
+      var withBalcony = BalconyShowing(Monday, balconyOff: false);
+      var withoutBalcony = BalconyShowing(Tuesday, balconyOff: true);
+      var groups = Enumerable.Range(1, 6).Select(number => Group("G" + number, 2)).ToArray();
+
+      Plan(withBalcony, withoutBalcony).With(groups).Distribute();
+
+      // Twelve people fit in the main room of both showings, so nobody needs the balcony.
+      Assert.Equal(6, withBalcony.Groups.Sum(group => group.Personen));
+      Assert.Equal(6, withoutBalcony.Groups.Sum(group => group.Personen));
+    }
+
+    [Fact]
+    public void Switched_on_section_fills_up_once_the_showing_without_it_is_full()
+    {
+      var withBalcony = BalconyShowing(Monday, balconyOff: false);
+      var withoutBalcony = BalconyShowing(Tuesday, balconyOff: true);
+      var groups = Enumerable.Range(1, 11).Select(number => Group("G" + number, 2)).ToArray();
+
+      var unplaced = Plan(withBalcony, withoutBalcony).With(groups).Distribute();
+
+      Assert.Empty(unplaced);
+      Assert.Equal(12, withBalcony.Groups.Sum(group => group.Personen));
+      Assert.Equal(10, withoutBalcony.Groups.Sum(group => group.Personen));
+    }
+
+    [Fact]
     public void With_equal_room_the_earlier_showing_is_used()
     {
       var tuesday = Showing(Tuesday, 10, seats: 10);
@@ -186,6 +214,17 @@ namespace Theaterverdeling.Tests
     private static Voorstelling Showing(DateTime date, int hour, int seats)
     {
       return new Voorstelling(DateTime.Today.AddHours(hour), Hall(Row(1, seats)), date);
+    }
+
+    // A showing in a hall with ten seats in the main room and ten on the balcony.
+    private static Voorstelling BalconyShowing(DateTime date, bool balconyOff)
+    {
+      var hall = Hall(Row(1, 10), SectionRow(2, 10, "Balkon"));
+      if (balconyOff)
+      {
+        hall.SwitchOff("Balkon");
+      }
+      return new Voorstelling(DateTime.Today.AddHours(10), hall, date);
     }
 
     private static Group Wish(string name, int people, DateTime date, bool morning = false)

@@ -58,11 +58,12 @@ namespace Theaterverdeling
       // Front-row groups choose first, then morning groups, then the larger groups.
       foreach (var group in InSeatingOrder(Groups.Where(group => !group.Pinned)).ToList())
       {
-        // The showing that stays the least full for its size with this group in it comes first.
-        // The earlier showing wins a tie.
+        // The showing that stays the least full with this group in it comes first. How full is
+        // measured against the whole hall, so a showing with a section switched off gets as many
+        // people as one of the same hall with that section on. The earlier showing wins a tie.
         var possible = Shows
           .Where(show => Fits(group, show))
-          .OrderByDescending(show => (double)(show.Freeseats - group.Personen) / show.Zaal.Seats)
+          .OrderBy(show => (double)(show.Zaal.Seats - show.Freeseats + group.Personen) / show.Zaal.SeatsWithAllSections)
           .ThenBy(show => show.Start)
           .ToList();
         var chosen = possible.FirstOrDefault(show => group.Datum.Contains(show.Datum)) ?? possible.FirstOrDefault();
