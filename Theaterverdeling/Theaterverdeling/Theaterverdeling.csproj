@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <Content Include="Zalen\*.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="LEESMIJ.txt" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

@@ -97,9 +97,23 @@ dotnet run --project Theaterverdeling/Theaterverdeling/Theaterverdeling.csproj
 dotnet publish Theaterverdeling/Theaterverdeling/Theaterverdeling.csproj -p:PublishProfile=Portable
 ```
 
-This writes the folder `publish/`: `Theaterverdeling.exe` (about 50 MB) with the halls folder `Zalen` next to it. The exe needs no installed .NET. Hand out the whole folder.
+This writes the folder `publish/`: `Theaterverdeling.exe` (about 50 MB) with the halls folder `Zalen` and the Dutch `LEESMIJ.txt` next to it. The exe needs no installed .NET. Hand out the whole folder.
 
 Halls made in the hall editor are saved in that `Zalen` folder, so keep the folder when the exe is replaced by a newer one.
+
+### Release
+
+Pushing a version tag makes a GitHub release with that folder as one zip, `Theaterverdeling-v1.0.zip`:
+
+```bash
+git tag v1.0
+```
+
+```bash
+git push origin v1.0
+```
+
+The workflow in `.github/workflows/release.yml` runs the tests, publishes and attaches the zip. A user downloads the zip from the release page, extracts it and starts `Theaterverdeling.exe`. The exe is not signed, so Windows shows a warning the first time; `LEESMIJ.txt` says how to get past it.
 
 ## Files
 

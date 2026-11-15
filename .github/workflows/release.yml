@@ -1,0 +1,38 @@
+name: Release
+
+# Pushing a version tag such as v1.2 tests the app, publishes the portable folder
+# and puts it as one zip on a GitHub release.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Test
+        run: dotnet test Theaterverdeling/Theaterverdeling.slnx
+
+      - name: Publish
+        run: dotnet publish Theaterverdeling/Theaterverdeling/Theaterverdeling.csproj -p:PublishProfile=Portable
+
+      # The zip holds one folder, "Theaterverdeling", so extracting a newer zip
+      # in the same place lands on top of the older version.
+      - name: Zip
+        run: |
+          Rename-Item publish Theaterverdeling
+          Compress-Archive -Path Theaterverdeling -DestinationPath "Theaterverdeling-${{ github.ref_name }}.zip"
+
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${{ github.ref_name }}" "Theaterverdeling-${{ github.ref_name }}.zip" --title "Theaterverdeling ${{ github.ref_name }}" --generate-notes

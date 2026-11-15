@@ -1,0 +1,24 @@
+Theaterverdeling
+================
+
+Starten
+-------
+1. Pak het zip-bestand uit: klik er met de rechtermuisknop op en kies
+   "Alles uitpakken". Starten vanuit het zip-bestand zelf werkt niet.
+2. Open de map "Theaterverdeling" en dubbelklik op Theaterverdeling.exe.
+
+Er hoeft niets geïnstalleerd te worden.
+
+Waarschuwing van Windows
+------------------------
+De eerste keer kan Windows melden: "Windows heeft uw pc beschermd".
+Klik dan op "Meer informatie" en daarna op "Toch uitvoeren".
+
+Start het programma op een laptop van school helemaal niet, vraag dan de
+ICT-beheerder om het toe te staan.
+
+Een nieuwe versie
+-----------------
+Zalen die u zelf hebt gemaakt of aangepast staan in de map "Zalen" naast
+Theaterverdeling.exe. Maak eerst een kopie van die map, pak daarna de nieuwe
+versie uit en zet uw eigen zalen terug in de nieuwe map "Zalen".
