@@ -34,7 +34,7 @@ namespace Theaterverdeling.Tests
       Assert.Equal(new[] { b }, tuesday.Groups);
       Assert.Same(tuesday, b.Voorstelling);
       Assert.True(b.Pinned);
-      Assert.Equal("rij 1: 8-10", Describe(b));
+      Assert.Equal("rij 1: 6-8", Describe(b));
       Assert.Equal(6, monday.Freeseats);
     }
 
@@ -353,7 +353,7 @@ namespace Theaterverdeling.Tests
       Seat(hall, a);
       var row = (ChairRow)hall.Rows[0];
 
-      hall.ChangeSeat(row, 5, a);
+      hall.ChangeSeat(row, 3, a);
       hall.ChangeSeat(row, 0, a);
 
       Assert.Equal("rij 1: 1-1, rij 1: 5-5", Describe(a));
@@ -444,14 +444,14 @@ namespace Theaterverdeling.Tests
       var b = Wish("B", 2, Monday);
       var plan = Plan(monday).With(a, b);
       plan.Distribute();
-      MoveSeat(monday, a, fromRow: 0, fromSeat: 6, toRow: 1, toSeat: 7);
+      MoveSeat(monday, a, fromRow: 0, fromSeat: 8, toRow: 1, toSeat: 7);
       a.Pinned = true;
 
       plan.Distribute();
 
-      Assert.Equal("rij 1: 8-10, rij 2: 8-8", Describe(a));
-      // B is seated around A: it now gets the seat that A left.
-      Assert.Equal("rij 1: 6-7", Describe(b));
+      Assert.Equal("rij 1: 6-8, rij 2: 8-8", Describe(a));
+      // B is seated around A: it gets the seat that A left and the one next to it.
+      Assert.Equal("rij 1: 9-10", Describe(b));
     }
 
     [Fact]
@@ -466,7 +466,7 @@ namespace Theaterverdeling.Tests
       a.HandSeated = false;
       plan.Distribute();
 
-      Assert.Equal("rij 1: 7-10", Describe(a));
+      Assert.Equal("rij 1: 6-9", Describe(a));
     }
 
     [Fact]
@@ -482,7 +482,7 @@ namespace Theaterverdeling.Tests
       plan.Move(a, tuesday);
 
       Assert.False(a.HandSeated);
-      Assert.Equal("rij 1: 7-10", Describe(a));
+      Assert.Equal("rij 1: 6-9", Describe(a));
       Assert.Equal(0, monday.Zaal.SeatsOf(a));
     }
 
@@ -494,7 +494,7 @@ namespace Theaterverdeling.Tests
       var a = Wish("A", 4, Monday);
       var b = Wish("B", 3, Monday);
       plan.With(a, b).Distribute();
-      // A sits on seats 18-21 of row 1; its first seat moves to the last seat of the hall.
+      // A sits on seats 15-18 of row 1; its last seat moves to the last seat of the hall.
       MoveSeat(plan.Shows[0], a, fromRow: 0, fromSeat: 17, toRow: 18, toSeat: 33);
       a.Pinned = true;
       var path = Path.Combine(AppContext.BaseDirectory, Guid.NewGuid() + ".json");
@@ -505,7 +505,7 @@ namespace Theaterverdeling.Tests
         var loaded = global::Theaterverdeling.Plan.Load(path);
         loaded.Distribute();
 
-        Assert.Equal("rij 1: 19-21, rij 19: 34-34", Describe(loaded.Groups[0]));
+        Assert.Equal("rij 1: 15-17, rij 19: 34-34", Describe(loaded.Groups[0]));
         Assert.True(loaded.Groups[0].HandSeated);
         Assert.False(loaded.Groups[1].HandSeated);
         Assert.Equal(3, loaded.Shows[0].Zaal.SeatsOf(loaded.Groups[1]));

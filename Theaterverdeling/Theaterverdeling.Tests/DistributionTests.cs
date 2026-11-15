@@ -138,7 +138,7 @@ namespace Theaterverdeling.Tests
 
       Plan(show).With(a).Distribute();
 
-      Assert.Equal("rij 1: 7-10", Describe(a));
+      Assert.Equal("rij 1: 6-9", Describe(a));
     }
 
     [Fact]

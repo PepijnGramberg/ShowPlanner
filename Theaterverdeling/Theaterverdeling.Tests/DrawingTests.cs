@@ -94,7 +94,7 @@ namespace Theaterverdeling.Tests
     [Fact]
     public void Single_seat_is_listed_without_a_range()
     {
-      var hall = Hall(Row(1, 4));
+      var hall = Hall(Row(1, 4, true, 2));
       Seat(hall, Group("A", 3));
       var drawing = new RecordingDrawingContext();
 

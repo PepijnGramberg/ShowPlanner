@@ -9,14 +9,14 @@ namespace Theaterverdeling.Tests
   public class SeatFillingTests
   {
     [Fact]
-    public void First_group_is_seated_from_the_right_edge_of_the_front_row()
+    public void First_group_is_seated_right_of_the_middle_of_the_front_row()
     {
       var hall = Hall(Row(1, 10));
       var a = Group("A", 4);
 
       Seat(hall, a);
 
-      Assert.Equal("rij 1: 7-10", Describe(a));
+      Assert.Equal("rij 1: 6-9", Describe(a));
     }
 
     [Fact]
@@ -28,7 +28,7 @@ namespace Theaterverdeling.Tests
 
       Seat(hall, a, b);
 
-      Assert.Equal("rij 1: 6-7, rij 2: 6-10, rij 3: 9-10", Describe(b));
+      Assert.Equal("rij 1: 6-7, rij 2: 6-10, rij 3: 6-7", Describe(b));
     }
 
     [Fact]
@@ -67,7 +67,7 @@ namespace Theaterverdeling.Tests
       Seat(hall, a, b);
 
       // One seat is left in the half row of A, so B starts in row 2.
-      Assert.Equal("rij 2: 7-10", Describe(b));
+      Assert.Equal("rij 2: 6-9", Describe(b));
     }
 
     [Fact]
@@ -80,7 +80,7 @@ namespace Theaterverdeling.Tests
 
       Seat(hall, a, b, c);
 
-      Assert.Equal("rij 1: 1-3", Describe(c));
+      Assert.Equal("rij 1: 3-5", Describe(c));
     }
 
     [Fact]
@@ -91,7 +91,7 @@ namespace Theaterverdeling.Tests
 
       Seat(hall, a);
 
-      Assert.Equal("rij 1: 1-1, rij 1: 3-4", Describe(a));
+      Assert.Equal("rij 1: 2-4", Describe(a));
     }
 
     [Fact]
@@ -104,7 +104,7 @@ namespace Theaterverdeling.Tests
 
       // Five fit in the half row, but then the sixth would sit alone in row 3. The left side has not
       // reached row 2 yet, so the sixth does not sit across the middle either.
-      Assert.Equal("rij 2: 7-10, rij 3: 9-10", Describe(a));
+      Assert.Equal("rij 2: 6-9, rij 3: 6-7", Describe(a));
     }
 
     [Fact]
@@ -117,7 +117,7 @@ namespace Theaterverdeling.Tests
 
       Seat(hall, Group("X", 5), a, b, c);
 
-      Assert.Equal("rij 1: 1-2", Describe(b));
+      Assert.Equal("rij 1: 4-5", Describe(b));
       Assert.Equal("rij 2: 6-6", Describe(c));
     }
 
@@ -129,7 +129,7 @@ namespace Theaterverdeling.Tests
 
       Seat(hall, Group("X", 2), a);
 
-      Assert.Equal("rij 2: 3-4, rij 3: 4-4", Describe(a));
+      Assert.Equal("rij 2: 3-4, rij 3: 3-3", Describe(a));
     }
 
     [Fact]
@@ -141,8 +141,8 @@ namespace Theaterverdeling.Tests
 
       Seat(hall, a, b);
 
-      Assert.Equal("rij 1: 8-10", Describe(a));
-      Assert.Equal("rij 2: 7-10", Describe(b));
+      Assert.Equal("rij 1: 6-8", Describe(a));
+      Assert.Equal("rij 2: 6-9", Describe(b));
     }
 
     [Fact]
@@ -187,6 +187,37 @@ namespace Theaterverdeling.Tests
     }
 
     [Fact]
+    public void Open_seats_of_a_row_are_at_the_edges()
+    {
+      var hall = Hall(Row(1, 10), Row(2, 10));
+      var b = Group("B", 3);
+      var c = Group("C", 2);
+
+      Seat(hall, Group("A", 5), b, c);
+
+      // B and C are seated from the edge, and then move up to the middle of their row.
+      Assert.Equal("rij 2: 6-8", Describe(b));
+      Assert.Equal("rij 1: 4-5", Describe(c));
+    }
+
+    [Fact]
+    public void Row_with_seats_chosen_by_hand_is_not_pushed_together()
+    {
+      var hall = Hall(Row(1, 10));
+      var a = Group("A", 2);
+      var b = Group("B", 2);
+      Seat(hall, a);
+      var row = (ChairRow)hall.Rows[0];
+      hall.ChangeSeat(row, 5, a);
+      hall.ChangeSeat(row, 9, a);
+
+      Seat(hall, a, b);
+
+      Assert.Equal("rij 1: 7-7, rij 1: 10-10", Describe(a));
+      Assert.Equal("rij 1: 8-9", Describe(b));
+    }
+
+    [Fact]
     public void Walkway_between_rows_is_skipped()
     {
       var hall = Hall(Row(1, 2, true, 1), Walkway, Row(2, 2));
@@ -216,7 +247,7 @@ namespace Theaterverdeling.Tests
 
       Seat(hall, a);
 
-      Assert.Equal("rij 1: 7-8", Describe(a));
+      Assert.Equal("rij 1: 6-7", Describe(a));
     }
 
     [Fact]
@@ -278,7 +309,7 @@ namespace Theaterverdeling.Tests
       // B leaves one seat open in row 1 and the right half of row 2, in front of the walkway.
       Seat(hall, Group("A", 4), Group("B", 12), c);
 
-      Assert.Equal("rij 1: 1-3", Describe(c));
+      Assert.Equal("rij 1: 3-5", Describe(c));
     }
   }
 }

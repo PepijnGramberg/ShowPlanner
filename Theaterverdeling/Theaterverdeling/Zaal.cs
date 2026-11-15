@@ -277,6 +277,7 @@ namespace Theaterverdeling
     // - seats that these rules leave open go to a later group that fits in them completely.
     // When a group finds no place that way, the hall is too full for these rules and all groups
     // are seated the plain way: row by row, using every seat.
+    // Afterwards every row is pushed together towards the middle, so open seats are at the edges.
     // A group whose seats were changed by hand keeps exactly those seats; the other groups are
     // seated around it.
     public virtual void AssignSeats()
@@ -287,6 +288,38 @@ namespace Theaterverdeling
       {
         ClearSeats(byHand);
         AssignSeatsRowByRow();
+      }
+      MoveOpenSeatsToTheEdges();
+      foreach (var group in Groups)
+      {
+        group.Seats = SeatRangesOf(group);
+      }
+    }
+
+    // Pushes the people in every row together towards the middle, so the seats that stay open are
+    // at the edges, where the view is worse. The groups keep their order in the row. A row with
+    // seats that were chosen by hand stays as it is.
+    private void MoveOpenSeatsToTheEdges()
+    {
+      foreach (var row in _rows.OfType<ChairRow>().Where(row => row.Available))
+      {
+        if (row.Seats.Any(seat => seat.Group != null && seat.Group.HandSeated))
+        {
+          continue;
+        }
+        PushTogether(LeftHalf(row).Reverse());
+        PushTogether(RightHalf(row).Reverse());
+      }
+    }
+
+    // Moves the people in half a row, given from the middle to the edge, to the seats nearest the middle.
+    private static void PushTogether(IEnumerable<Seat> fromTheMiddle)
+    {
+      var seats = fromTheMiddle.Where(seat => seat.Usable).ToList();
+      var groups = seats.Where(seat => seat.Group != null).Select(seat => seat.Group).ToList();
+      for (var i = 0; i < seats.Count; i++)
+      {
+        seats[i].Group = i < groups.Count ? groups[i] : null;
       }
     }
 

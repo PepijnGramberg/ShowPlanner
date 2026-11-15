@@ -42,6 +42,7 @@ A change to the plan in the main window closes the preview, because it is out of
 - Nobody sits alone: when the last row of a group would hold one person, the group leaves a seat free in the row before, so two sit together. A group also does not start on a row with one seat left.
 - A group that would sit on both sides of a walkway starts behind the walkway, when it fits there.
 - Seats that these rules leave open go to a later group that fits in them completely, without one of its people alone in a row.
+- When everybody is seated, the people in each row move up towards the middle, so the seats that stay open are at the edges. A row with hand-chosen seats stays as it is.
 - A showing that is too full for these rules is seated the plain way, row by row with every seat used, so no group loses its place because of them.
 
 ### Correcting by hand
