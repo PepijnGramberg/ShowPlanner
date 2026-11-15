@@ -175,3 +175,7 @@ Everything is in [Theaterverdeling/](Theaterverdeling/): the app in `Theaterverd
 | `AppIcon.cs`, `Theaterverdeling.ico` | The icon of the app and of every window. |
 
 [AGENTS.md](AGENTS.md) has the conventions for working on the code.
+
+## Licence
+
+[MIT](LICENSE).
