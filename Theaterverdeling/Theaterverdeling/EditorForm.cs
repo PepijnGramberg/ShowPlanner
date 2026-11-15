@@ -76,6 +76,36 @@ namespace Theaterverdeling
       return true;
     }
 
+    // Removes the opened hall from the halls folder, after a question, and starts a new hall.
+    // Returns false when there is no saved hall open, the answer is no or the file cannot be removed.
+    public bool DeleteHall()
+    {
+      var name = _openedName;
+      if (name == null
+          || !Confirm($"Zaal \"{name}\" verwijderen? Dit kan niet ongedaan worden gemaakt. Een plan dat deze zaal gebruikt, kan daarna niet meer worden geladen."))
+      {
+        return false;
+      }
+      try
+      {
+        Zaal.Delete(name);
+      }
+      catch (Exception ex)
+      {
+        ShowStatus($"Verwijderen is niet gelukt: {ex.Message}", true);
+        return false;
+      }
+      FillPicker(null);
+      ShowDraft(new HallDraft(), null);
+      ShowStatus("Verwijderd.", false);
+      return true;
+    }
+
+    private void DeletehallbuttonClick(object sender, EventArgs e)
+    {
+      DeleteHall();
+    }
+
     private void AddColumns()
     {
       Rowsgrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "Soort", HeaderText = "Soort", AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells, ReadOnly = true });
@@ -112,6 +142,7 @@ namespace Theaterverdeling
       var index = chosen == null ? 0 : Hallpicker.FindStringExact(chosen);
       Hallpicker.SelectedIndex = Math.Max(index, 0);
       _openedName = Hallpicker.SelectedIndex == 0 ? null : (string)Hallpicker.SelectedItem;
+      Deletehallbutton.Enabled = _openedName != null;
       _filling = false;
     }
 
@@ -139,8 +170,15 @@ namespace Theaterverdeling
         ShowStatus($"Openen is niet gelukt: {ex.Message}", true);
         return;
       }
+      ShowDraft(draft, name);
+    }
+
+    // Puts a hall in the editor as the hall that is open, without changes.
+    private void ShowDraft(HallDraft draft, string name)
+    {
       _draft = draft;
       _openedName = name;
+      Deletehallbutton.Enabled = name != null;
       Hallname.Text = name ?? "";
       _changed = false;
       ShowStatus("", false);

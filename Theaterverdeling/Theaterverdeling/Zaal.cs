@@ -232,6 +232,12 @@ namespace Theaterverdeling
       Name = Path.GetFileName(name);
     }
 
+    // Removes a hall from the halls folder. Showings that already have the hall keep their own copy.
+    public static void Delete(string name)
+    {
+      File.Delete(HallFile(name));
+    }
+
     // A hall with the given rows, from the stage to the back.
     public static Zaal FromRows(IEnumerable<Row> rows)
     {

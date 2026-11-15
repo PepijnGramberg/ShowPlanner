@@ -34,6 +34,7 @@
             this.Namelabel = new System.Windows.Forms.Label();
             this.Hallname = new System.Windows.Forms.TextBox();
             this.Savebutton = new System.Windows.Forms.Button();
+            this.Deletehallbutton = new System.Windows.Forms.Button();
             this.Statuslabel = new System.Windows.Forms.Label();
             this.Leftpanel = new System.Windows.Forms.Panel();
             this.Rowsgrid = new System.Windows.Forms.DataGridView();
@@ -61,6 +62,7 @@
             this.Toppanel.Controls.Add(this.Namelabel);
             this.Toppanel.Controls.Add(this.Hallname);
             this.Toppanel.Controls.Add(this.Savebutton);
+            this.Toppanel.Controls.Add(this.Deletehallbutton);
             this.Toppanel.Controls.Add(this.Statuslabel);
             this.Toppanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.Toppanel.Location = new System.Drawing.Point(0, 0);
@@ -114,13 +116,24 @@
             this.Savebutton.UseVisualStyleBackColor = true;
             this.Savebutton.Click += new System.EventHandler(this.SavebuttonClick);
             //
+            // Deletehallbutton
+            //
+            this.Deletehallbutton.Enabled = false;
+            this.Deletehallbutton.Location = new System.Drawing.Point(550, 8);
+            this.Deletehallbutton.Name = "Deletehallbutton";
+            this.Deletehallbutton.Size = new System.Drawing.Size(125, 25);
+            this.Deletehallbutton.TabIndex = 5;
+            this.Deletehallbutton.Text = "Zaal verwijderen";
+            this.Deletehallbutton.UseVisualStyleBackColor = true;
+            this.Deletehallbutton.Click += new System.EventHandler(this.DeletehallbuttonClick);
+            //
             // Statuslabel
             //
             this.Statuslabel.AutoSize = true;
-            this.Statuslabel.Location = new System.Drawing.Point(556, 14);
+            this.Statuslabel.Location = new System.Drawing.Point(687, 14);
             this.Statuslabel.Name = "Statuslabel";
             this.Statuslabel.Size = new System.Drawing.Size(0, 13);
-            this.Statuslabel.TabIndex = 5;
+            this.Statuslabel.TabIndex = 6;
             //
             // Leftpanel
             //
@@ -278,6 +291,7 @@
         private System.Windows.Forms.Label Namelabel;
         private System.Windows.Forms.TextBox Hallname;
         private System.Windows.Forms.Button Savebutton;
+        private System.Windows.Forms.Button Deletehallbutton;
         private System.Windows.Forms.Label Statuslabel;
         private System.Windows.Forms.Panel Leftpanel;
         private System.Windows.Forms.DataGridView Rowsgrid;

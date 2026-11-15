@@ -242,6 +242,85 @@ namespace Theaterverdeling.Tests
     }
 
     [Fact]
+    public void Removing_a_hall_asks_first_and_deletes_its_file()
+    {
+      OnUiThread(() =>
+      {
+        var name = TemporaryHallName();
+        try
+        {
+          TestHall().Save(name);
+          var editor = Editor();
+          editor.OpenHall(name);
+          var asked = "";
+          editor.Confirm = question =>
+          {
+            asked = question;
+            return true;
+          };
+
+          Find<Button>(editor, "Deletehallbutton").PerformClick();
+
+          Assert.Equal($"Zaal \"{name}\" verwijderen? Dit kan niet ongedaan worden gemaakt. Een plan dat deze zaal gebruikt, kan daarna niet meer worden geladen.", asked);
+          Assert.False(Zaal.Exists(name));
+          var picker = Find<ComboBox>(editor, "Hallpicker");
+          Assert.DoesNotContain(name, picker.Items.Cast<string>());
+          Assert.Equal(0, picker.SelectedIndex);
+          Assert.Equal("", Find<TextBox>(editor, "Hallname").Text);
+          Assert.Empty(Grid(editor).Rows);
+          Assert.Equal("Verwijderd.", Find<Label>(editor, "Statuslabel").Text);
+        }
+        finally
+        {
+          File.Delete(Path.Combine(Zaal.HallsFolder, name + ".json"));
+        }
+      });
+    }
+
+    [Fact]
+    public void Hall_stays_when_the_question_about_removing_is_answered_with_no()
+    {
+      OnUiThread(() =>
+      {
+        var name = TemporaryHallName();
+        try
+        {
+          TestHall().Save(name);
+          var editor = Editor();
+          editor.OpenHall(name);
+          editor.Confirm = question => false;
+
+          Assert.False(editor.DeleteHall());
+
+          Assert.True(Zaal.Exists(name));
+          Assert.Equal(name, Find<ComboBox>(editor, "Hallpicker").SelectedItem);
+          Assert.Single(Grid(editor).Rows.Cast<DataGridViewRow>());
+        }
+        finally
+        {
+          File.Delete(Path.Combine(Zaal.HallsFolder, name + ".json"));
+        }
+      });
+    }
+
+    [Fact]
+    public void Only_a_hall_that_is_saved_can_be_removed()
+    {
+      OnUiThread(() =>
+      {
+        var editor = Editor();
+        var button = Find<Button>(editor, "Deletehallbutton");
+        Assert.False(button.Enabled);
+
+        editor.OpenHall("Lampegiet");
+        Assert.True(button.Enabled);
+
+        editor.OpenHall("(nieuwe zaal)");
+        Assert.False(button.Enabled);
+      });
+    }
+
+    [Fact]
     public void Opening_another_hall_with_unsaved_changes_asks_first()
     {
       OnUiThread(() =>
@@ -314,6 +393,14 @@ namespace Theaterverdeling.Tests
     private static string[] Cells(DataGridView grid, int row)
     {
       return grid.Rows[row].Cells.Cast<DataGridViewCell>().Select(cell => Convert.ToString(cell.Value)).ToArray();
+    }
+
+    // A hall of one row of ten seats.
+    private static Zaal TestHall()
+    {
+      var draft = new HallDraft();
+      draft.AddRow(-1);
+      return draft.ToHall();
     }
 
     private static string TemporaryHallName()

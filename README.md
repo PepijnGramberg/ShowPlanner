@@ -72,6 +72,7 @@ A hall is a JSON file in the folder `Zalen` next to the exe. The app ships with 
 - The rows are in a grid: row number, number of seats, section, and the seats that are not used, such as `1-2, 22-23`. Rows and walkways can be added, removed and moved.
 - Next to the grid is the seat map. A click on a seat switches it between used and not used.
 - Every line is checked while typing. A hall with a problem is not saved.
+- "Zaal verwijderen" removes the opened hall from the halls folder, after a question. Showings that are already in the open plan keep the hall; a saved plan that names it can no longer be loaded.
 - Closing the editor asks first when the hall has changes that are not saved. So does closing the main window, which ends the app.
 - A changed hall counts for showings that are added afterwards and for plans that are loaded afterwards.
 
