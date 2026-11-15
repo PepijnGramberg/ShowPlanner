@@ -38,6 +38,7 @@ A change to the plan in the main window closes the preview, because it is out of
 
 - Groups are seated in the order above, so front-row groups sit in front.
 - A group sits row by row on one side of the hall, from the edge towards the middle. The next group goes to the side that is the fewest rows along.
+- The last people of a group do not start a new row when they fit in the seats the other side left free in their row: they sit there, across the middle and next to their own group. This only happens in a row the other side has reached.
 - Nobody sits alone: when the last row of a group would hold one person, the group leaves a seat free in the row before, so two sit together. A group also does not start on a row with one seat left.
 - A group that would sit on both sides of a walkway starts behind the walkway, when it fits there.
 - Seats that these rules leave open go to a later group that fits in them completely, without one of its people alone in a row.

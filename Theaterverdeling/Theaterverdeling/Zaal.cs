@@ -269,10 +269,12 @@ namespace Theaterverdeling
 
     // Gives every group its seats, in the order of the list of groups. A group sits row by row on
     // one side of the hall, on the side that is the fewest rows along. On top of that:
+    // - the last people of a group do not start a new row when they fit in the seats the other side
+    //   left free in their row: they sit there, across the middle;
     // - nobody sits alone: when the last row of a group would hold one person, the group leaves a
     //   seat free in the row before, so two sit together;
     // - a group that would sit on both sides of a walkway starts behind the walkway instead;
-    // - seats that these two rules leave open go to a later group that fits in them completely.
+    // - seats that these rules leave open go to a later group that fits in them completely.
     // When a group finds no place that way, the hall is too full for these rules and all groups
     // are seated the plain way: row by row, using every seat.
     // A group whose seats were changed by hand keeps exactly those seats; the other groups are
@@ -426,7 +428,7 @@ namespace Theaterverdeling
             // The side that is the fewest rows along gets the group. The right side wins a tie.
             var first = left.Row < right.Row ? left : right;
             var second = first == left ? right : left;
-            seats = Place(rows, parts, first, gaps, group.Personen) ?? Place(rows, parts, second, gaps, group.Personen);
+            seats = Place(rows, parts, first, second, gaps, group.Personen) ?? Place(rows, parts, second, first, gaps, group.Personen);
           }
           if (seats == null)
           {
@@ -444,7 +446,7 @@ namespace Theaterverdeling
 
     // Finds seats for a group on one side, from the row that side has reached, and moves the side along.
     // Returns null when the side has too few seats left.
-    private static List<RowPart> Place(List<ChairRow> rows, List<int> parts, Side side, List<Gap> gaps, int people)
+    private static List<RowPart> Place(List<ChairRow> rows, List<int> parts, Side side, Side other, List<Gap> gaps, int people)
     {
       var seats = Take(rows, side, side.Row, rows.Count, people);
       if (seats == null)
@@ -464,6 +466,8 @@ namespace Theaterverdeling
         }
       }
 
+      FinishAcrossTheMiddle(rows, side, other, seats);
+
       // A group that would sit on both sides of a walkway starts behind it, when it fits there
       // without crossing the next walkway. The seats in front of the walkway stay open.
       var firstPart = parts[seats[0].Row];
@@ -479,6 +483,7 @@ namespace Theaterverdeling
         {
           gaps.Add(new Gap { Side = side, Start = side.Row, End = behind });
           seats = moved;
+          FinishAcrossTheMiddle(rows, side, other, seats);
         }
       }
 
@@ -500,6 +505,33 @@ namespace Theaterverdeling
       // The side stays on the row where the group ends, so the next group can use what is left of it.
       side.Row = seats[seats.Count - 1].Row;
       return seats;
+    }
+
+    // The last people of a group do not start a new row when they fit in the seats the other side
+    // left free in the row before: they sit there, next to their own group across the middle.
+    // Only in a row the other side has reached, and where the group sits up to the middle.
+    private static void FinishAcrossTheMiddle(List<ChairRow> rows, Side side, Side other, List<RowPart> seats)
+    {
+      if (seats.Count < 2)
+      {
+        return;
+      }
+      var last = seats[seats.Count - 1];
+      var before = seats[seats.Count - 2];
+      var row = rows[before.Row];
+      if (other.Row < before.Row || !before.Seats.Contains(side.Half(row).Last()))
+      {
+        return;
+      }
+      var across = other.Half(row).Reverse()
+        .TakeWhile(seat => seat.Usable && seat.Group == null)
+        .Take(last.Seats.Count)
+        .ToList();
+      if (across.Count == last.Seats.Count)
+      {
+        before.Seats.AddRange(across);
+        seats.RemoveAt(seats.Count - 1);
+      }
     }
 
     // The first free seats for a number of people on one side, in the rows from start up to end.
