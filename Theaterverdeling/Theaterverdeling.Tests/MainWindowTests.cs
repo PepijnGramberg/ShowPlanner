@@ -112,14 +112,20 @@ namespace Theaterverdeling.Tests
         var divide = Find<Button>(main, "Dividebutton");
         var before = (groups.Size, showings.Height, Gap: add.Left - groups.Right, Below: divide.Top - groups.Bottom, Name: groups.Columns[0].Width);
 
-        main.Size = new System.Drawing.Size(main.Width + 200, main.Height + 150);
+        var window = main.Size;
 
-        Assert.Equal(before.Size.Width + 200, groups.Width);
-        Assert.Equal(before.Size.Height + 150, groups.Height);
-        Assert.Equal(before.Height + 150, showings.Height);
+        main.Size = new System.Drawing.Size(window.Width + 200, window.Height + 150);
+
+        // Windows keeps a window from growing far past the screen, so on a small screen it grows less than asked.
+        var wider = main.Width - window.Width;
+        var taller = main.Height - window.Height;
+        Assert.True(wider > 0 && taller > 0, $"The window grew by {wider} x {taller}.");
+        Assert.Equal(before.Size.Width + wider, groups.Width);
+        Assert.Equal(before.Size.Height + taller, groups.Height);
+        Assert.Equal(before.Height + taller, showings.Height);
         Assert.Equal(before.Gap, add.Left - groups.Right);
         Assert.Equal(before.Below, divide.Top - groups.Bottom);
-        Assert.Equal(before.Name + 200, groups.Columns[0].Width);
+        Assert.Equal(before.Name + wider, groups.Columns[0].Width);
       });
     }
 
