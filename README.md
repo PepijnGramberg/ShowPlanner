@@ -77,11 +77,11 @@ The hall is chosen per showing in the showing dialog. Once a plan uses more than
 ## Build, test and run
 
 ```bash
-dotnet build Theaterverdeling/Theaterverdeling.sln
+dotnet build Theaterverdeling/Theaterverdeling.slnx
 ```
 
 ```bash
-dotnet test Theaterverdeling/Theaterverdeling.sln
+dotnet test Theaterverdeling/Theaterverdeling.slnx
 ```
 
 ```bash

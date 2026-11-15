@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Theaterverdeling/Theaterverdeling.csproj" />
+  <Project Path="Theaterverdeling.Tests/Theaterverdeling.Tests.csproj" />
+</Solution>

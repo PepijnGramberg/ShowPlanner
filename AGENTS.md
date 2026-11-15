@@ -5,11 +5,11 @@
 ## Commands
 
 ```bash
-dotnet build Theaterverdeling/Theaterverdeling.sln
+dotnet build Theaterverdeling/Theaterverdeling.slnx
 ```
 
 ```bash
-dotnet test Theaterverdeling/Theaterverdeling.sln
+dotnet test Theaterverdeling/Theaterverdeling.slnx
 ```
 
 ```bash
