@@ -278,8 +278,9 @@ namespace Theaterverdeling
     //   seat free in the row before, so two sit together;
     // - a group that would sit on both sides of a walkway starts behind the walkway instead;
     // - seats that these rules leave open go to a later group that fits in them completely.
-    // When a group finds no place that way, the hall is too full for these rules and all groups
-    // are seated the plain way: row by row, using every seat.
+    // A group that fits on neither side sits on both sides, in the seats that are free; the other
+    // groups keep their seats. Should a group still find no place, all groups are seated the plain
+    // way: row by row, using every seat.
     // Afterwards every row is pushed together towards the middle, so open seats are at the edges.
     // A group whose seats were changed by hand keeps exactly those seats; the other groups are
     // seated around it.
@@ -464,7 +465,9 @@ namespace Theaterverdeling
             // The side that is the fewest rows along gets the group. The right side wins a tie.
             var first = left.Row < right.Row ? left : right;
             var second = first == left ? right : left;
-            seats = Place(rows, parts, first, second, gaps, group.Personen) ?? Place(rows, parts, second, first, gaps, group.Personen);
+            seats = Place(rows, parts, first, second, gaps, group.Personen)
+              ?? Place(rows, parts, second, first, gaps, group.Personen)
+              ?? PlaceOnBothSides(rows, left, right, group.Personen);
           }
           if (seats == null)
           {
@@ -541,6 +544,43 @@ namespace Theaterverdeling
       // The side stays on the row where the group ends, so the next group can use what is left of it.
       side.Row = seats[seats.Count - 1].Row;
       return seats;
+    }
+
+    // Finds seats for a group that fits on neither side alone: it sits on both sides, row by row.
+    // It starts as far back as it fits: in the row both sides have reached, else in the row one
+    // side has reached, else in the seats that were left open further to the front.
+    // Only this group is seated without the rules; the groups before it keep their seats.
+    private static List<RowPart> PlaceOnBothSides(List<ChairRow> rows, Side left, Side right, int people)
+    {
+      var seats = TakeOnBothSides(rows, left, right, Math.Max(left.Row, right.Row), people)
+        ?? TakeOnBothSides(rows, left, right, Math.Min(left.Row, right.Row), people)
+        ?? TakeOnBothSides(rows, left, right, 0, people);
+      if (seats == null)
+      {
+        return null;
+      }
+      var end = seats[seats.Count - 1].Row;
+      left.Row = Math.Max(left.Row, end);
+      right.Row = Math.Max(right.Row, end);
+      return seats;
+    }
+
+    // The first free seats for a number of people on both sides, in the rows from start.
+    // Returns null when there are too few.
+    private static List<RowPart> TakeOnBothSides(List<ChairRow> rows, Side left, Side right, int start, int people)
+    {
+      var seats = new List<RowPart>();
+      var remaining = people;
+      for (var row = start; row < rows.Count && remaining > 0; row++)
+      {
+        var free = FreeSeats(rows[row], right).Concat(FreeSeats(rows[row], left)).Take(remaining).ToList();
+        if (free.Count > 0)
+        {
+          seats.Add(new RowPart { Row = row, Seats = free });
+          remaining -= free.Count;
+        }
+      }
+      return remaining == 0 ? seats : null;
     }
 
     // The last people of a group do not start a new row when they fit in the seats the other side

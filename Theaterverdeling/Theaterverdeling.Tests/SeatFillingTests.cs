@@ -171,7 +171,37 @@ namespace Theaterverdeling.Tests
     }
 
     [Fact]
-    public void Hall_that_is_too_full_for_the_rules_is_seated_row_by_row_with_every_seat_used()
+    public void Group_that_fits_on_neither_side_sits_on_both_sides()
+    {
+      var hall = Hall(Row(1, 10), Row(2, 10), Row(3, 10));
+      var a = Group("A", 7);
+      var b = Group("B", 6);
+      var c = Group("C", 8);
+      var d = Group("D", 8);
+
+      Seat(hall, a, b, c, d);
+
+      // Row 3 has three seats left on the right and five on the left. D takes them all.
+      Assert.Equal("rij 3: 1-8", Describe(d));
+    }
+
+    [Fact]
+    public void Groups_before_one_that_fits_on_neither_side_keep_the_seats_the_rules_gave_them()
+    {
+      var hall = Hall(Row(1, 10), Row(2, 10), Row(3, 10));
+      var a = Group("A", 7);
+      var b = Group("B", 6);
+      var c = Group("C", 8);
+      var d = Group("D", 8);
+
+      Seat(hall, a, b, c, d);
+
+      // B still leaves a seat free in row 2, so nobody of B sits alone in row 3.
+      Assert.Equal("rij 2: 6-9, rij 3: 9-10", Describe(b));
+    }
+
+    [Fact]
+    public void Group_that_fits_on_neither_side_uses_the_seats_left_open_in_front_when_it_needs_them()
     {
       var hall = Hall(Row(1, 10, true, 1, 2, 3, 4, 5), Walkway, Row(2, 10));
       var a = Group("A", 3);
@@ -181,8 +211,9 @@ namespace Theaterverdeling.Tests
 
       Seat(hall, a, b, c, d);
 
-      // With the rules B starts behind the walkway, and then D finds no place. So nobody skips the walkway.
-      Assert.Equal("rij 1: 6-7, rij 2: 9-10", Describe(b));
+      // B starts behind the walkway and stays there. D gets what is left: two seats in front of it and three behind.
+      Assert.Equal("rij 2: 7-10", Describe(b));
+      Assert.Equal("rij 1: 6-7, rij 2: 4-6", Describe(d));
       Assert.Equal(new[] { 3, 4, 3, 5 }, new[] { a, b, c, d }.Select(group => hall.SeatsOf(group)));
     }
 
