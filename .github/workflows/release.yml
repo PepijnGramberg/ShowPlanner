@@ -29,8 +29,9 @@ jobs:
       # in the same place lands on top of the older version.
       - name: Zip
         run: |
-          Rename-Item publish Theaterverdeling
-          Compress-Archive -Path Theaterverdeling -DestinationPath "Theaterverdeling-${{ github.ref_name }}.zip"
+          New-Item -ItemType Directory dist | Out-Null
+          Move-Item publish dist/Theaterverdeling
+          Compress-Archive -Path dist/Theaterverdeling -DestinationPath "Theaterverdeling-${{ github.ref_name }}.zip"
 
       - name: Create the release
         env:
