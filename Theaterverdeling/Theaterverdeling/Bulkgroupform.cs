@@ -39,11 +39,11 @@ namespace Theaterverdeling
     {
       Groupgrid.Columns.Add(new DataGridViewTextBoxColumn
       {
-        Name = "Naam",
+        Name = GroupGrid.NameColumn,
         HeaderText = "Naam",
         Width = 200
       });
-      Groupgrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "Aantal", HeaderText = "Aantal", MinimumWidth = 55, AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells });
+      Groupgrid.Columns.Add(new DataGridViewTextBoxColumn { Name = GroupGrid.PeopleColumn, HeaderText = "Aantal", MinimumWidth = 55, AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells });
       Groupgrid.Columns.Add(new DataGridViewCheckBoxColumn { Name = "Vooraan", HeaderText = "Vooraan", AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells });
       Groupgrid.Columns.Add(new DataGridViewCheckBoxColumn { Name = "Ochtend", HeaderText = "Ochtend", AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells });
       for (var i = 0; i < _dates.Count; i++)
@@ -104,8 +104,8 @@ namespace Theaterverdeling
     {
       return new GroupEntry
       {
-        Name = Convert.ToString(row.Cells["Naam"].Value),
-        People = Convert.ToString(row.Cells["Aantal"].Value),
+        Name = Convert.ToString(row.Cells[GroupGrid.NameColumn].Value),
+        People = Convert.ToString(row.Cells[GroupGrid.PeopleColumn].Value),
         FrontRows = IsTicked(row, "Vooraan"),
         Morning = IsTicked(row, "Ochtend"),
         Dates = _dates.Where((datum, index) => IsTicked(row, DateColumn(index))).ToList()

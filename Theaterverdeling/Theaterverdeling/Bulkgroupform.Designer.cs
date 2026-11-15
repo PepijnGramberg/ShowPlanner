@@ -28,7 +28,7 @@ namespace Theaterverdeling
         /// </summary>
         private void InitializeComponent()
         {
-            this.Groupgrid = new System.Windows.Forms.DataGridView();
+            this.Groupgrid = new GroupGrid();
             this.Bottompanel = new System.Windows.Forms.Panel();
             this.Toppanel = new System.Windows.Forms.Panel();
             this.Hintlabel = new System.Windows.Forms.Label();
@@ -133,7 +133,7 @@ namespace Theaterverdeling
 
         #endregion
 
-        private System.Windows.Forms.DataGridView Groupgrid;
+        private GroupGrid Groupgrid;
         private System.Windows.Forms.Panel Bottompanel;
         private System.Windows.Forms.Panel Toppanel;
         private System.Windows.Forms.Label Hintlabel;

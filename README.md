@@ -15,7 +15,7 @@ It is a Windows app (WinForms, .NET 9). The user interface is in Dutch. Every wi
 - The main window follows the order of the work: 1. the showings, 2. the groups, 3. "Verdeel groepen", which leads to the seating and the PDF.
 - A showing has a date, a time and a hall. Sections of the hall, such as the balcony, can be switched off per showing. A new showing starts with the date, the hall and the switched-off sections of the last showing in the plan, so only the time is left to set.
 - A group has a name, a size, preferred dates, a "Vooraan" wish for the front rows and an "Ochtend" wish for a showing before noon. No preferred date means any date is fine.
-- Groups are added one at a time, or many at once in a grid with "Meerdere groepen". Rows copied from a spreadsheet can be pasted into that grid: name and size, separated by a tab or a semicolon.
+- Groups are added one at a time, or many at once in a grid with "Meerdere groepen". Rows copied from a spreadsheet can be pasted into that grid: name and size, separated by a tab or a semicolon. When typing, Enter on the size of a group goes to the name of the next row.
 - While a dialog for a showing or for groups is open, the main window waits. Enter accepts a dialog and Esc cancels it.
 - The dialogs check the input and show the problem as a message: empty or duplicate group name, a group name of more than 25 characters, a group larger than the largest showing, two showings at the same moment.
 - "Plan opslaan" and "Plan laden" save and load the whole plan as one JSON file. A file that cannot be read, that names a hall that is not in the halls folder, or that holds what the dialogs refuse is not loaded; a message says what is wrong.
@@ -169,7 +169,7 @@ Everything is in [Theaterverdeling/](Theaterverdeling/): the app in `Theaterverd
 | `Graphics.cs`, `PdfExport.cs` | One drawing interface with a PDF and a screen implementation, and the PDF export. |
 | `HallDraft.cs`, `GroupEntry.cs` | A hall and a group as typed in a grid, before they are checked. |
 | `Theaterverdeling.cs` | The main window. |
-| `Addshowform.cs`, `Addgroupform.cs`, `Bulkgroupform.cs` | The dialogs for showings and groups. |
+| `Addshowform.cs`, `Addgroupform.cs`, `Bulkgroupform.cs`, `GroupGrid.cs` | The dialogs for showings and groups, and the grid in which many groups are typed. |
 | `PreviewForm.cs`, `EditorForm.cs` | The preview with the corrections by hand, and the hall editor. |
 | `AppIcon.cs`, `Theaterverdeling.ico` | The icon of the app and of every window. |
 

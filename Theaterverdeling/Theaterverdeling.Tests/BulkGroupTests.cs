@@ -149,6 +149,68 @@ namespace Theaterverdeling.Tests
       });
     }
 
+    [Fact]
+    public void Enter_after_typing_the_size_goes_to_the_name_of_the_next_row()
+    {
+      OnUiThread(() =>
+      {
+        using var main = MainWithTwoShowings();
+        var grid = OpenGrid(main);
+        grid.Rows.Add("De Vlieger", "");
+        grid.CurrentCell = grid.Rows[0].Cells["Aantal"];
+        grid.BeginEdit(false);
+        grid.EditingControl.Text = "24";
+
+        // The way a key reaches a cell that is being typed in, without a message loop.
+        var enter = Message.Create(grid.EditingControl.Handle, KeyDown, (IntPtr)Keys.Enter, IntPtr.Zero);
+        grid.EditingControl.PreProcessMessage(ref enter);
+
+        Assert.Equal(new[] { "24" }, Column(grid, "Aantal"));
+        Assert.Equal(1, grid.CurrentCell.RowIndex);
+        Assert.Equal("Naam", grid.Columns[grid.CurrentCell.ColumnIndex].Name);
+      });
+    }
+
+    [Fact]
+    public void Enter_on_a_size_that_is_not_being_typed_goes_to_the_name_of_the_next_row()
+    {
+      OnUiThread(() =>
+      {
+        using var main = MainWithTwoShowings();
+        var grid = OpenGrid(main);
+        Dialog().PasteText("De Regenboog\t28\nHet Kompas\t31");
+        grid.CurrentCell = grid.Rows[0].Cells["Aantal"];
+
+        SendMessage(grid.Handle, KeyDown, (IntPtr)Keys.Enter, IntPtr.Zero);
+
+        Assert.Equal(1, grid.CurrentCell.RowIndex);
+        Assert.Equal("Naam", grid.Columns[grid.CurrentCell.ColumnIndex].Name);
+      });
+    }
+
+    [Fact]
+    public void Enter_on_a_name_still_goes_down_in_the_same_column()
+    {
+      OnUiThread(() =>
+      {
+        using var main = MainWithTwoShowings();
+        var grid = OpenGrid(main);
+        Dialog().PasteText("De Regenboog\t28\nHet Kompas\t31");
+        grid.CurrentCell = grid.Rows[0].Cells["Naam"];
+
+        SendMessage(grid.Handle, KeyDown, (IntPtr)Keys.Enter, IntPtr.Zero);
+
+        Assert.Equal(1, grid.CurrentCell.RowIndex);
+        Assert.Equal("Naam", grid.Columns[grid.CurrentCell.ColumnIndex].Name);
+      });
+    }
+
+    private const int KeyDown = 0x100;
+
+    // Delivers a key to a control at once, so no message loop is needed.
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    private static extern IntPtr SendMessage(IntPtr window, int message, IntPtr wParam, IntPtr lParam);
+
     private static Theaterverdeling MainWithTwoShowings()
     {
       var main = new Theaterverdeling();
